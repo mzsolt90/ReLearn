@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "370969138284",
+    "firebase_url": "https://relearn-7bc4e.firebaseio.com",
+    "project_id": "relearn-7bc4e",
+    "storage_bucket": "relearn-7bc4e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370969138284:android:2a06072ef5689496153449",
+        "android_client_info": {
+          "package_name": "com.azyoot.relearn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "370969138284-n32b2vsfs7hriqbkhlli8chcbnn8l1sg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.azyoot.relearn",
+            "certificate_hash": "b2bbf2b04057758775291b6bdd336f28f6204187"
+          }
+        },
+        {
+          "client_id": "370969138284-5e66p25fn5l8mlo4kmf96qnjge3ebl40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPN0YU9Y7U9UYrr3GPFJ3P7lRYTsE_SGs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "370969138284-5e66p25fn5l8mlo4kmf96qnjge3ebl40.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

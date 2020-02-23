@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ReLearn</string>
+    <string name="accessibility_service_label">ReLearn monitoring</string>
+    <string name="accessibility_service_description">ReLearn monitoring TODO</string>
+</resources>
