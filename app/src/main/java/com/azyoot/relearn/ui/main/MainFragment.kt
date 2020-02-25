@@ -1,30 +1,62 @@
 package com.azyoot.relearn.ui.main
 
-import androidx.lifecycle.ViewModelProviders
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.azyoot.relearn.R
+import com.azyoot.relearn.ReLearnApplication
+import com.azyoot.relearn.di.MainFragmentSubcomponent
+import kotlinx.coroutines.FlowPreview
+import javax.inject.Inject
 
-class MainFragment : Fragment() {
+
+@FlowPreview
+class MainFragment : Fragment(R.layout.main_fragment) {
 
     companion object {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+    private val viewModel: MainViewModel by viewModels { viewModelFactory }
+
+    private val component: MainFragmentSubcomponent by lazy {
+        (context!!.applicationContext as ReLearnApplication).appComponent.mainFragmentSubcomponent()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        component.inject(this)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
+
+        viewModel.isMonitoringServiceEnabled.observe(viewLifecycleOwner, Observer { isEnabled ->
+            if (!isEnabled) {
+                AlertDialog.Builder(activity)
+                    .setMessage(R.string.dialog_enable_accessibility_service)
+                    .setNegativeButton(android.R.string.no) { _, _ -> }
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                        startActivity(intent)
+                    }
+                    .show()
+            }
+        })
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.checkMonitoringService()
+    }
 }

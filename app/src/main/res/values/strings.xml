@@ -2,4 +2,5 @@
     <string name="app_name">ReLearn</string>
     <string name="accessibility_service_label">ReLearn monitoring</string>
     <string name="accessibility_service_description">ReLearn monitoring TODO</string>
+    <string name="dialog_enable_accessibility_service">Please enable the accessibility service</string>
 </resources>

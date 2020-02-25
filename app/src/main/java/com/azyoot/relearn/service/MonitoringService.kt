@@ -1,8 +1,11 @@
 package com.azyoot.relearn.service
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
+import android.content.Context
 import android.os.Bundle
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityManager
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.di.ServiceSubcomponent
 import com.azyoot.relearn.domain.usecase.LogWebpageVisitBufferUseCase
@@ -69,5 +72,16 @@ class MonitoringService : AccessibilityService() {
         coroutineJob.cancel()
 
         firebaseAnalytics.logEvent(EVENT_SERVICE_DESTROYED, Bundle.EMPTY)
+    }
+
+    companion object {
+        fun isRunning(context: Context): Boolean {
+            val manager =
+                context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+            return manager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+                .any {
+                    it.resolveInfo?.serviceInfo?.packageName == context.packageName
+                }
+        }
     }
 }

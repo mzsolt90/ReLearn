@@ -5,7 +5,7 @@ import dagger.BindsInstance
 import dagger.Component
 
 @AppScope
-@Component(modules = [DataModule::class, AnalyticsModule::class])
+@Component(modules = [DataModule::class, AnalyticsModule::class, ViewModelModule::class])
 abstract class ApplicationComponent {
 
     @Component.Builder
@@ -17,4 +17,5 @@ abstract class ApplicationComponent {
     }
 
     abstract fun serviceSubcomponentBuilder(): ServiceSubcomponent.Builder
+    abstract fun mainFragmentSubcomponent(): MainFragmentSubcomponent
 }
