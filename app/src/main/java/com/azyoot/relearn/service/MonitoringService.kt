@@ -1,26 +1,23 @@
 package com.azyoot.relearn.service
 
 import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.os.Bundle
+import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityManager
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.di.ServiceSubcomponent
-import com.azyoot.relearn.domain.usecase.LogWebpageVisitBufferUseCase
 import com.azyoot.relearn.domain.analytics.EVENT_SERVICE_CREATED
 import com.azyoot.relearn.domain.analytics.EVENT_SERVICE_DESTROYED
 import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
 import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
-import com.azyoot.relearn.domain.entity.WebpageVisit
 import com.azyoot.relearn.domain.usecase.ProcessAccessibilityEventUseCase
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 class MonitoringService : AccessibilityService() {
 
@@ -75,13 +72,11 @@ class MonitoringService : AccessibilityService() {
     }
 
     companion object {
-        fun isRunning(context: Context): Boolean {
-            val manager =
-                context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-            return manager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
-                .any {
-                    it.resolveInfo?.serviceInfo?.packageName == context.packageName
-                }
-        }
+        fun isRunning(context: Context) =
+            Settings.Secure.getString(
+                context.applicationContext.contentResolver,
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            )?.contains(context.packageName.toString() + "/" + MonitoringService::class.java.name)
+                ?: false
     }
 }
