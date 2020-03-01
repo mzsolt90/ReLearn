@@ -10,7 +10,7 @@ buildscript {
         daggerVersion = "2.26"
         firebaseAnalyticsVersion = '17.2.2'
         fragmentVersion = '1.1.0-alpha09'
-        gradleVersion = '3.5.3'
+        gradleVersion = '3.6.0'
         gsonVersion = '2.8.2'
         gmsVersion = '4.3.3'
         junitVersion = '4.12'
@@ -19,6 +19,7 @@ buildscript {
         ktxVersion = '1.2.0'
         lifecycleVersion = '2.2.0'
         materialVersion = '1.1.0'
+        pagingVersion = '2.1.1'
         recyclerViewVersion = '1.1.0'
         roomVersion = '2.2.3'
         testExtJunit = '1.1.0'
