@@ -2,5 +2,5 @@ package com.azyoot.relearn.domain.entity
 
 data class AccessibilityEventDescriptor(
     val packageName: String,
-    val viewInfo: AccessibilityEventViewInfo
+    val sourceViewInfo: AccessibilityEventViewInfo
 )

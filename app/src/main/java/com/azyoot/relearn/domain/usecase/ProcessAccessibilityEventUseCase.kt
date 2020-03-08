@@ -1,28 +1,50 @@
 package com.azyoot.relearn.domain.usecase
 
-import com.azyoot.relearn.di.ServiceScope
 import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
-import com.azyoot.relearn.domain.entity.WebpageVisit
-import com.azyoot.relearn.util.stripFragmentFromUrl
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
+import com.azyoot.relearn.service.ViewInfoFlagger
+import com.azyoot.relearn.service.di.ServiceScope
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
+typealias ViewHierarchyProvider = (ViewInfoFlagger) -> List<AccessibilityEventViewInfo>
+
 @ServiceScope
+@JvmSuppressWildcards
 class ProcessAccessibilityEventUseCase @Inject constructor(
-    private val logWebpageVisitBufferUseCase: LogWebpageVisitBufferUseCase,
+    private val usecases: Set<FlagAndSaveEventDataUseCase>,
     private val coroutineScope: CoroutineScope
 ) {
-    fun onAccessibilityEvent(eventInfo: AccessibilityEventDescriptor) {
-        if (eventInfo.viewInfo.viewResourceIdName.contains("id/url_bar") && eventInfo.viewInfo.text.isEmpty().not()) {
-            coroutineScope.launch(Dispatchers.Default) {
-                logWebpageVisitBufferUseCase.logWebpageVisit(
-                    WebpageVisit(
-                        url = eventInfo.viewInfo.text.stripFragmentFromUrl(),
-                        appPackageName = eventInfo.packageName
-                    )
+    fun onAccessibilityEvent(
+        eventInfo: AccessibilityEventDescriptor,
+        viewHierarchyProvider: ViewHierarchyProvider
+    ) {
+        val needsHierarchy = usecases.any { it.needsHierarchy(eventInfo) }
+        val jointFlagger = { viewInfo: AccessibilityEventViewInfo ->
+            usecases.any { it.isImportant(viewInfo) }
+        }
+
+        val importantNodes = listOf<AccessibilityEventViewInfo>()
+            .let { if (jointFlagger(eventInfo.sourceViewInfo)) it.plus(eventInfo.sourceViewInfo) else it }
+            .let {
+                if (needsHierarchy) it.plus(
+                    viewHierarchyProvider.invoke(jointFlagger)
                 )
+                else it
+            }
+
+        if (importantNodes.isEmpty()) return
+
+        coroutineScope.launch(Dispatchers.Default) {
+            usecases.map { useCase ->
+                async {
+                    if (importantNodes.any { useCase.isImportant(it) }) {
+                        useCase.saveEventData(eventInfo, importantNodes)
+                    }
+                }
+            }.forEach {
+                if (!isActive) return@forEach
+                it.await()
             }
         }
     }

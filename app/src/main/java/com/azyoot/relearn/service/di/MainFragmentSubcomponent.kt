@@ -1,4 +1,4 @@
-package com.azyoot.relearn.di
+package com.azyoot.relearn.service.di
 
 import com.azyoot.relearn.ui.main.MainFragment
 import dagger.Subcomponent

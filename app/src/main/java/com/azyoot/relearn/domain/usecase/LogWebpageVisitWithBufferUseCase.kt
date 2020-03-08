@@ -17,9 +17,8 @@ class LogWebpageVisitBufferUseCase @Inject constructor(
     private suspend fun shouldLog(webpageVisit: WebpageVisit): Boolean {
         val latestForSameUrl = repository.getLastWebpageVisitForUrl(webpageVisit.url)
 
-        return LocalDateTime.now().minusDays(1).isAfter(
-            latestForSameUrl?.time
-        )
+        return latestForSameUrl?.time
+            ?.isBefore(LocalDateTime.now().minusDays(1)) ?: true
     }
 
     suspend fun logWebpageVisit(webpageVisit: WebpageVisit) {

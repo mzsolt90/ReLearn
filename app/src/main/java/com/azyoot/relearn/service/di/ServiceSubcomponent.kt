@@ -1,4 +1,4 @@
-package com.azyoot.relearn.di
+package com.azyoot.relearn.service.di
 
 import com.azyoot.relearn.service.MonitoringService
 import dagger.BindsInstance
@@ -6,7 +6,7 @@ import dagger.Subcomponent
 import kotlinx.coroutines.CoroutineScope
 
 @ServiceScope
-@Subcomponent
+@Subcomponent(modules = [UseCasesModule::class])
 interface ServiceSubcomponent {
     @Subcomponent.Builder
     interface Builder {

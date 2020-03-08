@@ -1,6 +1,8 @@
 package com.azyoot.relearn.di
 
 import android.content.Context
+import com.azyoot.relearn.service.di.MainFragmentSubcomponent
+import com.azyoot.relearn.service.di.ServiceSubcomponent
 import dagger.BindsInstance
 import dagger.Component
 
