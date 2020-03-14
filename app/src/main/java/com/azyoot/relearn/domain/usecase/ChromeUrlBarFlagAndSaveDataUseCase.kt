@@ -25,6 +25,9 @@ class ChromeUrlBarFlagAndSaveDataUseCase @Inject constructor(
         eventDescriptor: AccessibilityEventDescriptor,
         viewNodes: List<AccessibilityEventViewInfo>
     ) {
+        val url = eventDescriptor.sourceViewInfo.text.stripFragmentFromUrl()
+        if(url.contains("wiktionary").not()) return
+
         saveDataUseCase.logWebpageVisit(
             WebpageVisit(
                 url = eventDescriptor.sourceViewInfo.text.stripFragmentFromUrl(),
