@@ -21,7 +21,8 @@ class ProcessAccessibilityEventUseCase @Inject constructor(
     ) {
         val needsHierarchy = usecases.any { it.needsHierarchy(eventInfo) }
         val jointFlagger = { viewInfo: AccessibilityEventViewInfo ->
-            usecases.any { it.isImportant(viewInfo) }
+            val flagged = usecases.any { it.isImportant(eventInfo, viewInfo) }
+            flagged
         }
 
         val importantNodes = listOf<AccessibilityEventViewInfo>()
@@ -38,7 +39,7 @@ class ProcessAccessibilityEventUseCase @Inject constructor(
         coroutineScope.launch(Dispatchers.Default) {
             usecases.map { useCase ->
                 async {
-                    if (importantNodes.any { useCase.isImportant(it) }) {
+                    if (importantNodes.any { useCase.isImportant(eventInfo, it) }) {
                         useCase.saveEventData(eventInfo, importantNodes)
                     }
                 }

@@ -5,7 +5,13 @@ import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
 
 interface FlagAndSaveEventDataUseCase {
     fun needsHierarchy(eventDescriptor: AccessibilityEventDescriptor): Boolean
-    fun isImportant(viewInfo: AccessibilityEventViewInfo): Boolean
+    fun isImportant(
+        eventInfo: AccessibilityEventDescriptor,
+        viewInfo: AccessibilityEventViewInfo
+    ): Boolean
 
-    suspend fun saveEventData(eventDescriptor: AccessibilityEventDescriptor, viewNodes: List<AccessibilityEventViewInfo>)
+    suspend fun saveEventData(
+        eventDescriptor: AccessibilityEventDescriptor,
+        viewNodes: List<AccessibilityEventViewInfo>
+    )
 }

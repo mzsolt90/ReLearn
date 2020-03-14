@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.azyoot.relearn.ReLearnApplication
@@ -51,11 +52,14 @@ class MonitoringService : AccessibilityService() {
     }
 
     private fun AccessibilityNodeInfo.toViewInfo() = AccessibilityEventViewInfo(
-        this.viewIdResourceName ?: "",
-        this.text?.toString() ?: ""
+        viewIdResourceName ?: "",
+        text?.toString() ?: "",
+        isVisibleToUser,
+        parent?.viewIdResourceName ?: "",
+        (0 until (parent?.childCount?:0)).map {parent?.getChild(it)}.indexOf(this)
     )
 
-    private fun getViewFlaggingTraverser(rootNode: AccessibilityNodeInfo): (flagger: ViewInfoFlagger) -> List<AccessibilityEventViewInfo> =
+    private fun getViewFlaggingTraverser(nodesToRecycle: MutableList<AccessibilityNodeInfo>, rootNode: AccessibilityNodeInfo): (flagger: ViewInfoFlagger) -> List<AccessibilityEventViewInfo> =
         { flagger ->
             val flaggedViews = mutableListOf<AccessibilityEventViewInfo>()
 
@@ -71,36 +75,53 @@ class MonitoringService : AccessibilityService() {
 
                     traverseChildrenAndFlag(nodeInfo.getChild(it))
                 }
-
-                try {
-                    nodeInfo.recycle()
-                } catch (ex: IllegalStateException) {
-                }
             }
 
             traverseChildrenAndFlag(rootNode)
+            nodesToRecycle.add(rootNode)
+            rootNode.parent?.apply { nodesToRecycle.add(parent) }
 
             flaggedViews
         }
+
+    private fun traverseNodeForDebug(nodeInfo: AccessibilityNodeInfo){
+        Log.d("RelearnMonitoring", "id ${nodeInfo.viewIdResourceName} hint: ${nodeInfo.hintText} which child: ${(0 until (nodeInfo.parent?.childCount?:0)).map {nodeInfo.parent?.getChild(it)}.indexOf(nodeInfo)} parent: ${nodeInfo.parent?.viewIdResourceName} text: ${nodeInfo.text}")
+        repeat(nodeInfo.childCount) {
+            val child = nodeInfo.getChild(it)
+            traverseNodeForDebug(child)
+        }
+        try {
+            nodeInfo.recycle()
+        } catch (ex: Exception) {
+        }
+    }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.packageName?.contains("com.android.chrome") != true &&
             event?.packageName?.contains("com.google.android.apps.translate") != true
         ) return // TODO move to service config
-        val source = event.source ?: return
 
+        val nodesToRecycle = mutableListOf<AccessibilityNodeInfo>()
+
+        val source = event.source ?: return
+        nodesToRecycle.add(source)
+        nodesToRecycle.add(rootInActiveWindow)
+
+//        traverseNode(rootInActiveWindow ?: source)
         val descriptor = AccessibilityEventDescriptor(
             event.packageName.toString(),
             source.toViewInfo()
         )
         processAccessibilityEventUseCase.onAccessibilityEvent(
             descriptor,
-            getViewFlaggingTraverser(source)
+            getViewFlaggingTraverser(nodesToRecycle,rootInActiveWindow ?: source)
         )
 
-        try {
-            source.recycle()
-        } catch (ex: Exception) {
+        nodesToRecycle.distinct().forEach {
+            try {
+                it.recycle()
+            } catch (ex: Exception) {
+            }
         }
     }
 

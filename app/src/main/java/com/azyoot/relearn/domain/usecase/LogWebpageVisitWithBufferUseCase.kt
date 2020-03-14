@@ -6,6 +6,8 @@ import com.azyoot.relearn.domain.analytics.EVENT_WEBPAGE_VISIT_LOGGED
 import com.azyoot.relearn.domain.analytics.PROPERTY_URL
 import com.azyoot.relearn.domain.entity.WebpageVisit
 import com.google.firebase.analytics.FirebaseAnalytics
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -30,6 +32,8 @@ class LogWebpageVisitBufferUseCase @Inject constructor(
             )
         })
 
-        repository.saveWebpageVisit(webpageVisit)
+        withContext(Dispatchers.IO) {
+            repository.saveWebpageVisit(webpageVisit)
+        }
     }
 }
