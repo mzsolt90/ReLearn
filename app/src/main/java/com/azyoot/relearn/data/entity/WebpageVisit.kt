@@ -9,5 +9,6 @@ data class WebpageVisit(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val url: String,
     val appPackageName: String,
-    @ColumnInfo(name = "timestamp") val timestamp: Long
+    @ColumnInfo(name = "timestamp") val timestamp: Long,
+    @ColumnInfo(name = "last_parse_version") val lastParseVersion: Int
 )

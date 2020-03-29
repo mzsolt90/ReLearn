@@ -20,7 +20,7 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class MainViewModel @Inject constructor(private val applicationContext: Context, private val repository: WebpageVisitRepository) : ViewModel() {
 
-    val history: LiveData<PagedList<WebpageVisit>> = repository.getWebpageVisitsByTimeDesc(viewModelScope + Dispatchers.IO)
+    val history: MutableLiveData<List<WebpageVisit>> = MutableLiveData()
 
     private val checkMonitoringServiceChannel = ConflatedBroadcastChannel<Unit>()
     val isMonitoringServiceEnabled = checkMonitoringServiceChannel.asFlow().map {
@@ -29,6 +29,13 @@ class MainViewModel @Inject constructor(private val applicationContext: Context,
 
     init {
         checkMonitoringService()
+        loadData()
+    }
+
+    fun loadData(){
+        viewModelScope.launch(Dispatchers.IO) {
+            history.postValue(repository.getWebpageVisitsByTimeDesc())
+        }
     }
 
     fun checkMonitoringService() {

@@ -6,7 +6,7 @@ import dagger.Subcomponent
 import kotlinx.coroutines.CoroutineScope
 
 @ServiceScope
-@Subcomponent(modules = [UseCasesModule::class])
+@Subcomponent(modules = [ServiceUseCasesModule::class])
 interface ServiceSubcomponent {
     @Subcomponent.Builder
     interface Builder {

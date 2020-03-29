@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.azyoot.relearn.databinding.ItemHistoryWebpageBinding
 import com.azyoot.relearn.domain.entity.WebpageVisit
@@ -19,7 +20,7 @@ class WebpageVisitViewHolder(private val binding: ItemHistoryWebpageBinding) :
 }
 
 class WebpageVisitAdapter(private val context: Context) :
-    PagedListAdapter<WebpageVisit, WebpageVisitViewHolder>(DIFF_CALLBACK) {
+    ListAdapter<WebpageVisit, WebpageVisitViewHolder>(DIFF_CALLBACK) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         WebpageVisitViewHolder(
             ItemHistoryWebpageBinding.inflate(

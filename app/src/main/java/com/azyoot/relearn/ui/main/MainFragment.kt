@@ -12,11 +12,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.*
 import com.azyoot.relearn.R
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.MainFragmentBinding
 import com.azyoot.relearn.service.di.MainFragmentSubcomponent
+import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import kotlinx.coroutines.FlowPreview
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -42,7 +45,6 @@ class MainFragment : Fragment() {
 
         component.inject(this)
     }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,8 +60,10 @@ class MainFragment : Fragment() {
         viewBinding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        rescheduleWebpageDownloadJob()
 
         viewModel.isMonitoringServiceEnabled.observe(viewLifecycleOwner, Observer { isEnabled ->
             if (!isEnabled) {
@@ -86,5 +90,20 @@ class MainFragment : Fragment() {
         super.onResume()
 
         viewModel.checkMonitoringService()
+    }
+
+
+    private fun rescheduleWebpageDownloadJob() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val request = OneTimeWorkRequestBuilder<WebpageDownloadWorker>()
+            .setConstraints(constraints)
+            .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+            .build()
+
+        WorkManager.getInstance(context!!)
+            .enqueueUniqueWork(WebpageDownloadWorker.NAME, ExistingWorkPolicy.KEEP, request)
     }
 }

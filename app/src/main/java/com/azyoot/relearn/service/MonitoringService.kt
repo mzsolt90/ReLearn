@@ -7,17 +7,21 @@ import android.provider.Settings
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.work.*
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.domain.analytics.EVENT_SERVICE_CREATED
 import com.azyoot.relearn.domain.analytics.EVENT_SERVICE_DESTROYED
 import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
 import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
-import com.azyoot.relearn.domain.usecase.ProcessAccessibilityEventUseCase
+import com.azyoot.relearn.domain.usecase.monitoring.ProcessAccessibilityEventUseCase
 import com.azyoot.relearn.service.di.ServiceSubcomponent
+import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import java.time.Duration
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 typealias ViewInfoFlagger = (AccessibilityEventViewInfo) -> Boolean
@@ -56,10 +60,13 @@ class MonitoringService : AccessibilityService() {
         text?.toString() ?: "",
         isVisibleToUser,
         parent?.viewIdResourceName ?: "",
-        (0 until (parent?.childCount?:0)).map {parent?.getChild(it)}.indexOf(this)
+        (0 until (parent?.childCount ?: 0)).map { parent?.getChild(it) }.indexOf(this)
     )
 
-    private fun getViewFlaggingTraverser(nodesToRecycle: MutableList<AccessibilityNodeInfo>, rootNode: AccessibilityNodeInfo): (flagger: ViewInfoFlagger) -> List<AccessibilityEventViewInfo> =
+    private fun getViewFlaggingTraverser(
+        nodesToRecycle: MutableList<AccessibilityNodeInfo>,
+        rootNode: AccessibilityNodeInfo
+    ): (flagger: ViewInfoFlagger) -> List<AccessibilityEventViewInfo> =
         { flagger ->
             val flaggedViews = mutableListOf<AccessibilityEventViewInfo>()
 
@@ -84,8 +91,14 @@ class MonitoringService : AccessibilityService() {
             flaggedViews
         }
 
-    private fun traverseNodeForDebug(nodeInfo: AccessibilityNodeInfo){
-        Log.d("RelearnMonitoring", "id ${nodeInfo.viewIdResourceName} hint: ${nodeInfo.hintText} which child: ${(0 until (nodeInfo.parent?.childCount?:0)).map {nodeInfo.parent?.getChild(it)}.indexOf(nodeInfo)} parent: ${nodeInfo.parent?.viewIdResourceName} text: ${nodeInfo.text}")
+    private fun traverseNodeForDebug(nodeInfo: AccessibilityNodeInfo) {
+        Log.d(
+            "RelearnMonitoring",
+            "id ${nodeInfo.viewIdResourceName} hint: ${nodeInfo.hintText} which child: ${(0 until (nodeInfo.parent?.childCount ?: 0)).map {
+                nodeInfo.parent?.getChild(it)
+            }
+                .indexOf(nodeInfo)} parent: ${nodeInfo.parent?.viewIdResourceName} text: ${nodeInfo.text}"
+        )
         repeat(nodeInfo.childCount) {
             val child = nodeInfo.getChild(it)
             traverseNodeForDebug(child)
@@ -112,10 +125,15 @@ class MonitoringService : AccessibilityService() {
             event.packageName.toString(),
             source.toViewInfo()
         )
-        processAccessibilityEventUseCase.onAccessibilityEvent(
+
+        val processingResult = processAccessibilityEventUseCase.onAccessibilityEvent(
             descriptor,
-            getViewFlaggingTraverser(nodesToRecycle,rootInActiveWindow ?: source)
+            getViewFlaggingTraverser(nodesToRecycle, rootInActiveWindow ?: source)
         )
+
+        if(processingResult == ProcessAccessibilityEventUseCase.ProcessResult.PROCESSED) {
+            rescheduleWebpageDownloadJob()
+        }
 
         nodesToRecycle.distinct().forEach {
             try {
@@ -123,6 +141,21 @@ class MonitoringService : AccessibilityService() {
             } catch (ex: Exception) {
             }
         }
+    }
+
+    private fun rescheduleWebpageDownloadJob() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val request = OneTimeWorkRequestBuilder<WebpageDownloadWorker>()
+            .setConstraints(constraints)
+            .setInitialDelay(30, TimeUnit.SECONDS)
+            .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+            .build()
+
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniqueWork(WebpageDownloadWorker.NAME, ExistingWorkPolicy.REPLACE, request)
     }
 
     override fun onDestroy() {

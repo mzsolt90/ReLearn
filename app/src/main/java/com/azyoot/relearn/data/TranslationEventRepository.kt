@@ -12,7 +12,7 @@ import javax.inject.Inject
 class TranslationEventRepository @Inject constructor(private val database: AppDatabase) {
 
     private fun DomainEntity.toDataEntity() = DataEntity(
-        id = id,
+        id = databaseId,
         fromText = fromText,
         toText = toText,
         timestamp = timestamp.toInstant(
@@ -21,7 +21,7 @@ class TranslationEventRepository @Inject constructor(private val database: AppDa
     )
 
     private fun DataEntity.toDomainEntity() = DomainEntity(
-        id = id,
+        databaseId = id,
         fromText = fromText,
         toText = toText,
         timestamp = LocalDateTime.ofInstant(

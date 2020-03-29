@@ -1,4 +1,4 @@
-package com.azyoot.relearn.data
+package com.azyoot.relearn.data.migration
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase

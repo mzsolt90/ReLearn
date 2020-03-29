@@ -1,4 +1,4 @@
-package com.azyoot.relearn.domain.usecase
+package com.azyoot.relearn.domain.usecase.monitoring
 
 import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
 import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo

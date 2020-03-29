@@ -1,4 +1,4 @@
-package com.azyoot.relearn.domain.usecase
+package com.azyoot.relearn.domain.usecase.monitoring
 
 import android.os.Bundle
 import com.azyoot.relearn.data.TranslationEventRepository
