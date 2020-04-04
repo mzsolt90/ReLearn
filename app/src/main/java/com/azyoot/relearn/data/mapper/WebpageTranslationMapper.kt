@@ -6,8 +6,6 @@ import javax.inject.Inject
 import com.azyoot.relearn.domain.entity.WebpageTranslation as DomainEntity
 import com.azyoot.relearn.data.entity.WebpageTranslation as DataEntity
 
-val UNSET_VISIT = WebpageVisit(url = "", appPackageName = "", time = LocalDateTime.MIN)
-
 class WebpageTranslationMapper @Inject constructor() : EntityMapper<DomainEntity, DataEntity> {
     override fun toDataEntity(domainEntity: DomainEntity) = DataEntity(
         id = domainEntity.databaseId,
@@ -22,6 +20,6 @@ class WebpageTranslationMapper @Inject constructor() : EntityMapper<DomainEntity
         toText = dataEntity.toText,
         parseVersion = dataEntity.parseVersion,
         databaseId = dataEntity.id,
-        webpageVisit = UNSET_VISIT
+        webpageVisit = UNSET_WEBPAGE_VISIT
     )
 }

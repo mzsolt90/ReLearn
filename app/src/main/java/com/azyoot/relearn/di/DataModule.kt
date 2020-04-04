@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.azyoot.relearn.data.migration.AddGoogleTranslateMigration
 import com.azyoot.relearn.data.migration.AddWebpageTranslationMigration
 import com.azyoot.relearn.data.AppDatabase
+import com.azyoot.relearn.data.migration.AddRelearnEventMigration
 import dagger.Module
 import dagger.Provides
 
@@ -16,6 +17,7 @@ object DataModule {
         Room.databaseBuilder(applicationContext, AppDatabase::class.java, "ReLearn-db")
             .addMigrations(
                 AddGoogleTranslateMigration(),
-                AddWebpageTranslationMigration()
+                AddWebpageTranslationMigration(),
+                AddRelearnEventMigration()
             ).build()
 }
