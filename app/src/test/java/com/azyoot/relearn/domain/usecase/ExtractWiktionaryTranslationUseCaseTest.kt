@@ -9,9 +9,9 @@ import java.io.BufferedReader
 class ExtractWiktionaryTranslationUseCaseTest {
 
     data class TranslationTestCase(
-        val fromText: String,
+        val title: String,
         val toTextList: List<String>,
-        val body: String
+        val bodyFileName: String
     )
 
     private val usecase = ExtractWiktionaryTranslationUseCase()
@@ -36,12 +36,12 @@ class ExtractWiktionaryTranslationUseCaseTest {
         TEST_TRANSLATIONS.forEach { testCase ->
             val extractedTranslations = usecase.extractTranslationsFromWiktionaryPage(
                 givenWebpageVisit,
-                javaClass.classLoader!!.getResourceAsStream(testCase.body).bufferedReader()
+                javaClass.classLoader!!.getResourceAsStream(testCase.bodyFileName).bufferedReader()
                     .use(BufferedReader::readText)
             )
 
             val expectedTranslations = testCase.toTextList.map { toText ->
-                WebpageTranslation(testCase.fromText, toText, givenWebpageVisit)
+                WebpageTranslation(testCase.title, toText, givenWebpageVisit)
             }
 
             assertThat(extractedTranslations).isEqualTo(expectedTranslations)
@@ -55,12 +55,47 @@ class ExtractWiktionaryTranslationUseCaseTest {
         val TEST_TRANSLATIONS = listOf(
             TranslationTestCase("запове́дник", listOf("natural reserve"), "заповедник.html"),
             TranslationTestCase(
+                "утоми́ть",
+                listOf("to fatigue, to weary, to tire"),
+                "утомить.html"
+            ),
+            TranslationTestCase(
                 "утомлённый",
                 listOf(
                     "tired (experiencing fatigue; of a person, nerves, etc.)",
                     "tired (expressing fatigue; of a look, face, tone, etc.; inanimate)"
                 ),
                 "утомлённый.html"
+            ),
+            TranslationTestCase(
+                "до́брый",
+                listOf(
+                    "kind, good, genial",
+                    "kindly, good-hearted",
+                    "gracious, nice",
+                    "gentle, soft",
+                    "decent",
+                    "benign",
+                    "beneficent",
+                    "tenderhearted",
+                    "good-natured",
+                    "kindhearted, warm-hearted",
+                    "(colloquial) good, solid ― идти́ до́брых де́сять киломе́тров ― to walk a good/solid ten kilometres"
+                ),
+                "добрый.html"
+            ),
+            TranslationTestCase(
+                "дом", listOf(
+                    "house (building) ― обы́скивать дом за до́мом ― to search house by house",
+                    "home",
+                    "family",
+                    "household"
+                ),
+                "дом.html"
+            ),
+            TranslationTestCase(
+                "перераспределе́ниях", listOf(),
+                "перераспределениях.html"
             )
         )
     }
