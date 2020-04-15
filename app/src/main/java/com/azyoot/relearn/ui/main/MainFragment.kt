@@ -45,6 +45,7 @@ class MainFragment : Fragment() {
 
         component.inject(this)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -92,7 +93,6 @@ class MainFragment : Fragment() {
         viewModel.checkMonitoringService()
     }
 
-
     private fun rescheduleWebpageDownloadJob() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -100,7 +100,11 @@ class MainFragment : Fragment() {
 
         val request = OneTimeWorkRequestBuilder<WebpageDownloadWorker>()
             .setConstraints(constraints)
-            .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS
+            )
             .build()
 
         WorkManager.getInstance(context!!)

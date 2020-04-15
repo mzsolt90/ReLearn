@@ -1,11 +1,9 @@
 package com.azyoot.relearn.data
 
 import com.azyoot.relearn.data.mapper.TranslationEventMapper
-import com.azyoot.relearn.di.AppScope
 import com.azyoot.relearn.domain.entity.TranslationEvent
 import javax.inject.Inject
 
-@AppScope
 class TranslationEventRepository @Inject constructor(
     private val database: AppDatabase,
     private val mapper: TranslationEventMapper

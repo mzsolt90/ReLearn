@@ -11,7 +11,7 @@ class ReLearnApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        appComponent = DaggerApplicationComponent.builder().applicationContext(this).build()
+        appComponent = DaggerApplicationComponent.factory().create(this)
         Stetho.initializeWithDefaults(this);
     }
 }

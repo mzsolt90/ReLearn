@@ -5,11 +5,10 @@ import androidx.room.RoomDatabase
 import com.azyoot.relearn.data.entity.*
 import com.azyoot.relearn.di.AppScope
 
-@AppScope
 @Database(
-    entities = [WebpageVisit::class, TranslationEvent::class, WebpageTranslation::class, RelearnEvent::class],
-    views = [WebpageVisitWithLatestTranslationView::class],
-    version = 4,
+    entities = [WebpageVisit::class, TranslationEvent::class, WebpageTranslation::class, RelearnEvent::class, LatestSourcesCache::class],
+    views = [WebpageVisitWithLatestTranslationView::class, LatestSourcesView::class],
+    version = 7,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

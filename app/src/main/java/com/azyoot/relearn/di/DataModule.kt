@@ -2,10 +2,8 @@ package com.azyoot.relearn.di
 
 import android.content.Context
 import androidx.room.Room
-import com.azyoot.relearn.data.migration.AddGoogleTranslateMigration
-import com.azyoot.relearn.data.migration.AddWebpageTranslationMigration
 import com.azyoot.relearn.data.AppDatabase
-import com.azyoot.relearn.data.migration.AddRelearnEventMigration
+import com.azyoot.relearn.data.migration.*
 import dagger.Module
 import dagger.Provides
 
@@ -18,6 +16,8 @@ object DataModule {
             .addMigrations(
                 AddGoogleTranslateMigration(),
                 AddWebpageTranslationMigration(),
-                AddRelearnEventMigration()
+                AddRelearnEventMigration(),
+                AddLatestSourcesViewMigration(),
+                UpdateLatestSourcesViewMigration()
             ).build()
 }

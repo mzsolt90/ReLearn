@@ -1,11 +1,9 @@
 package com.azyoot.relearn.data
 
 import com.azyoot.relearn.data.mapper.WebpageVisitMapper
-import com.azyoot.relearn.di.AppScope
 import javax.inject.Inject
 import com.azyoot.relearn.domain.entity.WebpageVisit as DomainWebpageVisit
 
-@AppScope
 class WebpageVisitRepository @Inject constructor(
     private val database: AppDatabase,
     private val mapper: WebpageVisitMapper

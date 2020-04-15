@@ -8,7 +8,7 @@ buildscript {
         constraintLayoutVersion = '2.0.0-beta4'
         coreTestingVersion = '2.0.0'
         coroutinesVersion = "1.3.5"
-        daggerVersion = "2.26"
+        daggerVersion = "2.27"
         firebaseAnalyticsVersion = '17.2.2'
         fragmentVersion = '1.1.0-alpha09'
         gradleVersion = '3.6.0'
