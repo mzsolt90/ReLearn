@@ -9,13 +9,17 @@ import com.azyoot.relearn.data.entity.*
 interface RelearnEventDataHandler {
     suspend fun getLatestValidSourceRange(
         suppressedThreshold: Long,
-        suppressedCode: Int
+        suppressedCode: Int,
+        acceptedThreshold: Long,
+        acceptedCode: Int
     ): SourceRange?
 
     suspend fun getNearestValidSourceForId(
         id: Int,
         suppressedThreshold: Long,
-        suppressedCode: Int
+        suppressedCode: Int,
+        acceptedThreshold: Long,
+        acceptedCode: Int
     ): LatestSourcesView?
 
     suspend fun getOldestReLearnSourceWithState(status: Int): LatestSourcesView?
@@ -78,20 +82,25 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
                 MIN(id) AS min_id, 
                 MAX(id) AS max_id
              FROM latest_sources_cache
-             WHERE (latest_relearn_status != :suppressedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :suppressedThreshold)"""
+             WHERE (latest_relearn_status != :suppressedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :suppressedThreshold)
+             AND (latest_relearn_status != :acceptedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :acceptedThreshold)"""
     )
     suspend fun getLatestValidSourceRangeInternal(
         suppressedThreshold: Long,
-        suppressedCode: Int
+        suppressedCode: Int,
+        acceptedThreshold: Long,
+        acceptedCode: Int
     ): SourceRange?
 
     @Transaction
     override suspend fun getLatestValidSourceRange(
         suppressedThreshold: Long,
-        suppressedCode: Int
+        suppressedCode: Int,
+        acceptedThreshold: Long,
+        acceptedCode: Int
     ): SourceRange? {
         reloadSourcesCacheIfNeeded()
-        return getLatestValidSourceRangeInternal(suppressedThreshold, suppressedCode)
+        return getLatestValidSourceRangeInternal(suppressedThreshold, suppressedCode, acceptedThreshold, acceptedCode)
     }
 
     @Query(
@@ -102,12 +111,15 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
         WHERE ABS(latest_sources_cache.id - :id) = (
             SELECT MIN(ABS(latest_sources_cache.id - :id)) 
             FROM latest_sources_cache
-            WHERE (latest_relearn_status != :suppressedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :suppressedThreshold))"""
+            WHERE (latest_relearn_status != :suppressedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :suppressedThreshold) 
+            AND (latest_relearn_status != :acceptedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :acceptedThreshold))"""
     )
     override suspend fun getNearestValidSourceForId(
         id: Int,
         suppressedThreshold: Long,
-        suppressedCode: Int
+        suppressedCode: Int,
+        acceptedThreshold: Long,
+        acceptedCode: Int
     ): LatestSourcesView?
 
     @Query(

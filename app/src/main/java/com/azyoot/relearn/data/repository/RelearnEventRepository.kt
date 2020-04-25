@@ -19,11 +19,16 @@ class RelearnEventRepository @Inject constructor(
         LocalDateTime.now().minusDays(SUPPRESSED_DAYS.toLong())
     )
 
+    private val acceptedThreshold = dateTimeMapper.mapToTimestamp(
+        LocalDateTime.now().minusHours(ACCEPT_DELAY_HOURS.toLong())
+    )
 
     suspend fun getSourceRange() =
         relearnEventDataHandler.getLatestValidSourceRange(
             suppressedThreshold,
-            RelearnEventStatus.SUPPRESSED.value
+            RelearnEventStatus.SUPPRESSED.value,
+            acceptedThreshold,
+            RelearnEventStatus.ACCEPTED.value
         )
             ?.let { sourceRangeMapper.toDomainEntity(it) }
 
@@ -32,7 +37,9 @@ class RelearnEventRepository @Inject constructor(
         relearnEventDataHandler.getNearestValidSourceForId(
             id,
             suppressedThreshold,
-            RelearnEventStatus.SUPPRESSED.value
+            RelearnEventStatus.SUPPRESSED.value,
+            acceptedThreshold,
+            RelearnEventStatus.ACCEPTED.value
         )
             ?.let { reLearnSourceMapper.toDomainEntity(it) }
 
@@ -58,5 +65,6 @@ class RelearnEventRepository @Inject constructor(
 
     companion object {
         const val SUPPRESSED_DAYS = 30
+        const val ACCEPT_DELAY_HOURS = 48
     }
 }
