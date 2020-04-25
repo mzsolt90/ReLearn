@@ -1,6 +1,7 @@
 package com.azyoot.relearn.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.azyoot.relearn.data.entity.PARSE_VERSION
@@ -11,6 +12,9 @@ interface WebpageVisitDao {
 
     @Insert
     suspend fun addWebpageVisit(visit: WebpageVisit)
+
+    @Delete
+    suspend fun deleteWebpageVisit(visit: WebpageVisit)
 
     @Query("SELECT * FROM webpage_visit ORDER BY timestamp DESC LIMIT :limit")
     suspend fun getAllWebpagesByDate(limit: Int): List<WebpageVisit>

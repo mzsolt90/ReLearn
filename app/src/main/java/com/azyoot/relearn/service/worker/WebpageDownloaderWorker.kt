@@ -29,10 +29,12 @@ class WebpageDownloadWorker(appContext: Context, workerParams: WorkerParameters)
         component.inject(this)
     }
 
+    private suspend fun needsReschedule() = countUseCase.countUntranslatedWebpages() > 0
+
     override suspend fun doWork(): Result {
         try {
             downloadUseCase.downloadLastWebpagesAndStoreTranslations()
-            if (countUseCase.countUntranslatedWebpages() > 0) {
+            if (needsReschedule()) {
                 return Result.retry()
             }
         } catch (exception: IOException) {

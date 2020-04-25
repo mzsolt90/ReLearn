@@ -26,4 +26,7 @@ class WebpageVisitRepository @Inject constructor(
     suspend fun getUnparsedWebpageVisitCount() =
         database.webpageVisitDao().getUnparsedWebpageVisitCount()
 
+    suspend fun deleteWebpageVisit(visit: DomainWebpageVisit) =
+        database.webpageVisitDao().deleteWebpageVisit(mapper.toDataEntity(visit))
+
 }

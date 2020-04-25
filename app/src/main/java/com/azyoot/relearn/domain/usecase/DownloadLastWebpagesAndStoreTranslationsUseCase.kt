@@ -2,16 +2,19 @@ package com.azyoot.relearn.domain.usecase
 
 import com.azyoot.relearn.data.WebpageTranslationRepository
 import com.azyoot.relearn.data.WebpageVisitRepository
+import com.azyoot.relearn.domain.entity.WebpageTranslation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
+import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 class DownloadLastWebpagesAndStoreTranslationsUseCase @Inject constructor(
     private val webpageVisitRepository: WebpageVisitRepository,
     private val webpageTranslationRepository: WebpageTranslationRepository,
-    private val usecase: DownloadWebpageAndExtractTranslationUseCase
+    private val downloadUseCase: DownloadWebpageAndExtractTranslationUseCase,
+    private val deleteInvalidWebpageVisitUseCase: DeleteInvalidWebpageVisitUseCase
 ) {
 
     suspend fun downloadLastWebpagesAndStoreTranslations() {
@@ -19,7 +22,14 @@ class DownloadLastWebpagesAndStoreTranslationsUseCase @Inject constructor(
         withContext(Dispatchers.IO) {
             visits.map { webpageVisit ->
                 async {
-                    val translations = usecase.downloadWebpageAndExtractTranslation(webpageVisit)
+                    val translations: List<WebpageTranslation>
+                    try {
+                        translations = downloadUseCase.downloadWebpageAndExtractTranslation(webpageVisit)
+                    } catch (ex: IllegalArgumentException){
+                        deleteInvalidWebpageVisitUseCase.deleteWebpageVisitIfInvalid(webpageVisit)
+                        return@async
+                    }
+
                     yield()
                     webpageTranslationRepository.addWebpageTranslationsForWebpageVisit(webpageVisit, translations)
                 }
