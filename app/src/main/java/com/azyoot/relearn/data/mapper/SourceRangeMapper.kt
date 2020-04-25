@@ -10,7 +10,8 @@ class SourceRangeMapper @Inject constructor() :
         minTimestamp = domainEntity.minTime,
         maxTimestamp = domainEntity.maxTime,
         minId = domainEntity.minId,
-        maxId = domainEntity.maxId
+        maxId = domainEntity.maxId,
+        count = domainEntity.count
     )
 
     override fun toDomainEntity(dataEntity: DataEntity) =
@@ -18,6 +19,7 @@ class SourceRangeMapper @Inject constructor() :
             minTime = dataEntity.minTimestamp,
             maxTime = dataEntity.maxTimestamp,
             minId = dataEntity.minId,
-            maxId = dataEntity.maxId
+            maxId = dataEntity.maxId,
+            count = dataEntity.count
         )
 }

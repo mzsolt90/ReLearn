@@ -80,7 +80,8 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
         """SELECT MIN(latest_timestamp) AS min_timestamp, 
                 MAX(latest_timestamp) AS max_timestamp,
                 MIN(id) AS min_id, 
-                MAX(id) AS max_id
+                MAX(id) AS max_id,
+                COUNT(*) AS count
              FROM latest_sources_cache
              WHERE (latest_relearn_status != :suppressedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :suppressedThreshold)
              AND (latest_relearn_status != :acceptedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :acceptedThreshold)"""
