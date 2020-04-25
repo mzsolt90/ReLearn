@@ -3,15 +3,17 @@ package com.azyoot.relearn.data.migration
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-class UpdateLatestSourcesViewMigration : Migration(6, 7){
+class UpdateLatestSourcesViewMigration : Migration(7, 8){
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL("DROP VIEW LatestSourcesView")
         database.execSQL(
             """CREATE VIEW `LatestSourcesView` AS SELECT
      latest_visits.source AS source_text,
-     latest_visits.latest_timestamp AS latest_timestamp,
+     latest_visits.latest_webpage_timestamp AS latest_source_timestamp,
      latest_visits.webpage_visit_id AS latest_source_id,
-     relearn_event.status AS if_relearn_status,
+     latest_visits.latest_relearn_timestamp AS latest_relearn_timestamp,
+     relearn_event.status AS latest_relearn_status,
+     MAX(latest_visits.latest_webpage_timestamp, IFNULL(latest_visits.latest_relearn_timestamp, 0)) AS latest_timestamp,
      1 AS source_type,
      webpage_visit.id AS webpage_visit_id,
      webpage_visit.url AS webpage_visit_url,
@@ -26,10 +28,8 @@ class UpdateLatestSourcesViewMigration : Migration(6, 7){
      (
          SELECT
              webpage_visit.url AS source,
-             MAX(
-                 IFNULL(MAX(webpage_visit.timestamp), 0),
-                 IFNULL(MAX(relearn_event.timestamp), 0)
-             ) AS latest_timestamp,
+             MAX(webpage_visit.timestamp) AS latest_webpage_timestamp,
+             MAX(relearn_event.timestamp) AS latest_relearn_timestamp,
              MAX(webpage_visit.id) AS webpage_visit_id
          FROM
              webpage_visit
@@ -41,14 +41,16 @@ class UpdateLatestSourcesViewMigration : Migration(6, 7){
              webpage_visit.url
      ) AS latest_visits
      LEFT JOIN relearn_event ON relearn_event.webpage_visit_id = latest_visits.webpage_visit_id
-		AND relearn_event.timestamp = latest_visits.latest_timestamp
+		AND relearn_event.timestamp = latest_visits.latest_relearn_timestamp
 	 INNER JOIN webpage_visit ON webpage_visit.id = latest_visits.webpage_visit_id
  UNION
  SELECT
      latest_translation_events.source AS source_text,
-     latest_translation_events.latest_timestamp AS latest_timestamp,
+     latest_translation_events.latest_translation_timestamp AS latest_source_timestamp,
      latest_translation_events.translation_event_id AS latest_source_id,
-     relearn_event.status AS if_relearn_status,
+     latest_translation_events.latest_relearn_timestamp AS latest_relearn_timestamp,
+     relearn_event.status AS latest_relearn_status,
+     MAX(latest_translation_events.latest_translation_timestamp, IFNULL(latest_translation_events.latest_relearn_timestamp, 0)) AS latest_timestamp,
      2 AS source_type,
      NULL AS webpage_visit_id,
      NULL AS webpage_visit_url,
@@ -63,10 +65,8 @@ class UpdateLatestSourcesViewMigration : Migration(6, 7){
      (
          SELECT
              translation_event.from_text AS source,
-             MAX(
-                 IFNULL(MAX(translation_event.timestamp), 0),
-                 IFNULL(MAX(relearn_event.timestamp), 0)
-             ) AS latest_timestamp,
+            MAX(translation_event.timestamp) AS latest_translation_timestamp,
+             MAX(relearn_event.timestamp) AS latest_relearn_timestamp,
              MAX(translation_event.id) AS translation_event_id
          FROM
              translation_event
@@ -75,11 +75,12 @@ class UpdateLatestSourcesViewMigration : Migration(6, 7){
              translation_event.from_text
      ) AS latest_translation_events
      LEFT JOIN relearn_event ON relearn_event.translation_event_id = latest_translation_events.translation_event_id
-		AND relearn_event.timestamp = latest_translation_events.latest_timestamp
+		AND relearn_event.timestamp = latest_translation_events.latest_relearn_timestamp
 	 INNER JOIN translation_event ON translation_event.id = latest_translation_events.translation_event_id"""
         )
 
-        database.execSQL("""CREATE TABLE IF NOT EXISTS `latest_sources_cache` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `source_text` TEXT NOT NULL, `latest_timestamp` INTEGER NOT NULL, `latest_source_id` INTEGER NOT NULL, `if_relearn_status` INTEGER, `source_type` INTEGER NOT NULL)""")
+        database.execSQL("""DROP TABLE IF EXISTS latest_sources_cache""")
+        database.execSQL("""CREATE TABLE `latest_sources_cache` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `source_text` TEXT NOT NULL, `latest_source_timestamp` INTEGER NOT NULL, `latest_source_id` INTEGER NOT NULL, `latest_relearn_timestamp` INTEGER, `latest_relearn_status` INTEGER, `latest_timestamp` INTEGER NOT NULL, `source_type` INTEGER NOT NULL)""")
     }
 
 }

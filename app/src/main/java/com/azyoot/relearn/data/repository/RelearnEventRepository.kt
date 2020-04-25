@@ -4,6 +4,7 @@ import com.azyoot.relearn.data.AppDatabase
 import com.azyoot.relearn.data.mapper.ReLearnSourceMapper
 import com.azyoot.relearn.data.mapper.SourceRangeMapper
 import com.azyoot.relearn.domain.entity.ReLearnSource
+import com.azyoot.relearn.domain.entity.RelearnEventStatus
 import com.azyoot.relearn.domain.entity.SourceRange
 import com.azyoot.relearn.util.DateTimeMapper
 import java.time.LocalDateTime
@@ -23,13 +24,14 @@ class RelearnEventRepository @Inject constructor(
         appDatabase.relearnEventDao().getCacheSize() < MIN_CACHE_SIZE
 
     private suspend fun reloadCacheIfNeeded() {
-        if (needsCacheReload()) appDatabase.relearnEventDao().reloadSourcesCache(suppressedThreshold)
+        if (needsCacheReload()) appDatabase.relearnEventDao()
+            .reloadSourcesCache(suppressedThreshold)
     }
 
     suspend fun getSourceRange(): SourceRange? {
         reloadCacheIfNeeded()
 
-        return appDatabase.relearnEventDao().getLatestNotSuppressedSourceRange()
+        return appDatabase.relearnEventDao().getLatestSourceRange()
             ?.let { sourceRangeMapper.toDomainEntity(it) }
     }
 
@@ -38,6 +40,27 @@ class RelearnEventRepository @Inject constructor(
 
         return appDatabase.relearnEventDao().getNearestSourceForId(id)
             ?.let { reLearnSourceMapper.toDomainEntity(it) }
+    }
+
+    suspend fun getShowingReLearnEventSource(): ReLearnSource? {
+        reloadCacheIfNeeded()
+
+        return appDatabase.relearnEventDao()
+            .getOldestReLearnSourceWithState(RelearnEventStatus.SHOWING.value)
+            ?.let { reLearnSourceMapper.toDomainEntity(it) }
+    }
+
+    suspend fun getOldestPendingReLearnEventSource(): ReLearnSource? {
+        reloadCacheIfNeeded()
+
+        return appDatabase.relearnEventDao()
+            .getOldestReLearnSourceWithState(RelearnEventStatus.PENDING.value)
+            ?.let { reLearnSourceMapper.toDomainEntity(it) }
+    }
+
+    suspend fun setLatestReLearnEventForSource(source: ReLearnSource, status: RelearnEventStatus) {
+        appDatabase.relearnEventDao()
+            .setLatestReLearnStatusForSource(reLearnSourceMapper.toDataEntity(source), status.value)
     }
 
     companion object {
