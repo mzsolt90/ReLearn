@@ -7,9 +7,6 @@ import androidx.room.Transaction
 import com.azyoot.relearn.data.entity.*
 
 interface RelearnEventDataHandler {
-    suspend fun getCacheSize(): Int
-    suspend fun reloadSourcesCache()
-
     suspend fun getLatestValidSourceRange(
         suppressedThreshold: Long,
         suppressedCode: Int
@@ -33,7 +30,7 @@ interface RelearnEventDataHandler {
 interface RelearnEventDaoInternal : RelearnEventDataHandler {
 
     @Query("""SELECT COUNT(*) FROM latest_sources_cache""")
-    override suspend fun getCacheSize(): Int
+    suspend fun getCacheSize(): Int
 
     @Query("""DELETE FROM latest_sources_cache""")
     suspend fun clearSourcesCache()
@@ -47,7 +44,8 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
     suspend fun populateSourcesCache()
 
     @Transaction
-    override suspend fun reloadSourcesCache() {
+    suspend fun reloadSourcesCacheIfNeeded() {
+        if(getCacheSize() >= MIN_CACHE_SIZE) return
         clearSourcesCache()
         populateSourcesCache()
     }
@@ -82,10 +80,19 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
              FROM latest_sources_cache
              WHERE (latest_relearn_status != :suppressedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :suppressedThreshold)"""
     )
-    override suspend fun getLatestValidSourceRange(
+    suspend fun getLatestValidSourceRangeInternal(
         suppressedThreshold: Long,
         suppressedCode: Int
     ): SourceRange?
+
+    @Transaction
+    override suspend fun getLatestValidSourceRange(
+        suppressedThreshold: Long,
+        suppressedCode: Int
+    ): SourceRange? {
+        reloadSourcesCacheIfNeeded()
+        return getLatestValidSourceRangeInternal(suppressedThreshold, suppressedCode)
+    }
 
     @Query(
         """SELECT LatestSourcesView.* 
@@ -111,7 +118,14 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
         WHERE latest_sources_cache.latest_relearn_status = :status
         ORDER BY latest_sources_cache.id ASC"""
     )
-    override suspend fun getOldestReLearnSourceWithState(status: Int): LatestSourcesView?
+    suspend fun getOldestReLearnSourceWithStateInternal(status: Int): LatestSourcesView?
+
+    @Transaction
+    override suspend fun getOldestReLearnSourceWithState(status: Int): LatestSourcesView? {
+        reloadSourcesCacheIfNeeded()
+
+        return getOldestReLearnSourceWithStateInternal(status)
+    }
 
     @Query(
         """SELECT *  
@@ -162,5 +176,9 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
             newEvent.timestamp
         )
         deleteOldCacheEntry(source.latestSourceId, source.sourceType, newEvent.timestamp)
+    }
+
+    companion object {
+        const val MIN_CACHE_SIZE = 30
     }
 }
