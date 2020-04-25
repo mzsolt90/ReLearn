@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.azyoot.relearn.data.WebpageVisitRepository
+import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.entity.WebpageVisit
 import com.azyoot.relearn.domain.usecase.relearn.GetNextReLearnSourceUseCase
 import com.azyoot.relearn.service.MonitoringService

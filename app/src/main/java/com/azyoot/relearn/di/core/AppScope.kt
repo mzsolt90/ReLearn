@@ -1,7 +1,7 @@
-package com.azyoot.relearn.service.di
+package com.azyoot.relearn.di.core
 
 import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.SOURCE)
-annotation class ServiceScope
+annotation class AppScope

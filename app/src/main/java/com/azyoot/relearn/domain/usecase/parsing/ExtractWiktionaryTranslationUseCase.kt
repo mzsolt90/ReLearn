@@ -1,4 +1,4 @@
-package com.azyoot.relearn.domain.usecase
+package com.azyoot.relearn.domain.usecase.parsing
 
 import com.azyoot.relearn.domain.entity.WebpageTranslation
 import com.azyoot.relearn.domain.entity.WebpageVisit

@@ -4,11 +4,10 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.azyoot.relearn.ReLearnApplication
-import com.azyoot.relearn.data.WebpageVisitRepository
-import com.azyoot.relearn.domain.usecase.CountUnparsedWebpagesUseCase
-import com.azyoot.relearn.domain.usecase.DownloadLastWebpagesAndStoreTranslationsUseCase
-import com.azyoot.relearn.service.di.WorkerSubcomponent
-import com.crashlytics.android.Crashlytics
+import com.azyoot.relearn.data.repository.WebpageVisitRepository
+import com.azyoot.relearn.domain.usecase.parsing.CountUnparsedWebpagesUseCase
+import com.azyoot.relearn.domain.usecase.parsing.DownloadLastWebpagesAndStoreTranslationsUseCase
+import com.azyoot.relearn.di.service.WorkerSubcomponent
 import java.io.IOException
 import javax.inject.Inject
 

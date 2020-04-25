@@ -1,7 +1,7 @@
 package com.azyoot.relearn.domain.usecase.monitoring
 
 import android.os.Bundle
-import com.azyoot.relearn.data.TranslationEventRepository
+import com.azyoot.relearn.data.repository.TranslationEventRepository
 import com.azyoot.relearn.domain.analytics.EVENT_TRANSLATION_LOGGED
 import com.azyoot.relearn.domain.analytics.PROPERTY_FROM_TEXT
 import com.azyoot.relearn.domain.analytics.PROPERTY_TO_TEXT

@@ -1,6 +1,6 @@
 package com.azyoot.relearn.domain.usecase.relearn
 
-import com.azyoot.relearn.data.RelearnEventRepository
+import com.azyoot.relearn.data.repository.RelearnEventRepository
 import com.azyoot.relearn.domain.math.BoxMuellerCalculation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

@@ -1,8 +1,8 @@
 package com.azyoot.relearn
 
 import android.app.Application
-import com.azyoot.relearn.di.ApplicationComponent
-import com.azyoot.relearn.di.DaggerApplicationComponent
+import com.azyoot.relearn.di.core.ApplicationComponent
+import com.azyoot.relearn.di.core.DaggerApplicationComponent
 import com.facebook.stetho.Stetho
 
 class ReLearnApplication : Application() {

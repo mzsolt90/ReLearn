@@ -1,6 +1,6 @@
-package com.azyoot.relearn.domain.usecase
+package com.azyoot.relearn.domain.usecase.parsing
 
-import com.azyoot.relearn.data.WebpageVisitRepository
+import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.entity.WebpageVisit
 import com.azyoot.relearn.util.isValidUrl
 import kotlinx.coroutines.Dispatchers

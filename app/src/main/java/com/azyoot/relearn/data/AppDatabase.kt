@@ -2,8 +2,11 @@ package com.azyoot.relearn.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.azyoot.relearn.data.dao.RelearnEventDao
+import com.azyoot.relearn.data.dao.TranslationEventDao
+import com.azyoot.relearn.data.dao.WebpageTranslationDao
+import com.azyoot.relearn.data.dao.WebpageVisitDao
 import com.azyoot.relearn.data.entity.*
-import com.azyoot.relearn.di.AppScope
 
 @Database(
     entities = [WebpageVisit::class, TranslationEvent::class, WebpageTranslation::class, RelearnEvent::class, LatestSourcesCache::class],

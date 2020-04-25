@@ -14,13 +14,12 @@ import com.azyoot.relearn.domain.analytics.EVENT_SERVICE_DESTROYED
 import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
 import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
 import com.azyoot.relearn.domain.usecase.monitoring.ProcessAccessibilityEventUseCase
-import com.azyoot.relearn.service.di.ServiceSubcomponent
+import com.azyoot.relearn.di.service.ServiceSubcomponent
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 

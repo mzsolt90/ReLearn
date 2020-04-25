@@ -1,5 +1,6 @@
-package com.azyoot.relearn.service.di
+package com.azyoot.relearn.di.service
 
+import com.azyoot.relearn.di.service.ServiceScope
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import dagger.Subcomponent
 

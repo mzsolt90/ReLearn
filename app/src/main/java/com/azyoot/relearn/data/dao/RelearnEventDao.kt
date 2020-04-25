@@ -1,4 +1,4 @@
-package com.azyoot.relearn.data
+package com.azyoot.relearn.data.dao
 
 import androidx.room.Dao
 import androidx.room.Query

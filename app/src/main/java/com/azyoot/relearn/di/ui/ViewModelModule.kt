@@ -1,8 +1,7 @@
-package com.azyoot.relearn.di
+package com.azyoot.relearn.di.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.azyoot.relearn.service.di.MainFragmentSubcomponent
 import com.azyoot.relearn.ui.main.MainViewModel
 import dagger.Binds
 import dagger.Module

@@ -1,10 +1,10 @@
-package com.azyoot.relearn.di
+package com.azyoot.relearn.di.core
 
 import android.content.Context
-import com.azyoot.relearn.data.AppDatabase
-import com.azyoot.relearn.service.di.MainFragmentSubcomponent
-import com.azyoot.relearn.service.di.ServiceSubcomponent
-import com.azyoot.relearn.service.di.WorkerSubcomponent
+import com.azyoot.relearn.di.service.MathModule
+import com.azyoot.relearn.di.service.ServiceSubcomponent
+import com.azyoot.relearn.di.service.WorkerSubcomponent
+import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
 import dagger.BindsInstance
 import dagger.Component
 

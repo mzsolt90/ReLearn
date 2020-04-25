@@ -3,6 +3,8 @@ package com.azyoot.relearn.domain.usecase
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.azyoot.relearn.domain.entity.WebpageTranslation
 import com.azyoot.relearn.domain.entity.WebpageVisit
+import com.azyoot.relearn.domain.usecase.parsing.DownloadWebpageAndExtractTranslationUseCase
+import com.azyoot.relearn.domain.usecase.parsing.ExtractWiktionaryTranslationUseCase
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
@@ -36,10 +38,11 @@ class DownloadWebpageAndExtractTranslationUseCaseTest {
         executingOkHttpClient = OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(2))
             .readTimeout(Duration.ofSeconds(2))
             .writeTimeout(Duration.ofSeconds(2)).build()
-        givenUseCase = DownloadWebpageAndExtractTranslationUseCase(
-            mockOkHttpClient,
-            mockExtractUseCase
-        )
+        givenUseCase =
+            DownloadWebpageAndExtractTranslationUseCase(
+                mockOkHttpClient,
+                mockExtractUseCase
+            )
         whenever(
             mockExtractUseCase.extractTranslationsFromWiktionaryPage(
                 any(),

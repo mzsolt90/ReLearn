@@ -1,6 +1,5 @@
-package com.azyoot.relearn.service.di
+package com.azyoot.relearn.di.ui
 
-import com.azyoot.relearn.di.ViewModelModule
 import com.azyoot.relearn.ui.main.MainFragment
 import dagger.Subcomponent
 

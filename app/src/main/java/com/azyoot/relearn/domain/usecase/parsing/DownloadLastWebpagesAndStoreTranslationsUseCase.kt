@@ -1,10 +1,9 @@
-package com.azyoot.relearn.domain.usecase
+package com.azyoot.relearn.domain.usecase.parsing
 
-import com.azyoot.relearn.data.WebpageTranslationRepository
-import com.azyoot.relearn.data.WebpageVisitRepository
+import com.azyoot.relearn.data.repository.WebpageTranslationRepository
+import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.entity.WebpageTranslation
 import com.crashlytics.android.Crashlytics
-import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext

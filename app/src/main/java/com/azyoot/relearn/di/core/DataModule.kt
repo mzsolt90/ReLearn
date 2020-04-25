@@ -1,4 +1,4 @@
-package com.azyoot.relearn.di
+package com.azyoot.relearn.di.core
 
 import android.content.Context
 import androidx.room.Room

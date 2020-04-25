@@ -3,7 +3,7 @@ package com.azyoot.relearn.domain.usecase.monitoring
 import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
 import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
 import com.azyoot.relearn.domain.entity.TranslationEvent
-import com.azyoot.relearn.service.di.ServiceScope
+import com.azyoot.relearn.di.service.ServiceScope
 import javax.inject.Inject
 
 @ServiceScope

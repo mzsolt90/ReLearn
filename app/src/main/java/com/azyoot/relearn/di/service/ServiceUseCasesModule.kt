@@ -1,4 +1,4 @@
-package com.azyoot.relearn.service.di
+package com.azyoot.relearn.di.service
 
 import com.azyoot.relearn.domain.usecase.monitoring.ChromeUrlBarFlagAndSaveDataUseCase
 import com.azyoot.relearn.domain.usecase.monitoring.FlagAndSaveEventDataUseCase

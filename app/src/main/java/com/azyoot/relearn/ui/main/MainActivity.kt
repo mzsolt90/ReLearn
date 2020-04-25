@@ -1,8 +1,8 @@
-package com.azyoot.relearn
+package com.azyoot.relearn.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.azyoot.relearn.ui.main.MainFragment
+import com.azyoot.relearn.R
 
 class MainActivity : AppCompatActivity() {
 

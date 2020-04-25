@@ -1,5 +1,6 @@
-package com.azyoot.relearn.data
+package com.azyoot.relearn.data.repository
 
+import com.azyoot.relearn.data.AppDatabase
 import com.azyoot.relearn.data.mapper.WebpageVisitMapper
 import javax.inject.Inject
 import com.azyoot.relearn.domain.entity.WebpageVisit as DomainWebpageVisit

@@ -1,7 +1,7 @@
 package com.azyoot.relearn.domain.usecase.monitoring
 
 import android.os.Bundle
-import com.azyoot.relearn.data.WebpageVisitRepository
+import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.analytics.EVENT_WEBPAGE_VISIT_LOGGED
 import com.azyoot.relearn.domain.analytics.PROPERTY_URL
 import com.azyoot.relearn.domain.entity.WebpageVisit

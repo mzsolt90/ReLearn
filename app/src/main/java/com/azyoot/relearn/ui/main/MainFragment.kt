@@ -16,7 +16,7 @@ import androidx.work.*
 import com.azyoot.relearn.R
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.MainFragmentBinding
-import com.azyoot.relearn.service.di.MainFragmentSubcomponent
+import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import kotlinx.coroutines.FlowPreview
 import java.util.concurrent.TimeUnit

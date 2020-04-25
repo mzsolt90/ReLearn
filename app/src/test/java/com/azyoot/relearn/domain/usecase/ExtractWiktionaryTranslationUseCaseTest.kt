@@ -2,6 +2,7 @@ package com.azyoot.relearn.domain.usecase
 
 import com.azyoot.relearn.domain.entity.WebpageTranslation
 import com.azyoot.relearn.domain.entity.WebpageVisit
+import com.azyoot.relearn.domain.usecase.parsing.ExtractWiktionaryTranslationUseCase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.io.BufferedReader
@@ -14,7 +15,8 @@ class ExtractWiktionaryTranslationUseCaseTest {
         val bodyFileName: String
     )
 
-    private val usecase = ExtractWiktionaryTranslationUseCase()
+    private val usecase =
+        ExtractWiktionaryTranslationUseCase()
 
     private val givenWebpageVisit = WebpageVisit(
         TEST_URL,

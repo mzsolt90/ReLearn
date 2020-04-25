@@ -1,4 +1,4 @@
-package com.azyoot.relearn.di
+package com.azyoot.relearn.di.ui
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

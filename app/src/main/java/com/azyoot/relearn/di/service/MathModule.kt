@@ -1,4 +1,4 @@
-package com.azyoot.relearn.di
+package com.azyoot.relearn.di.service
 
 import dagger.Module
 import dagger.Provides

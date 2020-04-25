@@ -1,4 +1,4 @@
-package com.azyoot.relearn.service.di
+package com.azyoot.relearn.di.service
 
 import com.azyoot.relearn.service.MonitoringService
 import dagger.BindsInstance
