@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 29
@@ -76,6 +77,7 @@ dependencies {
     implementation "com.google.firebase:firebase-analytics:$firebaseAnalyticsVersion"
     implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
     implementation "org.jsoup:jsoup:$jsoupVersion"
+    implementation "com.crashlytics.sdk.android:crashlytics:$fabricVersion"
 
     debugImplementation 'com.facebook.stetho:stetho:1.5.1'
 

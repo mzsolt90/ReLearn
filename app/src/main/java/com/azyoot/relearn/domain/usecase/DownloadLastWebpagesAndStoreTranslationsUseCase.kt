@@ -3,6 +3,8 @@ package com.azyoot.relearn.domain.usecase
 import com.azyoot.relearn.data.WebpageTranslationRepository
 import com.azyoot.relearn.data.WebpageVisitRepository
 import com.azyoot.relearn.domain.entity.WebpageTranslation
+import com.crashlytics.android.Crashlytics
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -26,6 +28,7 @@ class DownloadLastWebpagesAndStoreTranslationsUseCase @Inject constructor(
                     try {
                         translations = downloadUseCase.downloadWebpageAndExtractTranslation(webpageVisit)
                     } catch (ex: IllegalArgumentException){
+                        Crashlytics.logException(ex)
                         deleteInvalidWebpageVisitUseCase.deleteWebpageVisitIfInvalid(webpageVisit)
                         return@async
                     }

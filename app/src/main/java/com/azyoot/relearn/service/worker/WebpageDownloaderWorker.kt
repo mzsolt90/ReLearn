@@ -8,6 +8,7 @@ import com.azyoot.relearn.data.WebpageVisitRepository
 import com.azyoot.relearn.domain.usecase.CountUnparsedWebpagesUseCase
 import com.azyoot.relearn.domain.usecase.DownloadLastWebpagesAndStoreTranslationsUseCase
 import com.azyoot.relearn.service.di.WorkerSubcomponent
+import com.crashlytics.android.Crashlytics
 import java.io.IOException
 import javax.inject.Inject
 
