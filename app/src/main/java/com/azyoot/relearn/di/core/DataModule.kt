@@ -3,6 +3,7 @@ package com.azyoot.relearn.di.core
 import android.content.Context
 import androidx.room.Room
 import com.azyoot.relearn.data.AppDatabase
+import com.azyoot.relearn.data.dao.RelearnEventDataHandler
 import com.azyoot.relearn.data.migration.*
 import dagger.Module
 import dagger.Provides
@@ -20,4 +21,7 @@ object DataModule {
                 AddLatestSourcesViewMigration(),
                 UpdateLatestSourcesViewMigration()
             ).build()
+
+    @Provides
+    fun provideRelearnEventDataHandler(appDatabase: AppDatabase): RelearnEventDataHandler = appDatabase.relearnEventDao()
 }

@@ -5,14 +5,35 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import com.azyoot.relearn.data.entity.*
-import com.azyoot.relearn.domain.entity.RelearnEventStatus
-import java.lang.IllegalArgumentException
+
+interface RelearnEventDataHandler {
+    suspend fun getCacheSize(): Int
+    suspend fun reloadSourcesCache()
+
+    suspend fun getLatestValidSourceRange(
+        suppressedThreshold: Long,
+        suppressedCode: Int
+    ): SourceRange?
+
+    suspend fun getNearestValidSourceForId(
+        id: Int,
+        suppressedThreshold: Long,
+        suppressedCode: Int
+    ): LatestSourcesView?
+
+    suspend fun getOldestReLearnSourceWithState(status: Int): LatestSourcesView?
+
+    suspend fun setLatestReLearnStatusForSourceAndUpdateCache(
+        source: LatestSourcesView,
+        status: Int
+    )
+}
 
 @Dao
-interface RelearnEventDao {
+interface RelearnEventDaoInternal : RelearnEventDataHandler {
 
     @Query("""SELECT COUNT(*) FROM latest_sources_cache""")
-    suspend fun getCacheSize(): Int
+    override suspend fun getCacheSize(): Int
 
     @Query("""DELETE FROM latest_sources_cache""")
     suspend fun clearSourcesCache()
@@ -21,47 +42,65 @@ interface RelearnEventDao {
         """INSERT INTO latest_sources_cache (source_text, latest_source_timestamp, latest_source_id, latest_relearn_timestamp, latest_relearn_status, latest_timestamp, source_type)
         SELECT source_text, latest_source_timestamp, latest_source_id, latest_relearn_timestamp, latest_relearn_status, latest_timestamp, source_type
         FROM LatestSourcesView
-        WHERE (latest_relearn_status != :suppressedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :suppressedThreshold)
-        ORDER BY LatestSourcesView.latest_timestamp DESC"""
+        ORDER BY LatestSourcesView.latest_timestamp ASC"""
     )
-    suspend fun populateSourcesCache(
-        suppressedThreshold: Long,
-        suppressedCode: Int = RelearnEventStatus.SUPPRESSED.value
-    )
+    suspend fun populateSourcesCache()
 
     @Transaction
-    suspend fun reloadSourcesCache(
-        suppressedThreshold: Long,
-        suppressedCode: Int = RelearnEventStatus.SUPPRESSED.value
-    ) {
+    override suspend fun reloadSourcesCache() {
         clearSourcesCache()
-        populateSourcesCache(suppressedThreshold)
+        populateSourcesCache()
     }
 
-    @Query("""UPDATE latest_sources_cache
-        SET latest_relearn_status = :newStatus
-        WHERE latest_source_id = :sourceId 
-        AND source_type = :sourceType""")
-    suspend fun updateCacheEntryStatus(sourceId: Long, sourceType: Int, newStatus: Int)
+    @Query(
+        """DELETE FROM latest_sources_cache
+         WHERE latest_source_id = :sourceId 
+            AND source_type = :sourceType
+            AND latest_timestamp < :timestamp"""
+    )
+    suspend fun deleteOldCacheEntry(sourceId: Long, sourceType: Int, timestamp: Long)
+
+    @Query(
+        """INSERT INTO latest_sources_cache (source_text, latest_source_timestamp, latest_source_id, latest_relearn_timestamp, latest_relearn_status, latest_timestamp, source_type)
+        SELECT source_text, latest_source_timestamp, latest_source_id, :newTimestamp, :newStatus, :newTimestamp, source_type
+         FROM latest_sources_cache
+         WHERE latest_source_id = :sourceId 
+            AND source_type = :sourceType"""
+    )
+    suspend fun appendCacheEntryWithNewReLearnStatus(
+        sourceId: Long,
+        sourceType: Int,
+        newStatus: Int,
+        newTimestamp: Long
+    )
 
     @Query(
         """SELECT MIN(latest_timestamp) AS min_timestamp, 
                 MAX(latest_timestamp) AS max_timestamp,
                 MIN(id) AS min_id, 
                 MAX(id) AS max_id
-             FROM latest_sources_cache"""
+             FROM latest_sources_cache
+             WHERE (latest_relearn_status != :suppressedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :suppressedThreshold)"""
     )
-    suspend fun getLatestSourceRange(): SourceRange?
+    override suspend fun getLatestValidSourceRange(
+        suppressedThreshold: Long,
+        suppressedCode: Int
+    ): SourceRange?
 
     @Query(
         """SELECT LatestSourcesView.* 
         FROM latest_sources_cache 
         JOIN LatestSourcesView ON LatestSourcesView.latest_source_id = latest_sources_cache.latest_source_id 
             AND LatestSourcesView.source_type = latest_sources_cache.source_type
-        WHERE ABS(latest_sources_cache.id - :id) = (SELECT MIN(ABS(latest_sources_cache.id - :id)) FROM latest_sources_cache)"""
+        WHERE ABS(latest_sources_cache.id - :id) = (
+            SELECT MIN(ABS(latest_sources_cache.id - :id)) 
+            FROM latest_sources_cache
+            WHERE (latest_relearn_status != :suppressedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :suppressedThreshold))"""
     )
-    suspend fun getNearestSourceForId(
-        id: Int
+    override suspend fun getNearestValidSourceForId(
+        id: Int,
+        suppressedThreshold: Long,
+        suppressedCode: Int
     ): LatestSourcesView?
 
     @Query(
@@ -72,7 +111,7 @@ interface RelearnEventDao {
         WHERE latest_sources_cache.latest_relearn_status = :status
         ORDER BY latest_sources_cache.id ASC"""
     )
-    suspend fun getOldestReLearnSourceWithState(status: Int): LatestSourcesView?
+    override suspend fun getOldestReLearnSourceWithState(status: Int): LatestSourcesView?
 
     @Query(
         """SELECT *  
@@ -101,7 +140,10 @@ interface RelearnEventDao {
         }
 
     @Transaction
-    suspend fun setLatestReLearnStatusForSource(source: LatestSourcesView, status: Int) {
+    override suspend fun setLatestReLearnStatusForSourceAndUpdateCache(
+        source: LatestSourcesView,
+        status: Int
+    ) {
         val latestEvent = getLatestReLearnEventForSource(source)
         if (latestEvent?.status == status) return
 
@@ -113,6 +155,12 @@ interface RelearnEventDao {
         )
         addReLearnEvent(newEvent)
 
-        updateCacheEntryStatus(source.latestSourceId, source.sourceType, status)
+        appendCacheEntryWithNewReLearnStatus(
+            source.latestSourceId,
+            source.sourceType,
+            status,
+            newEvent.timestamp
+        )
+        deleteOldCacheEntry(source.latestSourceId, source.sourceType, newEvent.timestamp)
     }
 }

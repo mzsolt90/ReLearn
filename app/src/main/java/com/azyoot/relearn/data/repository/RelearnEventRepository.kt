@@ -1,6 +1,6 @@
 package com.azyoot.relearn.data.repository
 
-import com.azyoot.relearn.data.AppDatabase
+import com.azyoot.relearn.data.dao.RelearnEventDataHandler
 import com.azyoot.relearn.data.mapper.ReLearnSourceMapper
 import com.azyoot.relearn.data.mapper.SourceRangeMapper
 import com.azyoot.relearn.domain.entity.ReLearnSource
@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 class RelearnEventRepository @Inject constructor(
-    private val appDatabase: AppDatabase,
+    private val relearnEventDataHandler: RelearnEventDataHandler,
     private val sourceRangeMapper: SourceRangeMapper,
     private val reLearnSourceMapper: ReLearnSourceMapper,
     private val dateTimeMapper: DateTimeMapper
@@ -21,31 +21,38 @@ class RelearnEventRepository @Inject constructor(
     )
 
     private suspend fun needsCacheReload() =
-        appDatabase.relearnEventDao().getCacheSize() < MIN_CACHE_SIZE
+        relearnEventDataHandler.getCacheSize() < MIN_CACHE_SIZE
 
     private suspend fun reloadCacheIfNeeded() {
-        if (needsCacheReload()) appDatabase.relearnEventDao()
-            .reloadSourcesCache(suppressedThreshold)
+        if (needsCacheReload()) relearnEventDataHandler
+            .reloadSourcesCache()
     }
 
     suspend fun getSourceRange(): SourceRange? {
         reloadCacheIfNeeded()
 
-        return appDatabase.relearnEventDao().getLatestSourceRange()
+        return relearnEventDataHandler.getLatestValidSourceRange(
+            suppressedThreshold,
+            RelearnEventStatus.SUPPRESSED.value
+        )
             ?.let { sourceRangeMapper.toDomainEntity(it) }
     }
 
     suspend fun getNearestSource(id: Int): ReLearnSource? {
         reloadCacheIfNeeded()
 
-        return appDatabase.relearnEventDao().getNearestSourceForId(id)
+        return relearnEventDataHandler.getNearestValidSourceForId(
+            id,
+            suppressedThreshold,
+            RelearnEventStatus.SUPPRESSED.value
+        )
             ?.let { reLearnSourceMapper.toDomainEntity(it) }
     }
 
     suspend fun getShowingReLearnEventSource(): ReLearnSource? {
         reloadCacheIfNeeded()
 
-        return appDatabase.relearnEventDao()
+        return relearnEventDataHandler
             .getOldestReLearnSourceWithState(RelearnEventStatus.SHOWING.value)
             ?.let { reLearnSourceMapper.toDomainEntity(it) }
     }
@@ -53,14 +60,17 @@ class RelearnEventRepository @Inject constructor(
     suspend fun getOldestPendingReLearnEventSource(): ReLearnSource? {
         reloadCacheIfNeeded()
 
-        return appDatabase.relearnEventDao()
+        return relearnEventDataHandler
             .getOldestReLearnSourceWithState(RelearnEventStatus.PENDING.value)
             ?.let { reLearnSourceMapper.toDomainEntity(it) }
     }
 
     suspend fun setLatestReLearnEventForSource(source: ReLearnSource, status: RelearnEventStatus) {
-        appDatabase.relearnEventDao()
-            .setLatestReLearnStatusForSource(reLearnSourceMapper.toDataEntity(source), status.value)
+        relearnEventDataHandler
+            .setLatestReLearnStatusForSourceAndUpdateCache(
+                reLearnSourceMapper.toDataEntity(source),
+                status.value
+            )
     }
 
     companion object {

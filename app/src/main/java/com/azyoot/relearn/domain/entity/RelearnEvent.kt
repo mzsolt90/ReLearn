@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 enum class RelearnEventStatus(val value: Int) {
     SHOWING(1),
-    APPROVED(2),
+    ACCEPTED(2),
     PENDING(3),
     SUPPRESSED(4)
 }
