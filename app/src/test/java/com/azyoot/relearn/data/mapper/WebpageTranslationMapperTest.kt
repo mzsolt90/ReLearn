@@ -29,7 +29,7 @@ class WebpageTranslationMapperTest {
 
         val mapped = mapper.toDomainEntity(dataEntity)
 
-        assertThat(mapped).isEqualTo(DomainEntity(FROM_TEXT, TO_TEXT, UNSET_VISIT, PARSE_VERSION, ID))
+        assertThat(mapped).isEqualTo(DomainEntity(FROM_TEXT, TO_TEXT, UNSET_WEBPAGE_VISIT, PARSE_VERSION, ID))
     }
 
     companion object {

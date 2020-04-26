@@ -1,6 +1,10 @@
 package com.azyoot.relearn.data.mapper
 
+import com.azyoot.relearn.util.DateTimeMapper
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -10,7 +14,14 @@ import com.azyoot.relearn.domain.entity.WebpageVisit as DomainEntity
 
 class WebpageVisitMapperTest {
 
-    private val mapper = WebpageVisitMapper()
+    private val mockDateTimeMapper: DateTimeMapper = mock()
+    private val mapper = WebpageVisitMapper(mockDateTimeMapper)
+
+    @Before
+    fun setup(){
+        whenever(mockDateTimeMapper.mapToLocalDateTime(TIMESTAMP)).thenReturn(TIME)
+        whenever(mockDateTimeMapper.mapToTimestamp(TIME)).thenReturn(TIMESTAMP)
+    }
 
     @Test
     fun `Given domain entity When mapped to data entity Then correctly mapped all properties`() {
