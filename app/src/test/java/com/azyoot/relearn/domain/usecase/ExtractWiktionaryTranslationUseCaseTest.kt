@@ -3,6 +3,8 @@ package com.azyoot.relearn.domain.usecase
 import com.azyoot.relearn.domain.entity.WebpageTranslation
 import com.azyoot.relearn.domain.entity.WebpageVisit
 import com.azyoot.relearn.domain.usecase.parsing.ExtractWiktionaryTranslationUseCase
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.io.BufferedReader
@@ -12,11 +14,13 @@ class ExtractWiktionaryTranslationUseCaseTest {
     data class TranslationTestCase(
         val title: String,
         val toTextList: List<String>,
-        val bodyFileName: String
+        val url: String
     )
 
     private val usecase =
         ExtractWiktionaryTranslationUseCase()
+
+    private val okHttpClient = OkHttpClient.Builder().build()
 
     private val givenWebpageVisit = WebpageVisit(
         TEST_URL,
@@ -38,8 +42,7 @@ class ExtractWiktionaryTranslationUseCaseTest {
         TEST_TRANSLATIONS.forEach { testCase ->
             val extractedTranslations = usecase.extractTranslationsFromWiktionaryPage(
                 givenWebpageVisit,
-                javaClass.classLoader!!.getResourceAsStream(testCase.bodyFileName).bufferedReader()
-                    .use(BufferedReader::readText)
+                downloadUrl(testCase.url) ?: ""
             )
 
             val expectedTranslations = testCase.toTextList.map { toText ->
@@ -50,16 +53,23 @@ class ExtractWiktionaryTranslationUseCaseTest {
         }
     }
 
+    fun downloadUrl(url: String) =
+        okHttpClient.newCall(Request.Builder().url(url).get().build()).execute().body?.string()
+
     companion object {
         const val TEST_URL =
             "https://en.wiktionary.org/wiki/%D0%B7%D0%B0%D0%BF%D0%BE%D0%B2%D0%B5%D0%B4%D0%BD%D0%B8%D0%BA"
 
         val TEST_TRANSLATIONS = listOf(
-            TranslationTestCase("запове́дник", listOf("natural reserve"), "заповедник.html"),
+            TranslationTestCase(
+                "запове́дник",
+                listOf("natural reserve"),
+                "https://en.wiktionary.org/wiki/заповедник"
+            ),
             TranslationTestCase(
                 "утоми́ть",
                 listOf("to fatigue, to weary, to tire"),
-                "утомить.html"
+                "https://en.wiktionary.org/wiki/утомить"
             ),
             TranslationTestCase(
                 "утомлённый",
@@ -67,7 +77,7 @@ class ExtractWiktionaryTranslationUseCaseTest {
                     "tired (experiencing fatigue; of a person, nerves, etc.)",
                     "tired (expressing fatigue; of a look, face, tone, etc.; inanimate)"
                 ),
-                "утомлённый.html"
+                "https://en.wiktionary.org/wiki/утомлённый"
             ),
             TranslationTestCase(
                 "до́брый",
@@ -84,7 +94,7 @@ class ExtractWiktionaryTranslationUseCaseTest {
                     "kindhearted, warm-hearted",
                     "(colloquial) good, solid ― идти́ до́брых де́сять киломе́тров ― to walk a good/solid ten kilometres"
                 ),
-                "добрый.html"
+                "https://en.wiktionary.org/wiki/добрый"
             ),
             TranslationTestCase(
                 "дом", listOf(
@@ -93,11 +103,11 @@ class ExtractWiktionaryTranslationUseCaseTest {
                     "family",
                     "household"
                 ),
-                "дом.html"
+                "https://en.wiktionary.org/wiki/дом"
             ),
             TranslationTestCase(
                 "перераспределе́ниях", listOf(),
-                "перераспределениях.html"
+                "https://en.wiktionary.org/wiki/перераспределениях.html"
             )
         )
     }
