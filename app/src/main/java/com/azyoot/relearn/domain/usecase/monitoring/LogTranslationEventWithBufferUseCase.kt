@@ -9,6 +9,7 @@ import com.azyoot.relearn.domain.entity.TranslationEvent
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -28,6 +29,7 @@ class LogTranslationEventWithBufferUseCase @Inject constructor(
     suspend fun logTranslationEvent(translationEvent: TranslationEvent) {
         if (!shouldLog(translationEvent)) return
 
+        Timber.d("New translation event for text ${translationEvent.fromText}")
         firebaseAnalytics.logEvent(EVENT_TRANSLATION_LOGGED, Bundle().apply {
             putString(
                 PROPERTY_FROM_TEXT, translationEvent.fromText

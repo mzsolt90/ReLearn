@@ -5,6 +5,7 @@ import com.azyoot.relearn.domain.entity.WebpageVisit
 import com.azyoot.relearn.util.isValidUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 class DeleteInvalidWebpageVisitUseCase @Inject constructor(private val repository: WebpageVisitRepository) {
@@ -13,6 +14,7 @@ class DeleteInvalidWebpageVisitUseCase @Inject constructor(private val repositor
 
     suspend fun deleteWebpageVisitIfInvalid(webpageVisit: WebpageVisit) {
         if (webpageVisit.isInvalid()) withContext(Dispatchers.IO) {
+            Timber.i("Deleting ${webpageVisit.url} because it's invalid")
             repository.deleteWebpageVisit(webpageVisit)
         }
     }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
+import timber.log.Timber
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
@@ -25,9 +26,10 @@ class DownloadLastWebpagesAndStoreTranslationsUseCase @Inject constructor(
                 async {
                     val translations: List<WebpageTranslation>
                     try {
+                        Timber.d("Downloading webpage ${webpageVisit.url}")
                         translations = downloadUseCase.downloadWebpageAndExtractTranslation(webpageVisit)
                     } catch (ex: IllegalArgumentException){
-                        Crashlytics.logException(ex)
+                        Timber.w(ex, "Error downloading webpage")
                         deleteInvalidWebpageVisitUseCase.deleteWebpageVisitIfInvalid(webpageVisit)
                         return@async
                     }

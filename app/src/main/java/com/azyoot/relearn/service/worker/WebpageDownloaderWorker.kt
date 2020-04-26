@@ -8,6 +8,7 @@ import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.usecase.parsing.CountUnparsedWebpagesUseCase
 import com.azyoot.relearn.domain.usecase.parsing.DownloadLastWebpagesAndStoreTranslationsUseCase
 import com.azyoot.relearn.di.service.WorkerSubcomponent
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
@@ -33,11 +34,14 @@ class WebpageDownloadWorker(appContext: Context, workerParams: WorkerParameters)
 
     override suspend fun doWork(): Result {
         try {
+            Timber.i("Webpage download started")
             downloadUseCase.downloadLastWebpagesAndStoreTranslations()
             if (needsReschedule()) {
+                Timber.i("Will reschedule webpage download")
                 return Result.retry()
             }
         } catch (exception: IOException) {
+            Timber.e(exception, "Error downloading webpages")
             return Result.retry()
         }
 

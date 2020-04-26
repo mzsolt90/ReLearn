@@ -5,6 +5,7 @@ import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
 import com.azyoot.relearn.service.ViewInfoFlagger
 import com.azyoot.relearn.di.service.ServiceScope
 import kotlinx.coroutines.*
+import timber.log.Timber
 import javax.inject.Inject
 
 typealias ViewHierarchyProvider = (ViewInfoFlagger) -> List<AccessibilityEventViewInfo>
@@ -40,6 +41,8 @@ class ProcessAccessibilityEventUseCase @Inject constructor(
             }
 
         if (importantNodes.isEmpty()) return ProcessResult.NOT_IMPORTANT
+
+        Timber.d("Found ${importantNodes.size} important nodes")
 
         coroutineScope.launch(Dispatchers.Default) {
             usecases.map { useCase ->

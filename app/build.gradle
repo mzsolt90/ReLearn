@@ -78,6 +78,7 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
     implementation "org.jsoup:jsoup:$jsoupVersion"
     implementation "com.crashlytics.sdk.android:crashlytics:$fabricVersion"
+    implementation "com.jakewharton.timber:timber:$timberVersion"
 
     debugImplementation 'com.facebook.stetho:stetho:1.5.1'
 

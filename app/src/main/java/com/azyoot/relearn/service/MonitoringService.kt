@@ -20,6 +20,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -48,10 +49,10 @@ class MonitoringService : AccessibilityService() {
         component.inject(this)
 
         firebaseAnalytics.logEvent(EVENT_SERVICE_CREATED, Bundle.EMPTY)
+        Timber.i("Monitoring service created")
     }
 
     override fun onInterrupt() {
-
     }
 
     private fun AccessibilityNodeInfo.toViewInfo() = AccessibilityEventViewInfo(
@@ -91,8 +92,7 @@ class MonitoringService : AccessibilityService() {
         }
 
     private fun traverseNodeForDebug(nodeInfo: AccessibilityNodeInfo) {
-        Log.d(
-            "RelearnMonitoring",
+        Timber.d(
             "id ${nodeInfo.viewIdResourceName} hint: ${nodeInfo.hintText} which child: ${(0 until (nodeInfo.parent?.childCount ?: 0)).map {
                 nodeInfo.parent?.getChild(it)
             }
@@ -105,6 +105,7 @@ class MonitoringService : AccessibilityService() {
         try {
             nodeInfo.recycle()
         } catch (ex: Exception) {
+            Timber.w(ex, "Error recycling node")
         }
     }
 
@@ -119,7 +120,6 @@ class MonitoringService : AccessibilityService() {
         nodesToRecycle.add(source)
         nodesToRecycle.add(rootInActiveWindow)
 
-//        traverseNode(rootInActiveWindow ?: source)
         val descriptor = AccessibilityEventDescriptor(
             event.packageName.toString(),
             source.toViewInfo()
@@ -138,6 +138,7 @@ class MonitoringService : AccessibilityService() {
             try {
                 it.recycle()
             } catch (ex: Exception) {
+                Timber.w(ex, "Error recycling node")
             }
         }
     }
@@ -162,6 +163,7 @@ class MonitoringService : AccessibilityService() {
         coroutineJob.cancel()
 
         firebaseAnalytics.logEvent(EVENT_SERVICE_DESTROYED, Bundle.EMPTY)
+        Timber.i("Monitoring service destroyed")
     }
 
     companion object {

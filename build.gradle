@@ -31,6 +31,7 @@ buildscript {
         recyclerViewVersion = '1.1.0'
         roomVersion = '2.2.5'
         testExtJunit = '1.1.0'
+        timberVersion = '4.7.1'
         viewPagerVersion = '1.0.0'
         workVersion = '2.3.4'
     }

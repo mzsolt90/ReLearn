@@ -8,6 +8,7 @@ import com.azyoot.relearn.domain.entity.WebpageVisit
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -26,6 +27,7 @@ class LogWebpageVisitBufferUseCase @Inject constructor(
     suspend fun logWebpageVisit(webpageVisit: WebpageVisit) {
         if (!shouldLog(webpageVisit)) return
 
+        Timber.d("New webpage visit for url ${webpageVisit.url}")
         firebaseAnalytics.logEvent(EVENT_WEBPAGE_VISIT_LOGGED, Bundle().apply {
             putString(
                 PROPERTY_URL, webpageVisit.url

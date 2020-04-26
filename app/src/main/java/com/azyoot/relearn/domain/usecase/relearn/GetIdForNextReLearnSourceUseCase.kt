@@ -4,6 +4,7 @@ import com.azyoot.relearn.data.repository.RelearnEventRepository
 import com.azyoot.relearn.domain.math.BoxMuellerCalculation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 class GetIdForNextReLearnSourceUseCase @Inject constructor(
@@ -24,9 +25,13 @@ class GetIdForNextReLearnSourceUseCase @Inject constructor(
         }
         range ?: return null
 
+        Timber.v("Calculating next relearn source in range $range")
+
         val gaussValue = boxMuellerCalculation.getGaussianValuePair(0.0, 0.3).first
         val flippedValue = flipAndThresholdGauss(gaussValue)
         val centeredValue = flippedValue / 2.0 + 0.5
+
+        Timber.d("Next centered gauss value is $centeredValue")
 
         val rangeSize = range.maxId - range.minId
 

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import com.azyoot.relearn.data.entity.*
+import timber.log.Timber
 
 interface RelearnEventDataHandler {
     suspend fun getLatestValidSourceRange(
@@ -171,8 +172,12 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
         source: LatestSourcesView,
         status: Int
     ) {
+        Timber.d("Updating state for source ${source.sourceText} to $status")
+
         val latestEvent = getLatestReLearnEventForSource(source)
         if (latestEvent?.status == status) return
+
+        Timber.d("Latest event has different status: ${latestEvent?.status}")
 
         val newEvent = RelearnEvent(
             timestamp = System.currentTimeMillis(),
