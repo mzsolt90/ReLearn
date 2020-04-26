@@ -144,18 +144,7 @@ class MonitoringService : AccessibilityService() {
     }
 
     private fun rescheduleWebpageDownloadJob() {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val request = OneTimeWorkRequestBuilder<WebpageDownloadWorker>()
-            .setConstraints(constraints)
-            .setInitialDelay(30, TimeUnit.SECONDS)
-            .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
-            .build()
-
-        WorkManager.getInstance(applicationContext)
-            .enqueueUniqueWork(WebpageDownloadWorker.NAME, ExistingWorkPolicy.REPLACE, request)
+        WebpageDownloadWorker.schedule(applicationContext)
     }
 
     override fun onDestroy() {

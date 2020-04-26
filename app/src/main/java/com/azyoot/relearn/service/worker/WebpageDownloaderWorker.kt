@@ -1,8 +1,7 @@
 package com.azyoot.relearn.service.worker
 
 import android.content.Context
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
+import androidx.work.*
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.usecase.parsing.CountUnparsedWebpagesUseCase
@@ -10,6 +9,7 @@ import com.azyoot.relearn.domain.usecase.parsing.DownloadLastWebpagesAndStoreTra
 import com.azyoot.relearn.di.service.WorkerSubcomponent
 import timber.log.Timber
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class WebpageDownloadWorker(appContext: Context, workerParams: WorkerParameters) :
@@ -31,14 +31,15 @@ class WebpageDownloadWorker(appContext: Context, workerParams: WorkerParameters)
     }
 
     private suspend fun needsReschedule() = countUseCase.countUntranslatedWebpages() > 0
-
+        
     override suspend fun doWork(): Result {
         try {
             Timber.i("Webpage download started")
             downloadUseCase.downloadLastWebpagesAndStoreTranslations()
             if (needsReschedule()) {
                 Timber.i("Will reschedule webpage download")
-                return Result.retry()
+                schedule(applicationContext, RESCHEDULE_SECONDS)
+                return Result.success()
             }
         } catch (exception: IOException) {
             Timber.e(exception, "Error downloading webpages")
@@ -50,5 +51,25 @@ class WebpageDownloadWorker(appContext: Context, workerParams: WorkerParameters)
 
     companion object {
         const val NAME = "WebpageDownloadWorker"
+        private const val RESCHEDULE_SECONDS = 5
+
+        fun schedule(context: Context, initialDelaySeconds: Int = 30) {
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
+            val request = OneTimeWorkRequestBuilder<WebpageDownloadWorker>()
+                .setConstraints(constraints)
+                .setInitialDelay(initialDelaySeconds.toLong(), TimeUnit.SECONDS)
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .build()
+
+            WorkManager.getInstance(context)
+                .enqueueUniqueWork(NAME, ExistingWorkPolicy.REPLACE, request)
+        }
     }
 }
