@@ -9,6 +9,7 @@ import java.time.Duration
 object HttpModule {
 
     @Provides
+    @AppScope
     fun getOkHttp() = OkHttpClient.Builder()
         .connectTimeout(Duration.ofMinutes(2))
         .readTimeout(Duration.ofMinutes(2))

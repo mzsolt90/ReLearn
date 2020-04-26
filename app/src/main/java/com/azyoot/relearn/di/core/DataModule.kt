@@ -12,7 +12,8 @@ import dagger.Provides
 object DataModule {
 
     @Provides
-    fun provideRoomDatabase(applicationContext: Context) =
+    @AppScope
+    fun provideRoomDatabase(applicationContext: Context): AppDatabase =
         Room.databaseBuilder(applicationContext, AppDatabase::class.java, "ReLearn-db")
             .addMigrations(
                 AddGoogleTranslateMigration(),
@@ -23,5 +24,6 @@ object DataModule {
             ).build()
 
     @Provides
+    @AppScope
     fun provideRelearnEventDataHandler(appDatabase: AppDatabase): RelearnEventDataHandler = appDatabase.relearnEventDao()
 }

@@ -9,5 +9,6 @@ import dagger.Provides
 object AnalyticsModule {
 
     @Provides
+    @AppScope
     fun provideFirebaseAnalytics(context: Context): FirebaseAnalytics = FirebaseAnalytics.getInstance(context)
 }
