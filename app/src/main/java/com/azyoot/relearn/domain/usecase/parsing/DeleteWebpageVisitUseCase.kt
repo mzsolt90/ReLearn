@@ -8,13 +8,13 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
-class DeleteInvalidWebpageVisitUseCase @Inject constructor(private val repository: WebpageVisitRepository) {
+class DeleteWebpageVisitUseCase @Inject constructor(private val repository: WebpageVisitRepository) {
 
     private fun WebpageVisit.isInvalid() = !url.isValidUrl()
 
-    suspend fun deleteWebpageVisitIfInvalid(webpageVisit: WebpageVisit) {
-        if (webpageVisit.isInvalid()) withContext(Dispatchers.IO) {
-            Timber.i("Deleting ${webpageVisit.url} because it's invalid")
+    suspend fun deleteWebpageVisit(webpageVisit: WebpageVisit) {
+        withContext(Dispatchers.IO) {
+            Timber.i("Deleting ${webpageVisit.url}")
             repository.deleteWebpageVisit(webpageVisit)
         }
     }

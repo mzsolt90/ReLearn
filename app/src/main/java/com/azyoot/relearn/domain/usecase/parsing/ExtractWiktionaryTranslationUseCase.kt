@@ -5,6 +5,7 @@ import com.azyoot.relearn.domain.entity.WebpageVisit
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
+import timber.log.Timber
 import javax.inject.Inject
 
 class ExtractWiktionaryTranslationUseCase @Inject constructor() {
@@ -74,5 +75,7 @@ class ExtractWiktionaryTranslationUseCase @Inject constructor() {
                         webpageVisit
                     )
                 }
-            }?.distinct() ?: listOf()
+            }?.distinct()?.also {
+                Timber.d("Found ${it.size} translations for ${webpageVisit.url}")
+            } ?: listOf()
 }

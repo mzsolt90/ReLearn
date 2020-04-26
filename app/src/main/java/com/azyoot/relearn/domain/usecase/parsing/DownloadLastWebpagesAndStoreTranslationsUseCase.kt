@@ -3,20 +3,20 @@ package com.azyoot.relearn.domain.usecase.parsing
 import com.azyoot.relearn.data.repository.WebpageTranslationRepository
 import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.entity.WebpageTranslation
-import com.crashlytics.android.Crashlytics
+import com.azyoot.relearn.util.ensureStartsWithHttpScheme
+import com.azyoot.relearn.util.isValidUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import timber.log.Timber
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 class DownloadLastWebpagesAndStoreTranslationsUseCase @Inject constructor(
     private val webpageVisitRepository: WebpageVisitRepository,
     private val webpageTranslationRepository: WebpageTranslationRepository,
     private val downloadUseCase: DownloadWebpageAndExtractTranslationUseCase,
-    private val deleteInvalidWebpageVisitUseCase: DeleteInvalidWebpageVisitUseCase
+    private val deleteWebpageVisitUseCase: DeleteWebpageVisitUseCase
 ) {
 
     suspend fun downloadLastWebpagesAndStoreTranslations() {
@@ -24,18 +24,26 @@ class DownloadLastWebpagesAndStoreTranslationsUseCase @Inject constructor(
         withContext(Dispatchers.IO) {
             visits.map { webpageVisit ->
                 async {
+                    if (webpageVisit.url.ensureStartsWithHttpScheme().isValidUrl().not()) {
+                        deleteWebpageVisitUseCase.deleteWebpageVisit(webpageVisit)
+                        return@async
+                    }
+
                     val translations: List<WebpageTranslation>
                     try {
                         Timber.d("Downloading webpage ${webpageVisit.url}")
-                        translations = downloadUseCase.downloadWebpageAndExtractTranslation(webpageVisit)
-                    } catch (ex: IllegalArgumentException){
-                        Timber.w(ex, "Error downloading webpage")
-                        deleteInvalidWebpageVisitUseCase.deleteWebpageVisitIfInvalid(webpageVisit)
+                        translations =
+                            downloadUseCase.downloadWebpageAndExtractTranslation(webpageVisit)
+                    } catch (ex: IllegalArgumentException) {
+                        Timber.e(ex, "Error downloading webpage")
                         return@async
                     }
 
                     yield()
-                    webpageTranslationRepository.addWebpageTranslationsForWebpageVisit(webpageVisit, translations)
+                    webpageTranslationRepository.addWebpageTranslationsForWebpageVisit(
+                        webpageVisit,
+                        translations
+                    )
                 }
             }.forEach {
                 it.await()
