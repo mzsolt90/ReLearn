@@ -8,9 +8,10 @@ fun String.stripFragmentFromUrl() = Uri.parse(this)
     .build()
     .toString()
 
-fun String.ensureStartsWithHttpScheme() = let {
-    if(startsWith("https") || startsWith("http")) it
-    else "http://$it"
+fun String.ensureStartsWithHttpsScheme() = let {
+    if(startsWith("https")) it
+    else if(startsWith("http")) it.replace("http", "https")
+    else "https://$it"
 }
 
 fun String.isValidUrl() = try {

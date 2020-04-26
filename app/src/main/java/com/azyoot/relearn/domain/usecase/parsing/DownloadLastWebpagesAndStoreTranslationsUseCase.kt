@@ -3,7 +3,7 @@ package com.azyoot.relearn.domain.usecase.parsing
 import com.azyoot.relearn.data.repository.WebpageTranslationRepository
 import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.entity.WebpageTranslation
-import com.azyoot.relearn.util.ensureStartsWithHttpScheme
+import com.azyoot.relearn.util.ensureStartsWithHttpsScheme
 import com.azyoot.relearn.util.isValidUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -24,7 +24,7 @@ class DownloadLastWebpagesAndStoreTranslationsUseCase @Inject constructor(
         withContext(Dispatchers.IO) {
             visits.map { webpageVisit ->
                 async {
-                    if (webpageVisit.url.ensureStartsWithHttpScheme().isValidUrl().not()) {
+                    if (webpageVisit.url.ensureStartsWithHttpsScheme().isValidUrl().not()) {
                         deleteWebpageVisitUseCase.deleteWebpageVisit(webpageVisit)
                         return@async
                     }
