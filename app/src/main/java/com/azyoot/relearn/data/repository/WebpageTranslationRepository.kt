@@ -24,4 +24,8 @@ class WebpageTranslationRepository @Inject constructor(
             webpageVisitMapper.toDataEntity(webpageVisit),
             webpageTranslations.map { webpageTranslationMapper.toDataEntity(it) })
     }
+
+    suspend fun getTranslationsForWebpageVisit(webpageVisit: WebpageVisit) =
+        database.webpageTranslationDao().getTranslationsForWebpageVisit(webpageVisit.databaseId)
+            .map { webpageTranslationMapper.toDomainEntity(it) }
 }

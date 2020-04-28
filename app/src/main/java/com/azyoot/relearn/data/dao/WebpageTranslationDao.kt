@@ -7,7 +7,6 @@ import androidx.room.Transaction
 import com.azyoot.relearn.data.entity.PARSE_VERSION
 import com.azyoot.relearn.data.entity.WebpageTranslation
 import com.azyoot.relearn.data.entity.WebpageVisit
-import com.azyoot.relearn.data.entity.WebpageVisitWithLatestTranslationView
 
 @Dao
 interface WebpageTranslationDao {
@@ -18,14 +17,13 @@ interface WebpageTranslationDao {
     @Query("UPDATE webpage_visit SET last_parse_version = :lastParseVersion WHERE id = :id")
     suspend fun updateLastParseVersionOfWebpageVisit(id: Int, lastParseVersion: Int)
 
+    @Query("""SELECT * FROM webpage_translation WHERE webpage_visit_id = :webpageVisitId""")
+    suspend fun getTranslationsForWebpageVisit(webpageVisitId: Int): List<WebpageTranslation>
+
     @Transaction
     suspend fun addWebpageTranslationForWebpageVisit(webpageVisit: WebpageVisit, webpageTranslation: List<WebpageTranslation>) {
         webpageTranslation.forEach { addWebpageTranslation(it) }
         updateLastParseVersionOfWebpageVisit(webpageVisit.id, PARSE_VERSION)
     }
 
-    @Transaction
-    @Query("""SELECT * FROM webpage_visit_with_latest_parse_version_view
-             LIMIT :maxLimit""")
-    suspend fun getWebpageTranslationsAndVisits(maxLimit: Int = -1): List<WebpageVisitWithLatestTranslationView>
 }

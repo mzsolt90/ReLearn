@@ -5,6 +5,7 @@ import androidx.room.DatabaseView
 import androidx.room.Embedded
 
 const val ENTITY_TYPE_WEBPAGE = 1
+const val ENTITY_TYPE_TRANSLATION = 2
 
 @DatabaseView("""SELECT
      latest_visits.source AS source_text,
@@ -87,4 +88,3 @@ data class LatestSourcesView(
     @Embedded(prefix = "webpage_visit_") val webpageVisit: WebpageVisit?,
     @Embedded(prefix = "translation_event_") val translationEvent: TranslationEvent?
 )
-const val ENTITY_TYPE_TRANSLATION = 2
