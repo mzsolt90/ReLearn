@@ -64,7 +64,8 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rescheduleWebpageDownloadJob()
+        rescheduleWebpageDownloadWorker()
+        scheduleAccessibilityServiceCheckWorker()
 
         viewModel.isMonitoringServiceEnabled.observe(viewLifecycleOwner, Observer { isEnabled ->
             if (!isEnabled) {
@@ -93,21 +94,11 @@ class MainFragment : Fragment() {
         viewModel.checkMonitoringService()
     }
 
-    private fun rescheduleWebpageDownloadJob() {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
+    private fun rescheduleWebpageDownloadWorker() {
+        WebpageDownloadWorker.schedule(requireContext().applicationContext, 0)
+    }
 
-        val request = OneTimeWorkRequestBuilder<WebpageDownloadWorker>()
-            .setConstraints(constraints)
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS
-            )
-            .build()
-
-        WorkManager.getInstance(context!!)
-            .enqueueUniqueWork(WebpageDownloadWorker.NAME, ExistingWorkPolicy.KEEP, request)
+    private fun scheduleAccessibilityServiceCheckWorker() {
+        CheckAccessibilityServiceWorker.schedule(requireContext().applicationContext)
     }
 }
