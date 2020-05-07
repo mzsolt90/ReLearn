@@ -12,14 +12,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.work.*
 import com.azyoot.relearn.R
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.MainFragmentBinding
 import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
+import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
+import com.azyoot.relearn.service.worker.ReLearnWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import kotlinx.coroutines.FlowPreview
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -86,6 +86,10 @@ class MainFragment : Fragment() {
         viewModel.history.observe(viewLifecycleOwner, Observer {
             historyAdapter.submitList(it)
         })
+
+        viewBinding!!.fab.setOnClickListener {
+            viewModel.testReLearn()
+        }
     }
 
     override fun onResume() {
@@ -100,5 +104,9 @@ class MainFragment : Fragment() {
 
     private fun scheduleAccessibilityServiceCheckWorker() {
         CheckAccessibilityServiceWorker.schedule(requireContext().applicationContext)
+    }
+
+    private fun scheduleReLearnWorker() {
+        ReLearnWorker.schedule(requireContext().applicationContext)
     }
 }

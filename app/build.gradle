@@ -55,6 +55,7 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    implementation "androidx.browser:browser:$browserLibVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "androidx.core:core-ktx:$ktxVersion"
     implementation "androidx.arch.core:core-testing:$coreVersion"

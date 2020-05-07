@@ -12,7 +12,6 @@ import javax.inject.Inject
 class EnableAccessibilityServiceNotificationFactory @Inject constructor() {
 
     fun createAndNotify(context: Context) {
-
         ensureChannelCreated(context)
 
         val intent = Intent(AccessibilityCheckNotificationReceiver.ACTION)
@@ -35,5 +34,4 @@ class EnableAccessibilityServiceNotificationFactory @Inject constructor() {
 
         NotificationManagerCompat.from(context).notify(ID_ACCESSIBILITY_CHECK, builder.build())
     }
-
 }

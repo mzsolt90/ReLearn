@@ -5,6 +5,7 @@ import com.azyoot.relearn.data.mapper.ReLearnSourceMapper
 import com.azyoot.relearn.data.mapper.SourceRangeMapper
 import com.azyoot.relearn.domain.entity.ReLearnSource
 import com.azyoot.relearn.domain.entity.RelearnEventStatus
+import com.azyoot.relearn.domain.entity.SourceType
 import com.azyoot.relearn.util.DateTimeMapper
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -43,6 +44,9 @@ class RelearnEventRepository @Inject constructor(
         )
             ?.let { reLearnSourceMapper.toDomainEntity(it) }
 
+    suspend fun getSourceFromId(sourceId: Long, sourceType: SourceType) =
+        relearnEventDataHandler.getSourceFromId(sourceId, sourceType.value)
+            ?.let { reLearnSourceMapper.toDomainEntity(it) }
 
     suspend fun getShowingReLearnEventSource() =
         relearnEventDataHandler

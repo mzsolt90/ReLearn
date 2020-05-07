@@ -3,13 +3,13 @@
     package="com.azyoot.relearn">
 
     <application
+        android:name=".ReLearnApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".ReLearnApplication">
+        android:theme="@style/AppTheme">
         <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,9 +17,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.MonitoringService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:label="@string/accessibility_service_label">
+        <activity android:name=".ui.relearn.ReLearnLaunchUrlActivity" android:exported="false" />
+
+        <service
+            android:name=".service.MonitoringService"
+            android:label="@string/accessibility_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
@@ -27,6 +30,8 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
+        <receiver android:name=".ui.relearn.ReLearnNotificationActionsReceiver" android:exported="false" />
+        <receiver android:name=".ui.receiver.AccessibilityCheckNotificationReceiver" android:exported="false" />
     </application>
 
 </manifest>
