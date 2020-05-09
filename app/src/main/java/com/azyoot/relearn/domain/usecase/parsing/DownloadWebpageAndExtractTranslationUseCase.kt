@@ -24,6 +24,7 @@ class DownloadWebpageAndExtractTranslationUseCase @Inject constructor(
                 .execute()
             when {
                 response.isSuccessful && response.code == 200 -> response.body?.string()
+                response.code == 404 -> response.body?.string() //TODO delete webpage visit
                 else -> throw IOException("Unable to download webpage")
             }
         }
