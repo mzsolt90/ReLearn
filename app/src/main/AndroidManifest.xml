@@ -32,6 +32,7 @@
         </service>
         <receiver android:name=".service.receiver.ReLearnNotificationActionsReceiver" android:exported="false" />
         <receiver android:name=".service.receiver.AccessibilityCheckNotificationReceiver" android:exported="false" />
+        <receiver android:name=".service.receiver.ReLearnScheduleReceiver" android:exported="false" />
     </application>
 
 </manifest>

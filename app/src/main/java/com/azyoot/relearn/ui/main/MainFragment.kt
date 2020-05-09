@@ -19,6 +19,7 @@ import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.ReLearnWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
+import com.azyoot.relearn.ui.relearn.ReLearnScheduler
 import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
 
@@ -66,6 +67,7 @@ class MainFragment : Fragment() {
 
         rescheduleWebpageDownloadWorker()
         scheduleAccessibilityServiceCheckWorker()
+        scheduleReLearn()
 
         viewModel.isMonitoringServiceEnabled.observe(viewLifecycleOwner, Observer { isEnabled ->
             if (!isEnabled) {
@@ -106,7 +108,7 @@ class MainFragment : Fragment() {
         CheckAccessibilityServiceWorker.schedule(requireContext().applicationContext)
     }
 
-    private fun scheduleReLearnWorker() {
-        ReLearnWorker.schedule(requireContext().applicationContext)
+    private fun scheduleReLearn() {
+        viewModel.scheduleReLearn()
     }
 }

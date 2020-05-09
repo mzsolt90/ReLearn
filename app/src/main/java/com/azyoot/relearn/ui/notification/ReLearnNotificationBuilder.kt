@@ -10,6 +10,9 @@ import com.azyoot.relearn.domain.entity.ReLearnSource
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.domain.entity.SourceType
 import com.azyoot.relearn.service.receiver.ReLearnNotificationActionsReceiver
+import com.azyoot.relearn.ui.common.RELEARN_ACCEPT
+import com.azyoot.relearn.ui.common.RELEARN_LAUNCH
+import com.azyoot.relearn.ui.common.RELEARN_SUPPRESS
 import javax.inject.Inject
 
 
@@ -59,13 +62,13 @@ class ReLearnNotificationBuilder @Inject constructor() {
         }
 
         val pendingLaunchIntent =
-            PendingIntent.getBroadcast(context, 1, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getBroadcast(context, RELEARN_LAUNCH, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         val pendingAcceptIntent =
-            PendingIntent.getBroadcast(context, 2, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getBroadcast(context, RELEARN_ACCEPT, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         val pendingSuppressIntent =
             PendingIntent.getBroadcast(
                 context,
-                3,
+                RELEARN_SUPPRESS,
                 suppressIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
             )

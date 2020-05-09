@@ -72,14 +72,13 @@ class ReLearnWorker(appContext: Context, params: WorkerParameters) : CoroutineWo
         private const val MIN_SOURCES_COUNT = 20
         private const val NAME = "ReLearnWorker"
 
-        fun schedule(context: Context) {
+        fun run(context: Context) {
             val request =
-                PeriodicWorkRequestBuilder<ReLearnWorker>(1, TimeUnit.DAYS)
-                    .setInitialDelay(1, TimeUnit.DAYS)
+                OneTimeWorkRequestBuilder<ReLearnWorker>()
                     .build()
 
             WorkManager.getInstance(context)
-                .enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.KEEP, request)
+                .enqueueUniqueWork(NAME, ExistingWorkPolicy.KEEP, request)
         }
     }
 }

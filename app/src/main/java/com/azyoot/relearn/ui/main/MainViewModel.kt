@@ -13,6 +13,7 @@ import com.azyoot.relearn.domain.entity.WebpageVisit
 import com.azyoot.relearn.domain.usecase.relearn.*
 import com.azyoot.relearn.service.MonitoringService
 import com.azyoot.relearn.service.worker.ReLearnWorker
+import com.azyoot.relearn.ui.relearn.ReLearnScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -29,7 +30,8 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class MainViewModel @Inject constructor(
     private val applicationContext: Context,
-    private val repository: WebpageVisitRepository
+    private val repository: WebpageVisitRepository,
+    private val reLearnScheduler: ReLearnScheduler
 ) : ViewModel() {
 
     val history: MutableLiveData<List<WebpageVisit>> = MutableLiveData()
@@ -60,5 +62,9 @@ class MainViewModel @Inject constructor(
         val req = OneTimeWorkRequestBuilder<ReLearnWorker>().build()
 
         WorkManager.getInstance(applicationContext).enqueue(req)
+    }
+
+    fun scheduleReLearn() {
+        reLearnScheduler.schedule()
     }
 }
