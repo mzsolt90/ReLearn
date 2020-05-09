@@ -5,7 +5,7 @@ import com.azyoot.relearn.di.service.MathModule
 import com.azyoot.relearn.di.service.ServiceSubcomponent
 import com.azyoot.relearn.di.service.WorkerSubcomponent
 import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
-import com.azyoot.relearn.ui.relearn.ReLearnNotificationActionsReceiver
+import com.azyoot.relearn.service.receiver.ReLearnNotificationActionsReceiver
 import dagger.BindsInstance
 import dagger.Component
 

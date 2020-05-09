@@ -6,7 +6,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.azyoot.relearn.R
-import com.azyoot.relearn.ui.receiver.AccessibilityCheckNotificationReceiver
+import com.azyoot.relearn.service.receiver.AccessibilityCheckNotificationReceiver
 import javax.inject.Inject
 
 class EnableAccessibilityServiceNotificationFactory @Inject constructor() {

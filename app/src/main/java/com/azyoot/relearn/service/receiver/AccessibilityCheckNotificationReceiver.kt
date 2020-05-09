@@ -1,4 +1,4 @@
-package com.azyoot.relearn.ui.receiver
+package com.azyoot.relearn.service.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context

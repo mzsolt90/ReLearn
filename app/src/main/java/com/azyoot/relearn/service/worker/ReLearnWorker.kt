@@ -7,7 +7,7 @@ import com.azyoot.relearn.di.service.WorkerSubcomponent
 import com.azyoot.relearn.domain.usecase.relearn.CountReLearnSourcesUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetNextAndShowReLearnUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetTranslationFromSourceUseCase
-import com.azyoot.relearn.ui.relearn.ReLearnNotificationBuilder
+import com.azyoot.relearn.ui.notification.ReLearnNotificationBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber

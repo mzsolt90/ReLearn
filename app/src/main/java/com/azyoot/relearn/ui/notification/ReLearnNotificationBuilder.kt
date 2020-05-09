@@ -1,4 +1,4 @@
-package com.azyoot.relearn.ui.relearn
+package com.azyoot.relearn.ui.notification
 
 import android.app.PendingIntent
 import android.content.Context
@@ -9,9 +9,7 @@ import com.azyoot.relearn.R
 import com.azyoot.relearn.domain.entity.ReLearnSource
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.domain.entity.SourceType
-import com.azyoot.relearn.ui.notification.CHANNEL_ID
-import com.azyoot.relearn.ui.notification.ID_RELEARN
-import com.azyoot.relearn.ui.notification.ensureChannelCreated
+import com.azyoot.relearn.service.receiver.ReLearnNotificationActionsReceiver
 import javax.inject.Inject
 
 

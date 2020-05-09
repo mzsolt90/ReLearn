@@ -30,8 +30,8 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
-        <receiver android:name=".ui.relearn.ReLearnNotificationActionsReceiver" android:exported="false" />
-        <receiver android:name=".ui.receiver.AccessibilityCheckNotificationReceiver" android:exported="false" />
+        <receiver android:name=".service.receiver.ReLearnNotificationActionsReceiver" android:exported="false" />
+        <receiver android:name=".service.receiver.AccessibilityCheckNotificationReceiver" android:exported="false" />
     </application>
 
 </manifest>

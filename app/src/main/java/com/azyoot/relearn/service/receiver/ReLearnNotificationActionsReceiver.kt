@@ -1,4 +1,4 @@
-package com.azyoot.relearn.ui.relearn
+package com.azyoot.relearn.service.receiver
 
 import android.content.*
 import android.os.Build
@@ -7,6 +7,7 @@ import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.domain.entity.SourceType
 import com.azyoot.relearn.service.worker.AcceptOrSuppressReLearnWorker
 import com.azyoot.relearn.ui.notification.ID_RELEARN
+import com.azyoot.relearn.ui.relearn.ReLearnLaunchUrlActivity
 import com.azyoot.relearn.util.UrlProcessing
 import timber.log.Timber
 import javax.inject.Inject
