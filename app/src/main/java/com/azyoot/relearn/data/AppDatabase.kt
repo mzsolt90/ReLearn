@@ -8,7 +8,7 @@ import com.azyoot.relearn.data.entity.*
 @Database(
     entities = [WebpageVisit::class, TranslationEvent::class, WebpageTranslation::class, RelearnEvent::class, LatestSourcesCache::class],
     views = [WebpageVisitWithLatestTranslationView::class, LatestSourcesView::class],
-    version = 8,
+    version = 9,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

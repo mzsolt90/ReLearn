@@ -2,7 +2,7 @@ package com.azyoot.relearn.domain.usecase.parsing
 
 import com.azyoot.relearn.domain.entity.WebpageTranslation
 import com.azyoot.relearn.domain.entity.WebpageVisit
-import com.azyoot.relearn.util.ensureStartsWithHttpsScheme
+import com.azyoot.relearn.util.UrlProcessing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -12,12 +12,13 @@ import javax.inject.Inject
 
 class DownloadWebpageAndExtractTranslationUseCase @Inject constructor(
     private val httpClient: OkHttpClient,
-    private val extractUseCase: ExtractWiktionaryTranslationUseCase
+    private val extractUseCase: ExtractWiktionaryTranslationUseCase,
+    private val urlProcessing: UrlProcessing
 ) {
 
     suspend fun downloadWebpageAndExtractTranslation(webpageVisit: WebpageVisit): List<WebpageTranslation> {
         val webpageText = withContext(Dispatchers.IO) {
-            val fixedUrl = webpageVisit.url.ensureStartsWithHttpsScheme()
+            val fixedUrl = urlProcessing.ensureStartsWithHttpsScheme(webpageVisit.url)
 
             val response = httpClient.newCall(Request.Builder().url(fixedUrl).build())
                 .execute()

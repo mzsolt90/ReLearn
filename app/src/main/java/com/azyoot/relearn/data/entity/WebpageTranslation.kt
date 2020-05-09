@@ -46,4 +46,4 @@ data class WebpageVisitWithLatestTranslationView(
     @ColumnInfo(name = "max_translation_parse_version") val latestTranslatedVersion: Int
 )
 
-const val PARSE_VERSION = 3
+const val PARSE_VERSION = 4

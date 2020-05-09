@@ -20,7 +20,8 @@ object DataModule {
                 AddWebpageTranslationMigration(),
                 AddRelearnEventMigration(),
                 AddLatestSourcesViewMigration(),
-                UpdateLatestSourcesViewMigration()
+                UpdateLatestSourcesViewMigration(),
+                BumpParseVersionToRefreshWebpageTranslationsMigration()
             ).build()
 
     @Provides

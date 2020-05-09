@@ -4,12 +4,15 @@ import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
 import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
 import com.azyoot.relearn.domain.entity.WebpageVisit
 import com.azyoot.relearn.di.service.ServiceScope
-import com.azyoot.relearn.util.stripFragmentFromUrl
+import com.azyoot.relearn.util.UrlProcessing
+import timber.log.Timber
 import javax.inject.Inject
 
 @ServiceScope
 class ChromeUrlBarFlagAndSaveDataUseCase @Inject constructor(
-    private val saveDataUseCase: LogWebpageVisitBufferUseCase
+    private val saveDataUseCase: LogWebpageVisitBufferUseCase,
+    private val filterWebpageVisitUseCase: FilterWebpageVisitUseCase,
+    private val urlProcessing: UrlProcessing
 ) : FlagAndSaveEventDataUseCase {
     override fun needsHierarchy(eventDescriptor: AccessibilityEventDescriptor) = false
 
@@ -25,13 +28,20 @@ class ChromeUrlBarFlagAndSaveDataUseCase @Inject constructor(
         eventDescriptor: AccessibilityEventDescriptor,
         viewNodes: List<AccessibilityEventViewInfo>
     ) {
-        val url = eventDescriptor.sourceViewInfo.text.stripFragmentFromUrl()
-        if(url.contains("wiktionary").not()) return
+        val url = eventDescriptor.sourceViewInfo.text
+            .let { urlProcessing.stripFragmentFromUrl(it) }
+            .let { urlProcessing.ensureStartsWithHttpsScheme(it) }
+
+        if (!filterWebpageVisitUseCase.isWebpageVisitValid(url)) {
+            Timber.v("Filtering out $url")
+            return
+        }
 
         saveDataUseCase.logWebpageVisit(
             WebpageVisit(
-                url = eventDescriptor.sourceViewInfo.text.stripFragmentFromUrl(),
-                appPackageName = eventDescriptor.packageName
+                url = url,
+                appPackageName = eventDescriptor.packageName,
+                lastParseVersion = 0
             )
         )
     }

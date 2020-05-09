@@ -4,7 +4,6 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
-import com.azyoot.relearn.util.ensureStartsWithHttpsScheme
 import timber.log.Timber
 
 class ReLearnLaunchUrlActivity : AppCompatActivity() {
@@ -25,7 +24,7 @@ class ReLearnLaunchUrlActivity : AppCompatActivity() {
 
         val chromeCustomTabBuilder = CustomTabsIntent.Builder()
         val customTabsIntent = chromeCustomTabBuilder.build()
-        customTabsIntent.launchUrl(this, Uri.parse(url.ensureStartsWithHttpsScheme()))
+        customTabsIntent.launchUrl(this, Uri.parse(url))
 
         finish()
     }

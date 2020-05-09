@@ -53,7 +53,7 @@ class WebpageDownloadWorker(appContext: Context, workerParams: WorkerParameters)
         const val NAME = "WebpageDownloadWorker"
         private const val RESCHEDULE_SECONDS = 5
 
-        fun schedule(context: Context, initialDelaySeconds: Int = 30) {
+        fun schedule(context: Context, initialDelaySeconds: Int = 60) {
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()

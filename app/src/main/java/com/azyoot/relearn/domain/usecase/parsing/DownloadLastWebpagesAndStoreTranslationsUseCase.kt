@@ -3,8 +3,7 @@ package com.azyoot.relearn.domain.usecase.parsing
 import com.azyoot.relearn.data.repository.WebpageTranslationRepository
 import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.entity.WebpageTranslation
-import com.azyoot.relearn.util.ensureStartsWithHttpsScheme
-import com.azyoot.relearn.util.isValidUrl
+import com.azyoot.relearn.domain.usecase.monitoring.FilterWebpageVisitUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -16,7 +15,8 @@ class DownloadLastWebpagesAndStoreTranslationsUseCase @Inject constructor(
     private val webpageVisitRepository: WebpageVisitRepository,
     private val webpageTranslationRepository: WebpageTranslationRepository,
     private val downloadUseCase: DownloadWebpageAndExtractTranslationUseCase,
-    private val deleteWebpageVisitUseCase: DeleteWebpageVisitUseCase
+    private val deleteWebpageVisitUseCase: DeleteWebpageVisitUseCase,
+    private val filterWebpageVisitUseCase: FilterWebpageVisitUseCase
 ) {
 
     suspend fun downloadLastWebpagesAndStoreTranslations() {
@@ -24,7 +24,7 @@ class DownloadLastWebpagesAndStoreTranslationsUseCase @Inject constructor(
         withContext(Dispatchers.IO) {
             visits.map { webpageVisit ->
                 async {
-                    if (webpageVisit.url.ensureStartsWithHttpsScheme().isValidUrl().not()) {
+                    if (!filterWebpageVisitUseCase.isWebpageVisitValid(webpageVisit.url)) {
                         deleteWebpageVisitUseCase.deleteWebpageVisit(webpageVisit)
                         return@async
                     }

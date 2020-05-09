@@ -5,6 +5,7 @@ import com.azyoot.relearn.domain.entity.WebpageTranslation
 import com.azyoot.relearn.domain.entity.WebpageVisit
 import com.azyoot.relearn.domain.usecase.parsing.DownloadWebpageAndExtractTranslationUseCase
 import com.azyoot.relearn.domain.usecase.parsing.ExtractWiktionaryTranslationUseCase
+import com.azyoot.relearn.util.UrlProcessing
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
@@ -29,6 +30,7 @@ class DownloadWebpageAndExtractTranslationUseCaseTest {
 
     private val mockOkHttpClient: OkHttpClient = mock()
     private val mockExtractUseCase: ExtractWiktionaryTranslationUseCase = mock()
+    private val mockUrlProcessing: UrlProcessing = mock()
 
     private lateinit var executingOkHttpClient: OkHttpClient
     private lateinit var givenUseCase: DownloadWebpageAndExtractTranslationUseCase
@@ -41,7 +43,8 @@ class DownloadWebpageAndExtractTranslationUseCaseTest {
         givenUseCase =
             DownloadWebpageAndExtractTranslationUseCase(
                 mockOkHttpClient,
-                mockExtractUseCase
+                mockExtractUseCase,
+                mockUrlProcessing
             )
         whenever(
             mockExtractUseCase.extractTranslationsFromWiktionaryPage(

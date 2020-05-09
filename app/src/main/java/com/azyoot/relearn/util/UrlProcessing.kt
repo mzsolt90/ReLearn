@@ -1,25 +1,30 @@
 package com.azyoot.relearn.util
 
 import android.net.Uri
+import javax.inject.Inject
 
-fun String.stripFragmentFromUrl() = Uri.parse(this)
-    .buildUpon()
-    .fragment("")
-    .build()
-    .toString()
+class UrlProcessing @Inject constructor(){
+    fun stripFragmentFromUrl(string: String) = Uri.parse(string)
+        .buildUpon()
+        .fragment("")
+        .build()
+        .toString()
 
-fun String.ensureStartsWithHttpsScheme() = let {
-    if(startsWith("https")) it
-    else if(startsWith("http")) it.replace("http", "https")
-    else "https://$it"
+    fun ensureStartsWithHttpsScheme(string: String) = string.let {
+        if(it.startsWith("https")) it
+        else if(it.startsWith("http")) it.replace("http", "https")
+        else "https://$it"
+    }
+
+    fun isValidUrl(string: String) = try {
+        Uri.parse(string)?.let {
+            it.host.isNullOrBlank().not() &&
+                    it.scheme.isNullOrBlank().not() &&
+                    it.host!!.split(".").size >= 2 &&
+                    it.host!!.split(".").last().length >= 2
+        } ?: false
+    } catch (ex: IllegalArgumentException) {
+        false
+    }
 }
 
-fun String.isValidUrl() = try {
-    Uri.parse(this)?.let {
-        it.host.isNullOrBlank().not() &&
-                it.scheme.isNullOrBlank().not() &&
-                it.host!!.contains("wiktionary", ignoreCase = true)
-    } ?: false
-} catch (ex: IllegalArgumentException) {
-    false
-}

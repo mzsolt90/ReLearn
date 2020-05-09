@@ -3,15 +3,21 @@ package com.azyoot.relearn.ui.relearn
 import android.content.*
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
+import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.domain.entity.SourceType
 import com.azyoot.relearn.service.worker.AcceptOrSuppressReLearnWorker
 import com.azyoot.relearn.ui.notification.ID_RELEARN
-import com.azyoot.relearn.util.ensureStartsWithHttpsScheme
-import com.azyoot.relearn.util.isValidUrl
+import com.azyoot.relearn.util.UrlProcessing
 import timber.log.Timber
+import javax.inject.Inject
 
 class ReLearnNotificationActionsReceiver : BroadcastReceiver() {
+    @Inject
+    lateinit var urlProcessing: UrlProcessing
+
     override fun onReceive(context: Context, intent: Intent) {
+        (context.applicationContext as ReLearnApplication).appComponent.inject(this)
+
         val actionType = intent.getStringExtra(EXTRA_ACTION_TYPE)
         if (actionType.isNullOrEmpty()) return
 
@@ -52,7 +58,7 @@ class ReLearnNotificationActionsReceiver : BroadcastReceiver() {
     }
 
     private fun launchUrl(context: Context, url: String) {
-        if (url.ensureStartsWithHttpsScheme().isValidUrl().not()) {
+        if (urlProcessing.isValidUrl(urlProcessing.ensureStartsWithHttpsScheme(url)).not()) {
             Timber.w("Invalid url $url")
             return
         }
@@ -60,7 +66,7 @@ class ReLearnNotificationActionsReceiver : BroadcastReceiver() {
         Timber.d("Launching url for relearn $url")
 
         val intent = Intent(context, ReLearnLaunchUrlActivity::class.java).apply {
-            putExtra(ReLearnLaunchUrlActivity.EXTRA_URL, url.ensureStartsWithHttpsScheme())
+            putExtra(ReLearnLaunchUrlActivity.EXTRA_URL, urlProcessing.ensureStartsWithHttpsScheme(url))
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(intent)
