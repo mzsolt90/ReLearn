@@ -11,7 +11,6 @@ import com.azyoot.relearn.ui.notification.ReLearnNotificationBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ReLearnWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(
@@ -62,7 +61,7 @@ class ReLearnWorker(appContext: Context, params: WorkerParameters) : CoroutineWo
         }
 
         withContext(Dispatchers.Main) {
-            notificationBuilder.createAndNotify(translation, applicationContext)
+            notificationBuilder.createAndNotify(translation)
         }
 
         return Result.success()

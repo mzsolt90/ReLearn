@@ -3,8 +3,15 @@ package com.azyoot.relearn.ui.notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface.BOLD
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.BulletSpan
+import android.text.style.StyleSpan
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.azyoot.relearn.R
 import com.azyoot.relearn.domain.entity.ReLearnSource
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
@@ -16,7 +23,40 @@ import com.azyoot.relearn.ui.common.RELEARN_SUPPRESS
 import javax.inject.Inject
 
 
-class ReLearnNotificationBuilder @Inject constructor() {
+class ReLearnNotificationBuilder @Inject constructor(private val context: Context) {
+
+    private val bulletSpan: BulletSpan
+        get() = BulletSpan(
+            context.resources.getDimensionPixelSize(R.dimen.notification_bullet_gap_width),
+            ContextCompat.getColor(context, R.color.notification_bullet_color)
+        )
+
+    private fun getTitle(reLearnTranslation: ReLearnTranslation) =
+        SpannableString(reLearnTranslation.sourceText).apply {
+            setSpan(
+                StyleSpan(BOLD),
+                0,
+                reLearnTranslation.sourceText.length,
+                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+            )
+        }
+
+    private fun getText(reLearnTranslation: ReLearnTranslation) =
+        SpannableStringBuilder().apply {
+            reLearnTranslation.translations.forEach { translation ->
+                append(translation, bulletSpan, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                append("\n")
+            }
+        }.trim()
+
+    private fun ellipsizeText(string: CharSequence, length: Int = 8) =
+        (if (string.length > 8) "..." else "") + string.takeLast(8)
+
+    private fun getSummaryText(reLearnTranslation: ReLearnTranslation) =
+        ellipsizeText(getTitle(reLearnTranslation)) + " = " +
+                reLearnTranslation.translations
+                    .first()
+                    .substringBefore(",")
 
     private fun ReLearnSource.putInIntent(intent: Intent) {
         intent.putExtra(ReLearnNotificationActionsReceiver.EXTRA_SOURCE_ID, latestSourceId)
@@ -35,19 +75,7 @@ class ReLearnNotificationBuilder @Inject constructor() {
         }
     }
 
-    private fun getTitle(reLearnTranslation: ReLearnTranslation) = reLearnTranslation.sourceText
-
-    private fun getText(reLearnTranslation: ReLearnTranslation) =
-        reLearnTranslation.translations.joinToString("\n• ", "• ")
-
-    private fun getSummaryText(reLearnTranslation: ReLearnTranslation) = (if(getTitle(reLearnTranslation).length > 8)"..." else "") +
-            "${getTitle(reLearnTranslation).takeLast(8)} = " +
-            reLearnTranslation.translations.first()
-                .substringBefore(",")
-
-    fun createAndNotify(reLearnTranslation: ReLearnTranslation, context: Context) {
-        ensureChannelCreated(context)
-
+    private fun getLaunchPendingIntent(reLearnTranslation: ReLearnTranslation): PendingIntent {
         val launchIntent = Intent(context, ReLearnNotificationActionsReceiver::class.java)
             .apply {
                 putExtra(
@@ -56,6 +84,15 @@ class ReLearnNotificationBuilder @Inject constructor() {
                 )
                 reLearnTranslation.source.putInIntent(this)
             }
+        return PendingIntent.getBroadcast(
+            context,
+            RELEARN_LAUNCH,
+            launchIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
+
+    private fun getAcceptPendingIntent(reLearnTranslation: ReLearnTranslation): PendingIntent {
         val acceptIntent = Intent(context, ReLearnNotificationActionsReceiver::class.java).apply {
             putExtra(
                 ReLearnNotificationActionsReceiver.EXTRA_ACTION_TYPE,
@@ -63,6 +100,15 @@ class ReLearnNotificationBuilder @Inject constructor() {
             )
             reLearnTranslation.source.putInIntent(this)
         }
+        return PendingIntent.getBroadcast(
+            context,
+            RELEARN_ACCEPT,
+            acceptIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
+
+    private fun getSuppressPendingIntent(reLearnTranslation: ReLearnTranslation): PendingIntent {
         val suppressIntent = Intent(context, ReLearnNotificationActionsReceiver::class.java).apply {
             putExtra(
                 ReLearnNotificationActionsReceiver.EXTRA_ACTION_TYPE,
@@ -70,18 +116,20 @@ class ReLearnNotificationBuilder @Inject constructor() {
             )
             reLearnTranslation.source.putInIntent(this)
         }
+        return PendingIntent.getBroadcast(
+            context,
+            RELEARN_SUPPRESS,
+            suppressIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
 
-        val pendingLaunchIntent =
-            PendingIntent.getBroadcast(context, RELEARN_LAUNCH, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val pendingAcceptIntent =
-            PendingIntent.getBroadcast(context, RELEARN_ACCEPT, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val pendingSuppressIntent =
-            PendingIntent.getBroadcast(
-                context,
-                RELEARN_SUPPRESS,
-                suppressIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )
+    fun createAndNotify(reLearnTranslation: ReLearnTranslation) {
+        ensureChannelCreated(context)
+
+        val pendingLaunchIntent = getLaunchPendingIntent(reLearnTranslation)
+        val pendingAcceptIntent = getAcceptPendingIntent(reLearnTranslation)
+        val pendingSuppressIntent = getSuppressPendingIntent(reLearnTranslation)
 
         val builder = NotificationCompat.Builder(
             context,
