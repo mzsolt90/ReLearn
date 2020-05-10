@@ -4,3 +4,4 @@ const val RELEARN_LAUNCH = 1
 const val RELEARN_ACCEPT = 2
 const val RELEARN_SUPPRESS = 3
 const val RELEARN_SCHEDULE = 4
+const val RELEARN_ANOTHER = 5

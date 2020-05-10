@@ -3,11 +3,15 @@ package com.azyoot.relearn.service.receiver
 import android.content.*
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.domain.entity.SourceType
 import com.azyoot.relearn.service.worker.AcceptOrSuppressReLearnWorker
+import com.azyoot.relearn.service.worker.ReLearnWorker
 import com.azyoot.relearn.ui.notification.ID_RELEARN
 import com.azyoot.relearn.ui.relearn.ReLearnLaunchUrlActivity
+import com.azyoot.relearn.ui.relearn.ReLearnPeriodicScheduler
 import com.azyoot.relearn.util.UrlProcessing
 import timber.log.Timber
 import javax.inject.Inject
@@ -43,6 +47,7 @@ class ReLearnNotificationActionsReceiver : BroadcastReceiver() {
             }
             TYPE_ACCEPT -> scheduleAccept(context, sourceId, sourceType)
             TYPE_SUPPRESS -> scheduleSuppress(context, sourceId, sourceType)
+            TYPE_ANOTHER -> scheduleAnother(context, sourceId, sourceType)
         }
     }
 
@@ -56,6 +61,12 @@ class ReLearnNotificationActionsReceiver : BroadcastReceiver() {
 
     private fun scheduleSuppress(context: Context, sourceId: Long, sourceType: SourceType) {
         AcceptOrSuppressReLearnWorker.schedule(context, sourceId, sourceType, isSuppress = true)
+    }
+
+    private fun scheduleAnother(context: Context, sourceId: Long, sourceType: SourceType) {
+        WorkManager.getInstance(context).beginWith(AcceptOrSuppressReLearnWorker.getRequest(sourceId, sourceType, isAccept = true))
+            .then(OneTimeWorkRequest.from(ReLearnWorker::class.java))
+            .enqueue()
     }
 
     private fun launchUrl(context: Context, url: String) {
@@ -111,6 +122,7 @@ class ReLearnNotificationActionsReceiver : BroadcastReceiver() {
         const val TYPE_LAUNCH = "launch"
         const val TYPE_ACCEPT = "accept"
         const val TYPE_SUPPRESS = "suppress"
+        const val TYPE_ANOTHER = "another"
 
         const val EXTRA_LAUNCH_URL = "launch_url"
         const val EXTRA_TRANSLATE_TEXT = "translate_text"

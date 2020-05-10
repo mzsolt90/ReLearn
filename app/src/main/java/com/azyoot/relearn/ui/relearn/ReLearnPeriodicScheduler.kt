@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ReLearnScheduler @Inject constructor(
+class ReLearnPeriodicScheduler @Inject constructor(
     val context: Context,
     val dateTimeMapper: DateTimeMapper
 ) {

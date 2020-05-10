@@ -7,4 +7,5 @@
     <string name="action_notification_view">View</string>
     <string name="action_notification_dismiss">OK</string>
     <string name="action_notification_suppress">Already learnt</string>
+    <string name="action_notification_another">Another!</string>
 </resources>

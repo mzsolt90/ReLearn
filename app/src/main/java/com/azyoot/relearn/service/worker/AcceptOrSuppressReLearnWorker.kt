@@ -71,16 +71,15 @@ class AcceptOrSuppressReLearnWorker(
         const val EXTRA_SOURCE_ID = "source_id"
         const val EXTRA_SOURCE_TYPE = "source_type"
 
-        fun schedule(
-            context: Context,
+        fun getRequest(
             sourceId: Long,
             sourceType: SourceType,
             isAccept: Boolean = false,
             isSuppress: Boolean = false
-        ) {
+        ): OneTimeWorkRequest {
             if (!isAccept && !isSuppress) throw IllegalArgumentException("Either isAccept of isSuppress has to be true")
 
-            val request = OneTimeWorkRequestBuilder<AcceptOrSuppressReLearnWorker>()
+            return OneTimeWorkRequestBuilder<AcceptOrSuppressReLearnWorker>()
                 .setInputData(
                     workDataOf(
                         EXTRA_ACCEPT to isAccept,
@@ -95,9 +94,17 @@ class AcceptOrSuppressReLearnWorker(
                     TimeUnit.MILLISECONDS
                 )
                 .build()
+        }
 
+        fun schedule(
+            context: Context,
+            sourceId: Long,
+            sourceType: SourceType,
+            isAccept: Boolean = false,
+            isSuppress: Boolean = false
+        ) {
             WorkManager.getInstance(context)
-                .enqueue(request)
+                .enqueue(getRequest(sourceId, sourceType, isAccept, isSuppress))
         }
     }
 }

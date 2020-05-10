@@ -1,7 +1,6 @@
 package com.azyoot.relearn.ui.main
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -10,10 +9,9 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.entity.WebpageVisit
-import com.azyoot.relearn.domain.usecase.relearn.*
 import com.azyoot.relearn.service.MonitoringService
 import com.azyoot.relearn.service.worker.ReLearnWorker
-import com.azyoot.relearn.ui.relearn.ReLearnScheduler
+import com.azyoot.relearn.ui.relearn.ReLearnPeriodicScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -22,8 +20,6 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 @FlowPreview
@@ -31,7 +27,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val applicationContext: Context,
     private val repository: WebpageVisitRepository,
-    private val reLearnScheduler: ReLearnScheduler
+    private val reLearnPeriodicScheduler: ReLearnPeriodicScheduler
 ) : ViewModel() {
 
     val history: MutableLiveData<List<WebpageVisit>> = MutableLiveData()
@@ -65,6 +61,6 @@ class MainViewModel @Inject constructor(
     }
 
     fun scheduleReLearn() {
-        reLearnScheduler.schedule()
+        reLearnPeriodicScheduler.schedule()
     }
 }
