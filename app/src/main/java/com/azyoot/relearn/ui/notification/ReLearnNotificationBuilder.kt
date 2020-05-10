@@ -50,7 +50,7 @@ class ReLearnNotificationBuilder @Inject constructor(private val context: Contex
         }.trim()
 
     private fun ellipsizeText(string: CharSequence, length: Int = 8) =
-        (if (string.length > 8) "..." else "") + string.takeLast(8)
+        (if (string.length > length) "..." else "") + string.takeLast(length)
 
     private fun getSummaryText(reLearnTranslation: ReLearnTranslation) =
         ellipsizeText(getTitle(reLearnTranslation)) + " = " +
