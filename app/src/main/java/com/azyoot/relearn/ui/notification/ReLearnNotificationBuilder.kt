@@ -35,6 +35,16 @@ class ReLearnNotificationBuilder @Inject constructor() {
         }
     }
 
+    private fun getTitle(reLearnTranslation: ReLearnTranslation) = reLearnTranslation.sourceText
+
+    private fun getText(reLearnTranslation: ReLearnTranslation) =
+        reLearnTranslation.translations.joinToString("\n• ", "• ")
+
+    private fun getSummaryText(reLearnTranslation: ReLearnTranslation) = (if(getTitle(reLearnTranslation).length > 8)"..." else "") +
+            "${getTitle(reLearnTranslation).takeLast(8)} = " +
+            reLearnTranslation.translations.first()
+                .substringBefore(",")
+
     fun createAndNotify(reLearnTranslation: ReLearnTranslation, context: Context) {
         ensureChannelCreated(context)
 
@@ -78,17 +88,12 @@ class ReLearnNotificationBuilder @Inject constructor() {
             CHANNEL_ID
         )
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(reLearnTranslation.source.sourceText)
+            .setContentTitle(getTitle(reLearnTranslation))
             .setContentText(reLearnTranslation.translations.first())
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText(reLearnTranslation.translations.joinToString("\n• ", "• "))
-                    .setSummaryText(
-                        (if(reLearnTranslation.source.sourceText.length > 8)"..." else "") +
-                                "${reLearnTranslation.source.sourceText.takeLast(8)} = " +
-                                reLearnTranslation.translations.first()
-                            .substringBefore(",")
-                    )
+                    .bigText(getText(reLearnTranslation))
+                    .setSummaryText(getSummaryText(reLearnTranslation))
             )
             .addAction(
                 NotificationCompat.Action(

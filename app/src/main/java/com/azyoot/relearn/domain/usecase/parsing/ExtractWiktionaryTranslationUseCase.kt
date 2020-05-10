@@ -70,9 +70,9 @@ class ExtractWiktionaryTranslationUseCase @Inject constructor() {
                 val title = titleElement.text()
                 getTranslationsForTitle(titleElement.parent()).map {
                     WebpageTranslation(
-                        title,
-                        it,
-                        webpageVisit
+                        fromText = title,
+                        toText = it,
+                        webpageVisit = webpageVisit
                     )
                 }
             }?.distinct()?.also {
