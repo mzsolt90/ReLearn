@@ -117,7 +117,7 @@ class ReLearnNotificationBuilder @Inject constructor(private val context: Contex
             context,
             CHANNEL_ID
         )
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_logo_standalone)
             .setContentTitle(getTitle(reLearnTranslation))
             .setContentText(reLearnTranslation.translations.first())
             .setStyle(

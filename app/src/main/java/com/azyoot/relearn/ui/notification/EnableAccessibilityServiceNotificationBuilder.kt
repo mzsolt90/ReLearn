@@ -25,7 +25,7 @@ class EnableAccessibilityServiceNotificationFactory @Inject constructor() {
             PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_logo_standalone)
             .setContentTitle(context.resources.getString(R.string.app_name))
             .setContentText(context.resources.getString(R.string.dialog_enable_accessibility_service))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
