@@ -5,7 +5,7 @@
     <string name="accessibility_service_description">ReLearn monitoring TODO</string>
     <string name="dialog_enable_accessibility_service">Please enable the accessibility service</string>
     <string name="action_notification_view">View</string>
-    <string name="action_notification_dismiss">OK</string>
+    <string name="action_notification_dismiss">Dismiss</string>
     <string name="action_notification_suppress">Already learnt</string>
     <string name="action_notification_another">Another!</string>
 </resources>

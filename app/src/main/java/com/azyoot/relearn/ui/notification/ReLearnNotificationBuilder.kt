@@ -76,7 +76,11 @@ class ReLearnNotificationBuilder @Inject constructor(private val context: Contex
         }
     }
 
-    private fun getPendingIntentForAction(reLearnTranslation: ReLearnTranslation, actionType: String, requestCode: Int): PendingIntent {
+    private fun getPendingIntentForAction(
+        reLearnTranslation: ReLearnTranslation,
+        actionType: String,
+        requestCode: Int
+    ): PendingIntent {
         val launchIntent = Intent(context, ReLearnNotificationActionsReceiver::class.java)
             .apply {
                 putExtra(
@@ -94,16 +98,32 @@ class ReLearnNotificationBuilder @Inject constructor(private val context: Contex
     }
 
     private fun getLaunchPendingIntent(reLearnTranslation: ReLearnTranslation) =
-        getPendingIntentForAction(reLearnTranslation, ReLearnNotificationActionsReceiver.TYPE_LAUNCH, RELEARN_LAUNCH)
+        getPendingIntentForAction(
+            reLearnTranslation,
+            ReLearnNotificationActionsReceiver.TYPE_LAUNCH,
+            RELEARN_LAUNCH
+        )
 
     private fun getAcceptPendingIntent(reLearnTranslation: ReLearnTranslation) =
-        getPendingIntentForAction(reLearnTranslation, ReLearnNotificationActionsReceiver.TYPE_ACCEPT, RELEARN_ACCEPT)
+        getPendingIntentForAction(
+            reLearnTranslation,
+            ReLearnNotificationActionsReceiver.TYPE_ACCEPT,
+            RELEARN_ACCEPT
+        )
 
     private fun getSuppressPendingIntent(reLearnTranslation: ReLearnTranslation) =
-        getPendingIntentForAction(reLearnTranslation, ReLearnNotificationActionsReceiver.TYPE_SUPPRESS, RELEARN_SUPPRESS)
+        getPendingIntentForAction(
+            reLearnTranslation,
+            ReLearnNotificationActionsReceiver.TYPE_SUPPRESS,
+            RELEARN_SUPPRESS
+        )
 
     private fun getAnotherPendingIntent(reLearnTranslation: ReLearnTranslation) =
-        getPendingIntentForAction(reLearnTranslation, ReLearnNotificationActionsReceiver.TYPE_ANOTHER, RELEARN_ANOTHER)
+        getPendingIntentForAction(
+            reLearnTranslation,
+            ReLearnNotificationActionsReceiver.TYPE_ANOTHER,
+            RELEARN_ANOTHER
+        )
 
     fun createAndNotify(reLearnTranslation: ReLearnTranslation) {
         ensureChannelCreated(context)
@@ -127,16 +147,16 @@ class ReLearnNotificationBuilder @Inject constructor(private val context: Contex
             )
             .addAction(
                 NotificationCompat.Action(
-                    null,
-                    context.resources.getString(R.string.action_notification_dismiss),
-                    pendingAcceptIntent
+                    R.drawable.ic_notification_refresh_24dp,
+                    context.resources.getString(R.string.action_notification_another),
+                    pendingAnotherIntent
                 )
             )
             .addAction(
                 NotificationCompat.Action(
                     null,
-                    context.resources.getString(R.string.action_notification_another),
-                    pendingAnotherIntent
+                    context.resources.getString(R.string.action_notification_dismiss),
+                    pendingAcceptIntent
                 )
             )
             .addAction(
