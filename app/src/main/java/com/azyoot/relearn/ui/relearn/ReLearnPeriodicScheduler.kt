@@ -8,6 +8,7 @@ import com.azyoot.relearn.service.receiver.ReLearnScheduleReceiver
 import com.azyoot.relearn.ui.common.RELEARN_SCHEDULE
 import com.azyoot.relearn.util.DateTimeMapper
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -28,7 +29,7 @@ class ReLearnPeriodicScheduler @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val now = LocalDateTime.now()
+        val now = ZonedDateTime.now()
         val scheduledTime = now
             .withHour(SCHEDULE_AT_HOUR)
             .withMinute(SCHEDULE_AT_MINUTE)
