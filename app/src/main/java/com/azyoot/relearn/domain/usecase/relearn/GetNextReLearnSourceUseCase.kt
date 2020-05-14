@@ -6,7 +6,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class GetNextReLearnSourceUseCase @Inject constructor(
-    private val getIdForNextReLearnSourceUseCase: GetIdForNextReLearnSourceUseCase,
+    private val getOrderingNumberForNextReLearnSourceUseCase: GetOrderingNumberForNextReLearnSourceUseCase,
     private val getNextPredeterminedReLearnSourceUseCase: GetNextPredeterminedReLearnSourceUseCase,
     private val relearnEventRepository: RelearnEventRepository
 ) {
@@ -19,7 +19,7 @@ class GetNextReLearnSourceUseCase @Inject constructor(
                 .also { Timber.d("""Next source of text ${predetermined.sourceText}
                         | is predetermined with state ${predetermined.latestRelearnStatus}""".trimMargin()) }
 
-        val nextId = getIdForNextReLearnSourceUseCase.getIdForNextReLearnSource() ?: return null
+        val nextId = getOrderingNumberForNextReLearnSourceUseCase.getOrderingNumberForNextReLearnSource() ?: return null
         return relearnEventRepository.getNearestSource(nextId)
     }
 }

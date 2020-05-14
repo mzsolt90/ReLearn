@@ -7,7 +7,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
-class GetIdForNextReLearnSourceUseCase @Inject constructor(
+class GetOrderingNumberForNextReLearnSourceUseCase @Inject constructor(
     private val relearnEventRepository: RelearnEventRepository,
     private val boxMuellerCalculation: BoxMuellerCalculation
 ) {
@@ -19,7 +19,7 @@ class GetIdForNextReLearnSourceUseCase @Inject constructor(
         else -> 0.0
     }
 
-    suspend fun getIdForNextReLearnSource(): Int? {
+    suspend fun getOrderingNumberForNextReLearnSource(): Int? {
         val range = withContext(Dispatchers.IO) {
             relearnEventRepository.getSourceRange()
         }
@@ -33,8 +33,8 @@ class GetIdForNextReLearnSourceUseCase @Inject constructor(
 
         Timber.d("Next centered gauss value is $centeredValue")
 
-        val rangeSize = range.maxId - range.minId
+        val rangeSize = range.maxOrderingNumber - range.minOrderingNumber
 
-        return (range.minId.toDouble() + rangeSize.toDouble() * centeredValue).toInt()
+        return (range.minOrderingNumber.toDouble() + rangeSize.toDouble() * centeredValue).toInt()
     }
 }

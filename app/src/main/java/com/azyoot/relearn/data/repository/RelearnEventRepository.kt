@@ -34,9 +34,9 @@ class RelearnEventRepository @Inject constructor(
             ?.let { sourceRangeMapper.toDomainEntity(it) }
 
 
-    suspend fun getNearestSource(id: Int) =
-        relearnEventDataHandler.getNearestValidSourceForId(
-            id,
+    suspend fun getNearestSource(orderingNumber: Int) =
+        relearnEventDataHandler.getNearestValidSourceForOrderingNumber(
+            orderingNumber,
             suppressedThreshold,
             RelearnEventStatus.SUPPRESSED.value,
             acceptedThreshold,

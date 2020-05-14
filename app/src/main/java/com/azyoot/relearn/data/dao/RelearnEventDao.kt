@@ -15,8 +15,8 @@ interface RelearnEventDataHandler {
         acceptedCode: Int
     ): SourceRange?
 
-    suspend fun getNearestValidSourceForId(
-        id: Int,
+    suspend fun getNearestValidSourceForOrderingNumber(
+        orderingNumber: Int,
         suppressedThreshold: Long,
         suppressedCode: Int,
         acceptedThreshold: Long,
@@ -112,14 +112,14 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
         FROM latest_sources_cache 
         JOIN LatestSourcesView ON LatestSourcesView.latest_source_id = latest_sources_cache.latest_source_id 
             AND LatestSourcesView.source_type = latest_sources_cache.source_type
-        WHERE ABS(latest_sources_cache.id - :id) = (
-            SELECT MIN(ABS(latest_sources_cache.id - :id)) 
+        WHERE ABS(latest_sources_cache.id - :orderingNumber) = (
+            SELECT MIN(ABS(latest_sources_cache.id - :orderingNumber)) 
             FROM latest_sources_cache
             WHERE (latest_relearn_status != :suppressedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :suppressedThreshold) 
             AND (latest_relearn_status != :acceptedCode OR latest_relearn_status IS NULL OR latest_relearn_timestamp < :acceptedThreshold))"""
     )
-    override suspend fun getNearestValidSourceForId(
-        id: Int,
+    override suspend fun getNearestValidSourceForOrderingNumber(
+        orderingNumber: Int,
         suppressedThreshold: Long,
         suppressedCode: Int,
         acceptedThreshold: Long,
