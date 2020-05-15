@@ -11,10 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.azyoot.relearn.R
 import com.azyoot.relearn.ReLearnApplication
-import com.azyoot.relearn.databinding.MainFragmentBinding
+import com.azyoot.relearn.databinding.FragmentMainBinding
 import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
@@ -33,7 +32,7 @@ class MainFragment : Fragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
-    private var viewBinding: MainFragmentBinding? = null
+    private var viewBinding: FragmentMainBinding? = null
 
     private val component: MainFragmentSubcomponent by lazy {
         (context!!.applicationContext as ReLearnApplication).appComponent.mainFragmentSubcomponent()
@@ -50,7 +49,7 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? =
-        MainFragmentBinding.inflate(LayoutInflater.from(context)).let { binding ->
+        FragmentMainBinding.inflate(LayoutInflater.from(context)).let { binding ->
             this.viewBinding = binding
             binding.root
         }
@@ -67,35 +66,51 @@ class MainFragment : Fragment() {
         scheduleAccessibilityServiceCheckWorker()
         scheduleReLearn()
 
-        viewModel.isMonitoringServiceEnabled.observe(viewLifecycleOwner, Observer { isEnabled ->
-            if (!isEnabled) {
-                AlertDialog.Builder(activity)
-                    .setMessage(R.string.dialog_enable_accessibility_service)
-                    .setNegativeButton(android.R.string.no) { _, _ -> }
-                    .setPositiveButton(android.R.string.ok) { _, _ ->
-                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                        startActivity(intent)
-                    }
-                    .show()
+        viewModel.stateLiveData.observe(viewLifecycleOwner, Observer {
+            bindState(it)
+        })
+    }
+
+    private fun bindState(viewState: MainViewState) {
+        when (viewState) {
+            is MainViewState.Loading, is MainViewState.Initial -> {
+                viewBinding!!.relearnMainProgress.visibility = View.VISIBLE
+                viewBinding!!.relearnPager.visibility = View.GONE
             }
-        })
-
-        val historyAdapter = WebpageVisitAdapter(context!!)
-        viewBinding!!.listHistory.adapter = historyAdapter
-        viewBinding!!.listHistory.layoutManager = LinearLayoutManager(context)
-        viewModel.history.observe(viewLifecycleOwner, Observer {
-            historyAdapter.submitList(it)
-        })
-
-        viewBinding!!.fab.setOnClickListener {
-            viewModel.testReLearn()
+            is MainViewState.Loaded -> {
+                viewBinding!!.relearnMainProgress.visibility = View.GONE
+                viewBinding!!.relearnPager.visibility = View.VISIBLE
+                if (!isViewPagerSetup()) {
+                    setupViewPager(viewState)
+                }
+                if (!viewState.isServiceEnabled) {
+                    showServiceNotEnabledWarning()
+                }
+            }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun showServiceNotEnabledWarning() {
+        AlertDialog.Builder(activity)
+            .setMessage(R.string.dialog_enable_accessibility_service)
+            .setNegativeButton(android.R.string.no) { _, _ -> }
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                startActivity(intent)
+            }
+            .show()
+    }
 
-        viewModel.checkMonitoringService()
+    private fun isViewPagerSetup() = viewBinding!!.relearnPager.adapter != null
+
+    private fun setupViewPager(viewState: MainViewState.Loaded) {
+        val relearnAdapter =
+            ReLearnAdapter(requireContext(), viewLifecycleOwner, viewState.sourceCount)
+
+        viewBinding!!.relearnPager.apply {
+            adapter = relearnAdapter
+            setCurrentItem(relearnAdapter.itemCount - 1, false)
+        }
     }
 
     private fun rescheduleWebpageDownloadWorker() {

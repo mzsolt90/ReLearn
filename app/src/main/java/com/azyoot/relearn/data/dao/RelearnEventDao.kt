@@ -23,14 +23,16 @@ interface RelearnEventDataHandler {
         acceptedCode: Int
     ): LatestSourcesView?
 
-    suspend fun getOldestReLearnSourceWithState(status: Int): LatestSourcesView?
+    suspend fun getOldestSourceWithState(status: Int): LatestSourcesView?
 
-    suspend fun setLatestReLearnStatusForSourceAndUpdateCache(
+    suspend fun setLatestStatusForSourceAndUpdateCache(
         source: LatestSourcesView,
         status: Int
     )
 
     suspend fun getSourceFromId(sourceId: Long, sourceType: Int): LatestSourcesView?
+
+    suspend fun getNthLatestNotShowingSource(n: Int, showingStatusCode: Int): LatestSourcesView?
 }
 
 @Dao
@@ -137,7 +139,7 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
     suspend fun getOldestReLearnSourceWithStateInternal(status: Int): LatestSourcesView?
 
     @Transaction
-    override suspend fun getOldestReLearnSourceWithState(status: Int): LatestSourcesView? {
+    override suspend fun getOldestSourceWithState(status: Int): LatestSourcesView? {
         reloadSourcesCacheIfNeeded()
 
         return getOldestReLearnSourceWithStateInternal(status)
@@ -170,7 +172,7 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
         }
 
     @Transaction
-    override suspend fun setLatestReLearnStatusForSourceAndUpdateCache(
+    override suspend fun setLatestStatusForSourceAndUpdateCache(
         source: LatestSourcesView,
         status: Int
     ) {
@@ -205,6 +207,16 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
          WHERE latest_sources_cache.latest_source_id = :sourceId 
             AND latest_sources_cache.source_type = :sourceType""")
     override suspend fun getSourceFromId(sourceId: Long, sourceType: Int) : LatestSourcesView?
+
+    @Query("""SELECT * 
+         FROM latest_sources_cache
+         JOIN LatestSourcesView ON LatestSourcesView.latest_source_id = latest_sources_cache.latest_source_id 
+            AND LatestSourcesView.source_type = latest_sources_cache.source_type
+         WHERE latest_sources_cache.latest_relearn_status IS NULL OR latest_sources_cache.latest_relearn_status != :showingStatusCode
+         ORDER BY latest_sources_cache.id DESC
+        LIMIT 1 OFFSET (:n - 1)
+    """)
+    override suspend fun getNthLatestNotShowingSource(n: Int, showingStatusCode: Int): LatestSourcesView?
 
     companion object {
         const val MIN_CACHE_SIZE = 30

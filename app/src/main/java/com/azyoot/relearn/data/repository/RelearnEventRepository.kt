@@ -50,22 +50,26 @@ class RelearnEventRepository @Inject constructor(
 
     suspend fun getShowingReLearnEventSource() =
         relearnEventDataHandler
-            .getOldestReLearnSourceWithState(RelearnEventStatus.SHOWING.value)
+            .getOldestSourceWithState(RelearnEventStatus.SHOWING.value)
             ?.let { reLearnSourceMapper.toDomainEntity(it) }
 
 
     suspend fun getOldestPendingReLearnEventSource() = relearnEventDataHandler
-        .getOldestReLearnSourceWithState(RelearnEventStatus.PENDING.value)
+        .getOldestSourceWithState(RelearnEventStatus.PENDING.value)
         ?.let { reLearnSourceMapper.toDomainEntity(it) }
 
 
     suspend fun setLatestReLearnEventForSource(source: ReLearnSource, status: RelearnEventStatus) {
         relearnEventDataHandler
-            .setLatestReLearnStatusForSourceAndUpdateCache(
+            .setLatestStatusForSourceAndUpdateCache(
                 reLearnSourceMapper.toDataEntity(source),
                 status.value
             )
     }
+
+    suspend fun getNthLatestNotShowingSource(n: Int) =
+        relearnEventDataHandler.getNthLatestNotShowingSource(n, RelearnEventStatus.SHOWING.value)
+            ?.let { reLearnSourceMapper.toDomainEntity(it) }
 
     companion object {
         const val SUPPRESSED_DAYS = 30

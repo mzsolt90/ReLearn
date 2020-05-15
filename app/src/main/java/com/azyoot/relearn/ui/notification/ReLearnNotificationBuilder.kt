@@ -6,31 +6,22 @@ import android.content.Intent
 import android.graphics.Typeface.BOLD
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.style.BulletSpan
 import android.text.style.StyleSpan
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import com.azyoot.relearn.R
 import com.azyoot.relearn.domain.entity.ReLearnSource
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.domain.entity.SourceType
 import com.azyoot.relearn.service.receiver.ReLearnNotificationActionsReceiver
-import com.azyoot.relearn.ui.common.RELEARN_ACCEPT
-import com.azyoot.relearn.ui.common.RELEARN_ANOTHER
-import com.azyoot.relearn.ui.common.RELEARN_LAUNCH
-import com.azyoot.relearn.ui.common.RELEARN_SUPPRESS
+import com.azyoot.relearn.ui.common.*
 import javax.inject.Inject
 
 
-class ReLearnNotificationBuilder @Inject constructor(private val context: Context) {
-
-    private val bulletSpan: BulletSpan
-        get() = BulletSpan(
-            context.resources.getDimensionPixelSize(R.dimen.notification_bullet_gap_width),
-            ContextCompat.getColor(context, R.color.notification_bullet_color)
-        )
+class ReLearnNotificationBuilder @Inject constructor(
+    private val context: Context,
+    private val reLearnTranslationFormatter: ReLearnTranslationFormatter
+) {
 
     private fun getTitle(reLearnTranslation: ReLearnTranslation) =
         SpannableString(reLearnTranslation.sourceText).apply {
@@ -41,14 +32,6 @@ class ReLearnNotificationBuilder @Inject constructor(private val context: Contex
                 Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             )
         }
-
-    private fun getText(reLearnTranslation: ReLearnTranslation) =
-        SpannableStringBuilder().apply {
-            reLearnTranslation.translations.forEach { translation ->
-                append(translation, bulletSpan, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                append("\n")
-            }
-        }.trim()
 
     private fun ellipsizeText(string: CharSequence, length: Int = 8) =
         (if (string.length > length) "..." else "") + string.takeLast(length)
@@ -142,7 +125,7 @@ class ReLearnNotificationBuilder @Inject constructor(private val context: Contex
             .setContentText(reLearnTranslation.translations.first())
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText(getText(reLearnTranslation))
+                    .bigText(reLearnTranslationFormatter.formatTranslationTextForNotification(reLearnTranslation))
                     .setSummaryText(getSummaryText(reLearnTranslation))
             )
             .addAction(
