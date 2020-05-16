@@ -1,24 +1,22 @@
 package com.azyoot.relearn.service.receiver
 
-import android.content.*
-import android.os.Build
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.domain.entity.SourceType
+import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.AcceptOrSuppressReLearnWorker
 import com.azyoot.relearn.service.worker.ReLearnWorker
 import com.azyoot.relearn.ui.notification.ID_RELEARN
-import com.azyoot.relearn.ui.relearn.ReLearnLaunchUrlActivity
-import com.azyoot.relearn.ui.relearn.ReLearnPeriodicScheduler
-import com.azyoot.relearn.util.UrlProcessing
-import timber.log.Timber
 import javax.inject.Inject
 
 class ReLearnNotificationActionsReceiver : BroadcastReceiver() {
     @Inject
-    lateinit var urlProcessing: UrlProcessing
+    lateinit var reLearnLauncher: ReLearnLauncher
 
     override fun onReceive(context: Context, intent: Intent) {
         (context.applicationContext as ReLearnApplication).appComponent.inject(this)
@@ -36,11 +34,11 @@ class ReLearnNotificationActionsReceiver : BroadcastReceiver() {
             TYPE_LAUNCH -> {
                 val url = intent.getStringExtra(EXTRA_LAUNCH_URL) ?: ""
                 if (url.isEmpty().not()) {
-                    launchUrl(context, url)
+                    reLearnLauncher.launchUrl(url)
                 }
                 val text = intent.getStringExtra(EXTRA_TRANSLATE_TEXT) ?: ""
                 if (text.isEmpty().not()) {
-                    launchTranslation(context, text)
+                    reLearnLauncher.launchTranslation(text)
                 }
 
                 scheduleAccept(context, sourceId, sourceType)
@@ -64,58 +62,17 @@ class ReLearnNotificationActionsReceiver : BroadcastReceiver() {
     }
 
     private fun scheduleAnother(context: Context, sourceId: Long, sourceType: SourceType) {
-        WorkManager.getInstance(context).beginWith(AcceptOrSuppressReLearnWorker.getRequest(sourceId, sourceType, isAccept = true))
+        WorkManager.getInstance(context).beginWith(
+            AcceptOrSuppressReLearnWorker.getRequest(
+                sourceId,
+                sourceType,
+                isAccept = true
+            )
+        )
             .then(OneTimeWorkRequest.from(ReLearnWorker::class.java))
             .enqueue()
     }
 
-    private fun launchUrl(context: Context, url: String) {
-        if (urlProcessing.isValidUrl(urlProcessing.ensureStartsWithHttpsScheme(url)).not()) {
-            Timber.w("Invalid url $url")
-            return
-        }
-
-        Timber.d("Launching url for relearn $url")
-
-        val intent = Intent(context, ReLearnLaunchUrlActivity::class.java).apply {
-            putExtra(ReLearnLaunchUrlActivity.EXTRA_URL, urlProcessing.ensureStartsWithHttpsScheme(url))
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        context.startActivity(intent)
-    }
-
-    private fun launchTranslation(context: Context, text: String) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            val intent = Intent(Intent.ACTION_TRANSLATE).apply {
-                putExtra(Intent.EXTRA_TEXT, text)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-
-            try {
-                context.startActivity(intent)
-                return
-            } catch (ex: ActivityNotFoundException) {
-                Timber.w(ex, "No activity found to handle ACTION_TRANSLATE")
-            }
-        }
-
-        val sendIntent = Intent(Intent.ACTION_SEND).apply {
-            component = ComponentName(
-                "com.google.android.apps.translate",
-                "com.google.android.apps.translate.TranslateActivity"
-            )
-            putExtra(Intent.EXTRA_TEXT, text)
-            putExtra("key_text_input", text)
-            putExtra("key_suggest_translation", "")
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        try {
-            context.startActivity(sendIntent)
-            return
-        } catch (ex: ActivityNotFoundException) {
-            Timber.w(ex, "No activity found to handle ACTION_SEND")
-        }
-    }
 
     companion object {
         const val EXTRA_ACTION_TYPE = "action_type"

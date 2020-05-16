@@ -1,23 +1,28 @@
 package com.azyoot.relearn.ui.main.relearn
 
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.di.ui.AdapterSubcomponent
 import com.azyoot.relearn.ui.common.ReLearnTranslationFormatter
 import javax.inject.Inject
 
-class ReLearnCardViewHolder(private val viewBinding: ItemRelearnCardBinding, adapterComponent: AdapterSubcomponent) :
-    RecyclerView.ViewHolder(viewBinding.root) {
+class ReLearnNextCardViewHolder(
+    private val viewBinding: ItemRelearnCardBinding,
+    adapterComponent: AdapterSubcomponent
+) :
+    ReLearnBaseViewHolder(viewBinding.root) {
 
     @Inject
     lateinit var reLearnTranslationFormatter: ReLearnTranslationFormatter
 
     init {
         adapterComponent.inject(this)
+
+        viewBinding.buttonAccept.setOnClickListener { actionsInternal.postValue(ReLearnAction.AcceptReLearn) }
+        viewBinding.buttonView.setOnClickListener { actionsInternal.postValue(ReLearnAction.ViewReLearn) }
     }
 
-    fun bind(state: ReLearnCardViewState) {
+    override fun bind(state: ReLearnCardViewState) {
         when (state) {
             is ReLearnCardViewState.Loading, is ReLearnCardViewState.Initial -> {
                 viewBinding.groupProgress.visibility = View.VISIBLE
@@ -33,6 +38,7 @@ class ReLearnCardViewHolder(private val viewBinding: ItemRelearnCardBinding, ada
 
     private fun bindTranslationData(state: ReLearnCardViewState.Finished) {
         viewBinding.sourceTitle.text = state.reLearnTranslation.sourceText
-        viewBinding.sourceTranslation.text = reLearnTranslationFormatter.formatTranslationTextForNotification(state.reLearnTranslation)
+        viewBinding.sourceTranslation.text =
+            reLearnTranslationFormatter.formatTranslationTextForNotification(state.reLearnTranslation)
     }
 }

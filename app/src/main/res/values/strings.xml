@@ -8,4 +8,6 @@
     <string name="action_notification_dismiss">Dismiss</string>
     <string name="action_notification_suppress">Already learnt</string>
     <string name="action_notification_another">Another!</string>
+    <string name="action_button_accept">OK</string>
+    <string name="action_button_view">View</string>
 </resources>

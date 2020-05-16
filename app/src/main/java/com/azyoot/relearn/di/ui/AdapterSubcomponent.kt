@@ -1,9 +1,9 @@
 package com.azyoot.relearn.di.ui
 
 import com.azyoot.relearn.ui.main.ReLearnAdapter
-import com.azyoot.relearn.ui.main.relearn.ReLearnCardViewHolder
+import com.azyoot.relearn.ui.main.relearn.ReLearnHistoryCardViewHolder
+import com.azyoot.relearn.ui.main.relearn.ReLearnNextCardViewHolder
 import dagger.BindsInstance
-import dagger.Component
 import dagger.Subcomponent
 import kotlinx.coroutines.CoroutineScope
 
@@ -16,5 +16,6 @@ interface AdapterSubcomponent {
     }
 
     fun inject(adapter: ReLearnAdapter)
-    fun inject(viewHolder: ReLearnCardViewHolder)
+    fun inject(viewHolder: ReLearnHistoryCardViewHolder)
+    fun inject(viewHolder: ReLearnNextCardViewHolder)
 }

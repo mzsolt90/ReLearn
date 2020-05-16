@@ -15,6 +15,7 @@ import com.azyoot.relearn.R
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.FragmentMainBinding
 import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
+import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import kotlinx.coroutines.FlowPreview
@@ -30,6 +31,9 @@ class MainFragment : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    @Inject
+    lateinit var relearnLauncher: ReLearnLauncher
 
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
     private var viewBinding: FragmentMainBinding? = null
@@ -111,6 +115,12 @@ class MainFragment : Fragment() {
             adapter = relearnAdapter
             setCurrentItem(relearnAdapter.itemCount - 1, false)
         }
+
+        relearnAdapter.actionsLiveData.observe(viewLifecycleOwner, Observer {
+            if (it is ReLearnAdapterActions.LaunchReLearn) {
+                relearnLauncher.launch(it.reLearnTranslation)
+            }
+        })
     }
 
     private fun rescheduleWebpageDownloadWorker() {
