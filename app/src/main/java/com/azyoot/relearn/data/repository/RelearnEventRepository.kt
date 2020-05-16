@@ -59,13 +59,14 @@ class RelearnEventRepository @Inject constructor(
         ?.let { reLearnSourceMapper.toDomainEntity(it) }
 
 
-    suspend fun setLatestReLearnEventForSource(source: ReLearnSource, status: RelearnEventStatus) {
+    suspend fun setLatestReLearnEventForSource(source: ReLearnSource, status: RelearnEventStatus) =
         relearnEventDataHandler
             .setLatestStatusForSourceAndUpdateCache(
                 reLearnSourceMapper.toDataEntity(source),
                 status.value
             )
-    }
+            .let { reLearnSourceMapper.toDomainEntity(it) }
+
 
     suspend fun getNthLatestNotShowingSource(n: Int) =
         relearnEventDataHandler.getNthLatestNotShowingSource(n, RelearnEventStatus.SHOWING.value)

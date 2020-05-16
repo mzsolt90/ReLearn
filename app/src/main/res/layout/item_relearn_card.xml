@@ -14,14 +14,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            app:contentPadding="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.2"
-            app:contentPadding="16dp">
+            app:layout_constraintVertical_bias="0.2">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/scene"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="120dp">
@@ -44,12 +45,9 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                    app:layout_constraintBottom_toTopOf="@id/source_translation"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.2"
-                    app:layout_constraintVertical_chainStyle="packed"
                     tools:text="влечь" />
 
                 <TextView
@@ -59,40 +57,44 @@
                     android:layout_marginTop="16dp"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
+                    app:layout_constraintVertical_bias="0"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/source_title"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     tools:text="- attract, to draw, to pull, to haul
 - to entail, to bring about - Нея́вка на избира́тельные уча́стки без уважи́тельных причи́н влечёт за собо́й штраф в Люксембурге
 Nejávka na izbirátelʹnyje učástki bez uvažítelʹnyx pričín vlečót za sobój štraf v Ljuksemburge
 Unless a valid reason is given, not attending the polling stations entails a fine in Luxembourg" />
 
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="24dp"
+                    android:alpha="1"
                     android:text="@string/action_button_view"
-                    app:layout_constraintTop_toBottomOf="@id/source_translation"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/button_accept"
-                    android:layout_marginTop="24dp"
-                    app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintHorizontal_bias="1"
-                    android:layout_marginHorizontal="16dp"/>
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/source_translation" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_accept"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:alpha="1"
                     android:text="@string/action_button_accept"
-                    app:layout_constraintTop_toBottomOf="@id/source_translation"
-                    app:layout_constraintStart_toEndOf="@id/button_view"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginTop="24dp"/>
+                    app:layout_constraintStart_toEndOf="@id/button_view"
+                    app:layout_constraintTop_toBottomOf="@id/source_translation" />
 
                 <androidx.constraintlayout.widget.Group
                     android:id="@+id/group_progress"
@@ -101,10 +103,16 @@ Unless a valid reason is given, not attending the polling stations entails a fin
                     app:constraint_referenced_ids="progress" />
 
                 <androidx.constraintlayout.widget.Group
+                    android:id="@+id/group_actions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="button_accept, button_view" />
+
+                <androidx.constraintlayout.widget.Group
                     android:id="@+id/group_loaded"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:constraint_referenced_ids="source_title, source_translation" />
+                    app:constraint_referenced_ids="source_title, source_translation, button_accept, button_view" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>

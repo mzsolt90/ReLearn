@@ -3,6 +3,7 @@ package com.azyoot.relearn.ui.main.relearn
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.azyoot.relearn.di.ui.AdapterScope
+import com.azyoot.relearn.domain.usecase.relearn.AcceptRelearnSourceUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetNextAndShowReLearnUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetNthHistoryReLearnSourceUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetTranslationFromSourceUseCase
@@ -14,6 +15,7 @@ class ReLearnCardViewModel @Inject constructor(
     private val getNextAndShowReLearnUseCase: GetNextAndShowReLearnUseCase,
     private val getNthHistoryReLearnSourceUseCase: GetNthHistoryReLearnSourceUseCase,
     private val getTranslationFromSourceUseCase: GetTranslationFromSourceUseCase,
+    private val acceptRelearnSourceUseCase: AcceptRelearnSourceUseCase,
     @AdapterScope private val coroutineScope: CoroutineScope
 ) {
 
@@ -38,7 +40,7 @@ class ReLearnCardViewModel @Inject constructor(
                 return@launch
             }
             val translation = getTranslationFromSourceUseCase.getTranslationFromSource(source)
-            stateInternal.postValue(ReLearnCardViewState.Finished(translation))
+            stateInternal.postValue(ReLearnCardViewState.FinishedLoading(translation))
         }
     }
 
@@ -52,7 +54,18 @@ class ReLearnCardViewModel @Inject constructor(
                 return@launch
             }
             val translation = getTranslationFromSourceUseCase.getTranslationFromSource(source)
-            stateInternal.postValue(ReLearnCardViewState.Finished(translation))
+            stateInternal.postValue(ReLearnCardViewState.FinishedLoading(translation))
+        }
+    }
+
+    fun acceptReLearn() {
+        val relearn =
+            currentState.let { if (it is ReLearnCardViewState.FinishedLoading) it.reLearnTranslation else return }
+        coroutineScope.launch {
+            stateInternal.postValue(ReLearnCardViewState.Accepting(relearn))
+            val newSource = acceptRelearnSourceUseCase.acceptRelearnUseCase(relearn.source)
+            val translation = getTranslationFromSourceUseCase.getTranslationFromSource(newSource)
+            stateInternal.postValue(ReLearnCardViewState.Accepted(translation))
         }
     }
 }

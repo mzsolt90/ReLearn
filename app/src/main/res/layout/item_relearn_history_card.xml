@@ -22,6 +22,7 @@
             app:contentPadding="16dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/scene"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="120dp">
@@ -44,12 +45,9 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                    app:layout_constraintBottom_toTopOf="@id/source_translation"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.2"
-                    app:layout_constraintVertical_chainStyle="packed"
                     tools:text="влечь" />
 
                 <TextView
@@ -60,7 +58,6 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/source_title"

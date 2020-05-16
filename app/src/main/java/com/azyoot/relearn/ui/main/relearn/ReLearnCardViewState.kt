@@ -6,5 +6,8 @@ sealed class ReLearnCardViewState {
     object Initial : ReLearnCardViewState()
     object Loading : ReLearnCardViewState()
     object NotFound : ReLearnCardViewState()
-    data class Finished(val reLearnTranslation: ReLearnTranslation) : ReLearnCardViewState()
+    abstract class ReLearnTranslationState(val reLearnTranslation: ReLearnTranslation) : ReLearnCardViewState()
+    class Accepting(reLearnTranslation: ReLearnTranslation) : ReLearnTranslationState(reLearnTranslation)
+    class FinishedLoading(reLearnTranslation: ReLearnTranslation) : ReLearnTranslationState(reLearnTranslation)
+    class Accepted(reLearnTranslation: ReLearnTranslation) : ReLearnTranslationState(reLearnTranslation)
 }

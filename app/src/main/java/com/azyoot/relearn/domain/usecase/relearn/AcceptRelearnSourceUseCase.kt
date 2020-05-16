@@ -8,12 +8,14 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
-class AcceptRelearnSourceUseCase @Inject constructor(private val repository: RelearnEventRepository){
+class AcceptRelearnSourceUseCase @Inject constructor(private val repository: RelearnEventRepository) {
 
-    suspend fun acceptRelearnUseCase(source: ReLearnSource) {
-        Timber.d("Accepting relearn for ${source.sourceText}")
+    suspend fun acceptRelearnUseCase(source: ReLearnSource) =
         withContext(Dispatchers.IO) {
-            repository.setLatestReLearnEventForSource(source, RelearnEventStatus.ACCEPTED)
+            Timber.d("Accepting relearn for ${source.sourceText}")
+            return@withContext repository.setLatestReLearnEventForSource(
+                source,
+                RelearnEventStatus.ACCEPTED
+            )
         }
-    }
 }

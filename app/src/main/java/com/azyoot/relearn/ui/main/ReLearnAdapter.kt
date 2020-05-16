@@ -3,10 +3,7 @@ package com.azyoot.relearn.ui.main
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.RecyclerView
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
@@ -17,13 +14,14 @@ import com.azyoot.relearn.ui.main.relearn.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.math.min
 
 sealed class ReLearnAdapterActions {
-    data class LaunchReLearn(val reLearnTranslation: ReLearnTranslation): ReLearnAdapterActions()
+    data class LaunchReLearn(val reLearnTranslation: ReLearnTranslation) : ReLearnAdapterActions()
 }
 
 class ReLearnAdapter(
@@ -37,7 +35,7 @@ class ReLearnAdapter(
 
     private val actionsInternal = MutableLiveData<ReLearnAdapterActions>()
     val actionsLiveData: LiveData<ReLearnAdapterActions>
-    get() = actionsInternal
+        get() = actionsInternal
 
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job)
@@ -53,12 +51,12 @@ class ReLearnAdapter(
 
         Timber.v("Setting up viewmodels")
         repeat(itemCount) {
-            viewModels.add(setupViewModel(it))
+            viewModels.add(setupViewModel(viewModelProvider.get(), it))
         }
     }
 
-    private fun setupViewModel(position: Int) = viewModelProvider.get().apply {
-        stateLiveData.observe(viewLifecycleOwner, Observer {
+    private fun setupViewModel(viewModel: ReLearnCardViewModel, position: Int) = viewModel.also { viewModel ->
+        viewModel.stateLiveData.observe(viewLifecycleOwner, Observer {
             notifyItemChanged(position)
         })
     }
@@ -82,6 +80,13 @@ class ReLearnAdapter(
             else -> throw NotImplementedError("View type is not supported")
         }
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        recyclerView.itemAnimator = null
+    }
+
+    override fun getItemId(position: Int) =
+        viewModels[position].hashCode().toLong()
 
     override fun getItemCount() = min(sourceCount, MAX_HISTORY) + 1
 
@@ -98,31 +103,48 @@ class ReLearnAdapter(
             }
         }
         holder.bind(viewModel.currentState)
-        holder.actionsLiveData.observe(viewLifecycleOwner, Observer {
+        holder.actionsListener = {
             handleAction(it, position)
-        })
-    }
-
-    private fun handleAction(action: ReLearnAction, position: Int){
-        Timber.v("Adapter action $action at position $position")
-        if(!isNextReLearn(position)) return
-        val viewModel = viewModels[position]
-        val state = viewModel.currentState
-        if(state !is ReLearnCardViewState.Finished) return
-
-        when(action){
-            ReLearnAction.ViewReLearn -> launchReLearn(state.reLearnTranslation)
         }
     }
 
-    private fun launchReLearn(relearn: ReLearnTranslation){
+    private fun handleAction(action: ReLearnAction, position: Int) {
+        Timber.v("Adapter action $action at position $position")
+        if (!isNextReLearn(position)) return
+        val viewModel = viewModels[position]
+        val state = viewModel.currentState
+
+        when (action) {
+            ReLearnAction.ViewReLearn -> launchReLearn((state as ReLearnCardViewState.ReLearnTranslationState).reLearnTranslation)
+            ReLearnAction.AcceptReLearn -> acceptReLearn(viewModel, (state as ReLearnCardViewState.ReLearnTranslationState).reLearnTranslation)
+            ReLearnAction.AcceptAnimationFinished -> addNewPageForNextReLearn()
+        }
+    }
+
+    private fun launchReLearn(relearn: ReLearnTranslation) {
         actionsInternal.postValue(ReLearnAdapterActions.LaunchReLearn(relearn))
     }
 
-    override fun onViewRecycled(holder: ReLearnBaseViewHolder) {
-        super.onViewRecycled(holder)
-        Timber.v("Recycling view holder")
-        holder.actionsLiveData.removeObservers(viewLifecycleOwner)
+    private fun acceptReLearn(viewModel: ReLearnCardViewModel, relearn: ReLearnTranslation) {
+        viewModel.acceptReLearn()
+    }
+
+    private fun addNewPageForNextReLearn(){
+        viewModels[0].stateLiveData.removeObservers(viewLifecycleOwner)
+        viewModels.removeAt(0)
+
+        viewModels.forEachIndexed { index, viewModel ->
+            viewModel.stateLiveData.removeObservers(viewLifecycleOwner)
+            setupViewModel(viewModel, index)
+        }
+
+        val newViewModel = setupViewModel(viewModelProvider.get(), itemCount - 1)
+        viewModels.add(newViewModel)
+
+        notifyItemRemoved(0)
+        notifyItemInserted(itemCount)
+
+        newViewModel.loadNextReLearn()
     }
 
     override fun getItemViewType(position: Int) =
@@ -130,8 +152,8 @@ class ReLearnAdapter(
 
     private fun isNextReLearn(position: Int) = position == itemCount - 1
 
-    override fun onViewDetachedFromWindow(holder: ReLearnBaseViewHolder) {
-        super.onViewDetachedFromWindow(holder)
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
         job.cancelChildren()
     }
 
