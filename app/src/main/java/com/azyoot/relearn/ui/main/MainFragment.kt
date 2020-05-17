@@ -18,7 +18,10 @@ import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
 import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import javax.inject.Inject
 
 
@@ -35,17 +38,30 @@ class MainFragment : Fragment() {
     @Inject
     lateinit var relearnLauncher: ReLearnLauncher
 
+    @Inject
+    lateinit var relearnAdapterFactory: ReLearnAdapter.Factory
+
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
     private var viewBinding: FragmentMainBinding? = null
 
+    private val job = Job()
+    private val coroutineScope = CoroutineScope(job)
+
     private val component: MainFragmentSubcomponent by lazy {
-        (context!!.applicationContext as ReLearnApplication).appComponent.mainFragmentSubcomponent()
+        (context!!.applicationContext as ReLearnApplication).appComponent
+            .mainFragmentSubcomponentFactory()
+            .create(coroutineScope)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         component.inject(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.complete()
     }
 
     override fun onCreateView(
@@ -108,8 +124,7 @@ class MainFragment : Fragment() {
     private fun isViewPagerSetup() = viewBinding!!.relearnPager.adapter != null
 
     private fun setupViewPager(viewState: MainViewState.Loaded) {
-        val relearnAdapter =
-            ReLearnAdapter(requireContext(), viewLifecycleOwner, viewState.sourceCount)
+        val relearnAdapter = relearnAdapterFactory.create(viewState.sourceCount)
 
         viewBinding!!.relearnPager.apply {
             adapter = relearnAdapter

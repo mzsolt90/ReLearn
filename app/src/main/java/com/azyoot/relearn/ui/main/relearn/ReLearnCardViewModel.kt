@@ -2,7 +2,6 @@ package com.azyoot.relearn.ui.main.relearn
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.azyoot.relearn.di.ui.AdapterScope
 import com.azyoot.relearn.domain.usecase.relearn.AcceptRelearnSourceUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetNextAndShowReLearnUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetNthHistoryReLearnSourceUseCase
@@ -16,7 +15,7 @@ class ReLearnCardViewModel @Inject constructor(
     private val getNthHistoryReLearnSourceUseCase: GetNthHistoryReLearnSourceUseCase,
     private val getTranslationFromSourceUseCase: GetTranslationFromSourceUseCase,
     private val acceptRelearnSourceUseCase: AcceptRelearnSourceUseCase,
-    @AdapterScope private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope
 ) {
 
     private val stateInternal = MutableLiveData<ReLearnCardViewState>()

@@ -5,6 +5,7 @@ buildscript {
         // App dependencies
         appCompatVersion = '1.1.0'
         assertJVersion = '3.15.0'
+        assistedInjectVersion = '0.5.2'
         browserLibVersion = '1.2.0'
         burstVersion = '1.2.0'
         constraintLayoutVersion = '2.0.0-beta4'

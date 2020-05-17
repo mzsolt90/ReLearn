@@ -4,7 +4,6 @@ import android.content.Context
 import com.azyoot.relearn.di.service.MathModule
 import com.azyoot.relearn.di.service.ServiceSubcomponent
 import com.azyoot.relearn.di.service.WorkerSubcomponent
-import com.azyoot.relearn.di.ui.AdapterSubcomponent
 import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
 import com.azyoot.relearn.service.receiver.ReLearnNotificationActionsReceiver
 import dagger.BindsInstance
@@ -20,9 +19,8 @@ interface ApplicationComponent {
     }
 
     fun serviceSubcomponentBuilder(): ServiceSubcomponent.Builder
-    fun mainFragmentSubcomponent(): MainFragmentSubcomponent
+    fun mainFragmentSubcomponentFactory(): MainFragmentSubcomponent.Factory
     fun workerSubcomponent(): WorkerSubcomponent
-    fun adapterSubcomponentFactory(): AdapterSubcomponent.Factory
 
     fun inject(notificationsReceiver: ReLearnNotificationActionsReceiver)
 }

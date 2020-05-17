@@ -2,24 +2,17 @@ package com.azyoot.relearn.ui.main.relearn
 
 import android.view.View
 import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
-import com.azyoot.relearn.di.ui.AdapterSubcomponent
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.common.ReLearnTranslationFormatter
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import timber.log.Timber
-import javax.inject.Inject
 
-class ReLearnHistoryCardViewHolder(
-    private val viewBinding: ItemRelearnHistoryCardBinding,
-    adapterComponent: AdapterSubcomponent
+class ReLearnHistoryCardViewHolder @AssistedInject constructor(
+    private val reLearnTranslationFormatter: ReLearnTranslationFormatter,
+    @Assisted private val viewBinding: ItemRelearnHistoryCardBinding
 ) :
     ReLearnBaseViewHolder(viewBinding.root) {
-
-    @Inject
-    lateinit var reLearnTranslationFormatter: ReLearnTranslationFormatter
-
-    init {
-        adapterComponent.inject(this)
-    }
 
     override fun bind(state: ReLearnCardViewState) {
         Timber.v("Binding history with state $state")
@@ -41,5 +34,10 @@ class ReLearnHistoryCardViewHolder(
         viewBinding.sourceTitle.text = reLearnTranslation.sourceText
         viewBinding.sourceTranslation.text =
             reLearnTranslationFormatter.formatTranslationTextForNotification(reLearnTranslation)
+    }
+
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(viewBinding: ItemRelearnHistoryCardBinding): ReLearnHistoryCardViewHolder
     }
 }

@@ -9,30 +9,19 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.azyoot.relearn.R
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
-import com.azyoot.relearn.di.ui.AdapterScope
-import com.azyoot.relearn.di.ui.AdapterSubcomponent
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.common.ReLearnTranslationFormatter
-import kotlinx.coroutines.CoroutineScope
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import timber.log.Timber
-import javax.inject.Inject
 
-class ReLearnNextCardViewHolder(
-    private val viewBinding: ItemRelearnCardBinding,
-    adapterComponent: AdapterSubcomponent
+class ReLearnNextCardViewHolder @AssistedInject constructor(
+    private val reLearnTranslationFormatter: ReLearnTranslationFormatter,
+    @Assisted private val viewBinding: ItemRelearnCardBinding
 ) :
     ReLearnBaseViewHolder(viewBinding.root) {
 
-    @Inject
-    lateinit var reLearnTranslationFormatter: ReLearnTranslationFormatter
-
-    @Inject
-    @AdapterScope
-    lateinit var coroutineScope: CoroutineScope
-
     init {
-        adapterComponent.inject(this)
-
         viewBinding.buttonAccept.setOnClickListener {
             actionsListener(ReLearnAction.AcceptReLearn)
         }
@@ -68,7 +57,8 @@ class ReLearnNextCardViewHolder(
     private fun animateOutActions() {
         if (viewBinding.groupActions.visibility != View.VISIBLE) return
 
-        val originalTopMargin = (viewBinding.buttonAccept.layoutParams as ConstraintLayout.LayoutParams).topMargin
+        val originalTopMargin =
+            (viewBinding.buttonAccept.layoutParams as ConstraintLayout.LayoutParams).topMargin
 
         val slideUpPx =
             viewBinding.buttonAccept.height +
@@ -112,14 +102,32 @@ class ReLearnNextCardViewHolder(
                 override fun onAnimationEnd(animation: Animator?) {
                     viewBinding.groupActions.visibility = View.GONE
 
-                    constraintSet.setMargin(R.id.source_translation, ConstraintSet.BOTTOM, originalBottomMargin)
+                    constraintSet.setMargin(
+                        R.id.source_translation,
+                        ConstraintSet.BOTTOM,
+                        originalBottomMargin
+                    )
 
                     constraintSet.setMargin(R.id.button_view, ConstraintSet.TOP, originalTopMargin)
-                    constraintSet.setMargin(R.id.button_accept, ConstraintSet.TOP, originalTopMargin)
+                    constraintSet.setMargin(
+                        R.id.button_accept,
+                        ConstraintSet.TOP,
+                        originalTopMargin
+                    )
                     constraintSet.setAlpha(R.id.button_view, 1F)
                     constraintSet.setAlpha(R.id.button_accept, 1F)
-                    constraintSet.connect(R.id.button_accept, ConstraintSet.TOP, R.id.source_translation, ConstraintSet.BOTTOM)
-                    constraintSet.connect(R.id.button_view, ConstraintSet.TOP, R.id.source_translation, ConstraintSet.BOTTOM)
+                    constraintSet.connect(
+                        R.id.button_accept,
+                        ConstraintSet.TOP,
+                        R.id.source_translation,
+                        ConstraintSet.BOTTOM
+                    )
+                    constraintSet.connect(
+                        R.id.button_view,
+                        ConstraintSet.TOP,
+                        R.id.source_translation,
+                        ConstraintSet.BOTTOM
+                    )
 
                     constraintSet.applyTo(viewBinding.scene)
 
@@ -137,6 +145,11 @@ class ReLearnNextCardViewHolder(
         viewBinding.sourceTitle.text = reLearnTranslation.sourceText
         viewBinding.sourceTranslation.text =
             reLearnTranslationFormatter.formatTranslationTextForNotification(reLearnTranslation)
+    }
+
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(viewBinding: ItemRelearnCardBinding): ReLearnNextCardViewHolder
     }
 
     companion object {

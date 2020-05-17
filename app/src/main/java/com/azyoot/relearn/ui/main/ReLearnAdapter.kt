@@ -5,18 +5,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.RecyclerView
-import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
-import com.azyoot.relearn.di.ui.AdapterSubcomponent
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.main.relearn.*
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.math.min
 
@@ -24,58 +20,56 @@ sealed class ReLearnAdapterActions {
     data class LaunchReLearn(val reLearnTranslation: ReLearnTranslation) : ReLearnAdapterActions()
 }
 
-class ReLearnAdapter(
+class ReLearnAdapter @AssistedInject constructor(
     private val context: Context,
-    private val viewLifecycleOwner: LifecycleOwner,
-    private val sourceCount: Int
-) : RecyclerView.Adapter<ReLearnBaseViewHolder>() {
-
-    @Inject
-    lateinit var viewModelProvider: Provider<ReLearnCardViewModel>
+    private val coroutineScope: CoroutineScope,
+    private val viewModelProvider: Provider<ReLearnCardViewModel>,
+    private val nextReLearnCardFactory: ReLearnNextCardViewHolder.Factory,
+    private val historyReLearnCardFactory: ReLearnHistoryCardViewHolder.Factory,
+    @Assisted private val sourceCount: Int
+) : RecyclerView.Adapter<ReLearnBaseViewHolder>(), LifecycleOwner {
 
     private val actionsInternal = MutableLiveData<ReLearnAdapterActions>()
     val actionsLiveData: LiveData<ReLearnAdapterActions>
         get() = actionsInternal
 
-    private val job = SupervisorJob()
-    private val coroutineScope = CoroutineScope(job)
-    private val component: AdapterSubcomponent = (context.applicationContext as ReLearnApplication)
-        .appComponent
-        .adapterSubcomponentFactory()
-        .create(coroutineScope)
-
     private val viewModels = mutableListOf<ReLearnCardViewModel>()
 
-    init {
-        component.inject(this)
+    private val lifecycleRegistry = LifecycleRegistry(this)
+    override fun getLifecycle() = lifecycleRegistry
 
+    init {
         Timber.v("Setting up viewmodels")
         repeat(itemCount) {
             viewModels.add(setupViewModel(viewModelProvider.get(), it))
         }
+
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
     }
 
-    private fun setupViewModel(viewModel: ReLearnCardViewModel, position: Int) = viewModel.also { viewModel ->
-        viewModel.stateLiveData.observe(viewLifecycleOwner, Observer {
-            notifyItemChanged(position)
-        })
-    }
+    private fun setupViewModel(viewModel: ReLearnCardViewModel, position: Int) =
+        viewModel.also { viewModel ->
+            viewModel.stateLiveData.removeObservers(this)
+            viewModel.stateLiveData.observe(this, Observer {
+                notifyItemChanged(position)
+            })
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         when (viewType) {
-            ITEM_TYPE_NEXT -> ReLearnNextCardViewHolder(
+            ITEM_TYPE_NEXT -> nextReLearnCardFactory.create(
                 ItemRelearnCardBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
-                ), component
+                )
             )
-            ITEM_TYPE_HISTORY -> ReLearnHistoryCardViewHolder(
+            ITEM_TYPE_HISTORY -> historyReLearnCardFactory.create(
                 ItemRelearnHistoryCardBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
-                ), component
+                )
             )
             else -> throw NotImplementedError("View type is not supported")
         }
@@ -83,6 +77,8 @@ class ReLearnAdapter(
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.itemAnimator = null
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
     }
 
     override fun getItemId(position: Int) =
@@ -116,7 +112,10 @@ class ReLearnAdapter(
 
         when (action) {
             ReLearnAction.ViewReLearn -> launchReLearn((state as ReLearnCardViewState.ReLearnTranslationState).reLearnTranslation)
-            ReLearnAction.AcceptReLearn -> acceptReLearn(viewModel, (state as ReLearnCardViewState.ReLearnTranslationState).reLearnTranslation)
+            ReLearnAction.AcceptReLearn -> acceptReLearn(
+                viewModel,
+                (state as ReLearnCardViewState.ReLearnTranslationState).reLearnTranslation
+            )
             ReLearnAction.AcceptAnimationFinished -> addNewPageForNextReLearn()
         }
     }
@@ -129,12 +128,11 @@ class ReLearnAdapter(
         viewModel.acceptReLearn()
     }
 
-    private fun addNewPageForNextReLearn(){
-        viewModels[0].stateLiveData.removeObservers(viewLifecycleOwner)
+    private fun addNewPageForNextReLearn() {
+        viewModels[0].stateLiveData.removeObservers(this)
         viewModels.removeAt(0)
 
         viewModels.forEachIndexed { index, viewModel ->
-            viewModel.stateLiveData.removeObservers(viewLifecycleOwner)
             setupViewModel(viewModel, index)
         }
 
@@ -154,7 +152,13 @@ class ReLearnAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        job.cancelChildren()
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+    }
+
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(sourceCount: Int): ReLearnAdapter
     }
 
     companion object {
