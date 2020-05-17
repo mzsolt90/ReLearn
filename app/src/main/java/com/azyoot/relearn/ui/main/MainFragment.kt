@@ -131,8 +131,13 @@ class MainFragment : Fragment() {
         }
 
         relearnAdapter.actionsLiveData.observe(viewLifecycleOwner, Observer {
-            if (it is ReLearnAdapterActions.LaunchReLearn) {
-                relearnLauncher.launch(it.reLearnTranslation)
+            when (it) {
+                is ReLearnAdapterActions.LaunchReLearn -> {
+                    relearnLauncher.launch(it.reLearnTranslation)
+                }
+                is ReLearnAdapterActions.ShowNextReLearn -> {
+                    viewBinding!!.relearnPager.setCurrentItem(relearnAdapter.itemCount - 1, true)
+                }
             }
         })
     }

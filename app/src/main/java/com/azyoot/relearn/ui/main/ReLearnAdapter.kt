@@ -18,6 +18,7 @@ import kotlin.math.min
 
 sealed class ReLearnAdapterActions {
     data class LaunchReLearn(val reLearnTranslation: ReLearnTranslation) : ReLearnAdapterActions()
+    object ShowNextReLearn : ReLearnAdapterActions()
 }
 
 class ReLearnAdapter @AssistedInject constructor(
@@ -143,6 +144,8 @@ class ReLearnAdapter @AssistedInject constructor(
         notifyItemInserted(itemCount)
 
         newViewModel.loadNextReLearn()
+
+        actionsInternal.postValue(ReLearnAdapterActions.ShowNextReLearn)
     }
 
     override fun getItemViewType(position: Int) =
