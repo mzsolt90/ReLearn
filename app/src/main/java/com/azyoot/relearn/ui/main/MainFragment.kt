@@ -1,6 +1,5 @@
 package com.azyoot.relearn.ui.main
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -18,10 +17,10 @@ import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
 import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import javax.inject.Inject
 
 
@@ -111,7 +110,7 @@ class MainFragment : Fragment() {
     }
 
     private fun showServiceNotEnabledWarning() {
-        AlertDialog.Builder(activity)
+        MaterialAlertDialogBuilder(activity)
             .setMessage(R.string.dialog_enable_accessibility_service)
             .setNegativeButton(android.R.string.no) { _, _ -> }
             .setPositiveButton(android.R.string.ok) { _, _ ->
