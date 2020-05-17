@@ -83,3 +83,4 @@ lint/tmp/
 # lint/reports/
 app/schemas/
 db_backup/
+app/release/output.json

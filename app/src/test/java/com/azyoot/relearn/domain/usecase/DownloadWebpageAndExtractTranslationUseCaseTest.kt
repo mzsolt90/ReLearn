@@ -19,6 +19,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.AdditionalAnswers
 import java.io.IOException
 import java.time.Duration
 import java.time.LocalDateTime
@@ -46,6 +47,9 @@ class DownloadWebpageAndExtractTranslationUseCaseTest {
                 mockExtractUseCase,
                 mockUrlProcessing
             )
+        whenever(mockUrlProcessing.ensureStartsWithHttpsScheme(any())).then(AdditionalAnswers.returnsFirstArg<String>())
+        whenever(mockUrlProcessing.stripFragmentFromUrl(any())).then(AdditionalAnswers.returnsFirstArg<String>())
+        whenever(mockUrlProcessing.isValidUrl(any())).thenReturn(true)
         whenever(
             mockExtractUseCase.extractTranslationsFromWiktionaryPage(
                 any(),
