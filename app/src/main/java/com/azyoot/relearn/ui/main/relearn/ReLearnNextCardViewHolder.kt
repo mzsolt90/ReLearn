@@ -28,6 +28,9 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         viewBinding.buttonView.setOnClickListener {
             actionsListener(ReLearnAction.ViewReLearn)
         }
+        viewBinding.card.setOnClickListener {
+            actionsListener(ReLearnAction.ViewReLearn)
+        }
     }
 
     override fun bind(state: ReLearnCardViewState) {

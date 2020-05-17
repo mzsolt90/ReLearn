@@ -14,6 +14,12 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
 ) :
     ReLearnBaseViewHolder(viewBinding.root) {
 
+    init {
+        viewBinding.card.setOnClickListener {
+            actionsListener(ReLearnAction.ViewReLearn)
+        }
+    }
+
     override fun bind(state: ReLearnCardViewState) {
         Timber.v("Binding history with state $state")
         when (state) {

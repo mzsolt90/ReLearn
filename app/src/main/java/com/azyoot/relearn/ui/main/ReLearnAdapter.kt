@@ -107,7 +107,7 @@ class ReLearnAdapter @AssistedInject constructor(
 
     private fun handleAction(action: ReLearnAction, position: Int) {
         Timber.v("Adapter action $action at position $position")
-        if (!isNextReLearn(position)) return
+
         val viewModel = viewModels[position]
         val state = viewModel.currentState
 
