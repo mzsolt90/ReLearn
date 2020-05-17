@@ -14,6 +14,11 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
+
+        supportActionBar?.apply {
+            setDisplayShowHomeEnabled(true)
+            setIcon(R.drawable.ic_logo)
+        }
     }
 
 }
