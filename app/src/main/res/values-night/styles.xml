@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorSecondary">@color/secondaryLightColor</item>
+        <item name="android:colorBackground">@color/primaryBackgroundColor</item>
+        <item name="colorError">@color/errorColor</item>
+        <item name="android:windowBackground">@color/primaryBackgroundColor</item>
+
+        <item name="colorPrimaryVariant">@color/primaryLightColor</item>
+        <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
+        <item name="colorSurface">@color/secondaryBackgroundColor</item>
+        <item name="colorOnPrimary">@color/primaryTextColor</item>
+        <item name="colorOnSecondary">@color/secondaryColor</item>
+        <item name="colorOnBackground">@color/primaryTextColor</item>
+        
+    </style>
+
+
+</resources>
