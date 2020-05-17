@@ -5,7 +5,6 @@ import android.util.Log
 import com.azyoot.relearn.di.core.ApplicationComponent
 import com.azyoot.relearn.di.core.DaggerApplicationComponent
 import com.crashlytics.android.Crashlytics
-import com.facebook.stetho.Stetho
 import timber.log.Timber
 
 import timber.log.Timber.DebugTree
@@ -17,7 +16,10 @@ class ReLearnApplication : Application() {
         super.onCreate()
 
         appComponent = DaggerApplicationComponent.factory().create(this)
-        Stetho.initializeWithDefaults(this)
+
+        if(BuildConfig.DEBUG) {
+            com.facebook.stetho.Stetho.initializeWithDefaults(this)
+        }
 
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())

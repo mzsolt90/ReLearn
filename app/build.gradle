@@ -83,7 +83,7 @@ dependencies {
     implementation "com.crashlytics.sdk.android:crashlytics:$fabricVersion"
     implementation "com.jakewharton.timber:timber:$timberVersion"
 
-    debugImplementation 'com.facebook.stetho:stetho:1.5.1'
+    implementation 'com.facebook.stetho:stetho:1.5.1'
 
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-android:$mockitoVersion"
