@@ -33,6 +33,8 @@ interface RelearnEventDataHandler {
     suspend fun getSourceFromId(sourceId: Long, sourceType: Int): LatestSourcesView?
 
     suspend fun getNthLatestNotShowingSource(n: Int, showingStatusCode: Int): LatestSourcesView?
+
+    suspend fun reloadSourcesCache()
 }
 
 @Dao
@@ -53,10 +55,15 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
     suspend fun populateSourcesCache()
 
     @Transaction
-    suspend fun reloadSourcesCacheIfNeeded() {
-        if (getCacheSize() >= MIN_CACHE_SIZE) return
+    suspend override fun reloadSourcesCache() {
         clearSourcesCache()
         populateSourcesCache()
+    }
+
+    @Transaction
+    private suspend fun reloadSourcesCacheIfNeeded() {
+        if (getCacheSize() >= MIN_CACHE_SIZE) return
+        reloadSourcesCache()
     }
 
     @Query(

@@ -1,9 +1,6 @@
 package com.azyoot.relearn.di.service
 
-import com.azyoot.relearn.service.worker.AcceptOrSuppressReLearnWorker
-import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
-import com.azyoot.relearn.service.worker.ReLearnWorker
-import com.azyoot.relearn.service.worker.WebpageDownloadWorker
+import com.azyoot.relearn.service.worker.*
 import dagger.Subcomponent
 
 @ServiceScope
@@ -13,4 +10,5 @@ interface WorkerSubcomponent {
     fun inject(worker: CheckAccessibilityServiceWorker)
     fun inject(worker: AcceptOrSuppressReLearnWorker)
     fun inject(worker: ReLearnWorker)
+    fun inject(worker: SyncReLearnsWorker)
 }

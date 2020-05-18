@@ -72,6 +72,8 @@ class RelearnEventRepository @Inject constructor(
         relearnEventDataHandler.getNthLatestNotShowingSource(n, RelearnEventStatus.SHOWING.value)
             ?.let { reLearnSourceMapper.toDomainEntity(it) }
 
+    suspend fun reloadSourcesCache() = relearnEventDataHandler.reloadSourcesCache()
+
     companion object {
         const val SUPPRESSED_DAYS = 30
         const val ACCEPT_DELAY_HOURS = 48

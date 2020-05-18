@@ -40,6 +40,8 @@ class WebpageDownloadWorker(appContext: Context, workerParams: WorkerParameters)
                 Timber.i("Will reschedule webpage download")
                 schedule(applicationContext, RESCHEDULE_SECONDS)
                 return Result.success()
+            } else {
+                SyncReLearnsWorker.schedule(applicationContext)
             }
         } catch (exception: IOException) {
             Timber.e(exception, "Error downloading webpages")
