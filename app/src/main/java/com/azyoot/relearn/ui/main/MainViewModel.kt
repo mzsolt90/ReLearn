@@ -1,23 +1,13 @@
 package com.azyoot.relearn.ui.main
 
 import android.content.Context
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.usecase.relearn.CountReLearnSourcesUseCase
 import com.azyoot.relearn.domain.usecase.relearn.SyncReLearnsUseCase
 import com.azyoot.relearn.service.MonitoringService
-import com.azyoot.relearn.service.worker.ReLearnWorker
 import com.azyoot.relearn.ui.common.BaseAndroidViewModel
 import com.azyoot.relearn.ui.relearn.ReLearnPeriodicScheduler
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @FlowPreview
@@ -41,8 +31,13 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch {
             val count = countReLearnSourcesUseCase.countReLearnSourcesUseCase()
-            withContext(Dispatchers.Main){
-                stateInternal.value = MainViewState.Loaded(count, MonitoringService.isRunning(applicationContext))
+            withContext(Dispatchers.Main) {
+                stateInternal.value =
+                    MainViewState.Loaded(
+                        count,
+                        MonitoringService.isRunning(applicationContext),
+                        getDefaultPage(count)
+                    )
             }
         }
     }
@@ -51,13 +46,27 @@ class MainViewModel @Inject constructor(
         reLearnPeriodicScheduler.schedule()
     }
 
-    fun refresh(){
+    fun refresh() {
         coroutineScope.launch {
             syncReLearnsUseCase.syncReLearns()
             val count = countReLearnSourcesUseCase.countReLearnSourcesUseCase()
-            withContext(Dispatchers.Main){
-                stateInternal.value = MainViewState.Loaded(count, MonitoringService.isRunning(applicationContext))
+            withContext(Dispatchers.Main) {
+                stateInternal.value =
+                    MainViewState.Loaded(
+                        count,
+                        MonitoringService.isRunning(applicationContext),
+                        (currentState as? MainViewState.Loaded)?.page ?: getDefaultPage(count)
+                    )
             }
         }
     }
+
+    fun onPageChanged(page: Int) {
+        currentState.let {
+            if (it !is MainViewState.Loaded) return@let
+            stateInternal.value = it.copy(page = page)
+        }
+    }
+
+    fun getDefaultPage(relearnCount: Int) = relearnCount
 }

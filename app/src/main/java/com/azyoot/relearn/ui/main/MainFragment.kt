@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.widget.ViewPager2
 import com.azyoot.relearn.R
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.FragmentMainBinding
@@ -124,14 +125,30 @@ class MainFragment : Fragment() {
             .show()
     }
 
-    private fun isViewPagerSetup() = viewBinding!!.relearnPager.adapter != null
-
     private fun setupViewPager(viewState: MainViewState.Loaded) {
         val relearnAdapter = relearnAdapterFactory.create(viewState.sourceCount)
 
-        viewBinding!!.relearnPager.apply {
-            adapter = relearnAdapter
-            setCurrentItem(relearnAdapter.itemCount - 1, false)
+        if(viewBinding!!.relearnPager.adapter == null) {
+            viewBinding!!.relearnPager.apply {
+                adapter = relearnAdapter
+                currentItem = viewState.page
+
+                registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        if(position != (viewModel.currentState as? MainViewState.Loaded)?.page) {
+                            viewModel.onPageChanged(position)
+                        }
+                    }
+
+                    override fun onPageScrollStateChanged(state: Int) {
+                        viewBinding?.refresh?.apply {
+                            isEnabled = state == ViewPager2.SCROLL_STATE_IDLE
+                        }
+                    }
+                })
+            }
+        } else {
+            viewBinding!!.relearnPager.adapter!!.notifyDataSetChanged()
         }
 
         relearnAdapter.actionsLiveData.observe(viewLifecycleOwner, Observer {
