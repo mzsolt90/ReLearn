@@ -8,6 +8,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.azyoot.relearn.data.repository.WebpageVisitRepository
 import com.azyoot.relearn.domain.usecase.relearn.CountReLearnSourcesUseCase
+import com.azyoot.relearn.domain.usecase.relearn.SyncReLearnsUseCase
 import com.azyoot.relearn.service.MonitoringService
 import com.azyoot.relearn.service.worker.ReLearnWorker
 import com.azyoot.relearn.ui.common.BaseAndroidViewModel
@@ -24,7 +25,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val applicationContext: Context,
     private val reLearnPeriodicScheduler: ReLearnPeriodicScheduler,
-    private val countReLearnSourcesUseCase: CountReLearnSourcesUseCase
+    private val countReLearnSourcesUseCase: CountReLearnSourcesUseCase,
+    private val syncReLearnsUseCase: SyncReLearnsUseCase
 ) : BaseAndroidViewModel<MainViewState>() {
 
     override val initialState = MainViewState.Initial
@@ -47,5 +49,15 @@ class MainViewModel @Inject constructor(
 
     fun scheduleReLearn() {
         reLearnPeriodicScheduler.schedule()
+    }
+
+    fun refresh(){
+        coroutineScope.launch {
+            syncReLearnsUseCase.syncReLearns()
+            val count = countReLearnSourcesUseCase.countReLearnSourcesUseCase()
+            withContext(Dispatchers.Main){
+                stateInternal.value = MainViewState.Loaded(count, MonitoringService.isRunning(applicationContext))
+            }
+        }
     }
 }

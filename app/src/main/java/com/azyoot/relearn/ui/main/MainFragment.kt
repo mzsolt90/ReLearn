@@ -85,6 +85,10 @@ class MainFragment : Fragment() {
         scheduleAccessibilityServiceCheckWorker()
         scheduleReLearn()
 
+        viewBinding!!.refresh.setOnRefreshListener {
+            viewModel.refresh()
+        }
+
         viewModel.stateLiveData.observe(viewLifecycleOwner, Observer {
             bindState(it)
         })
@@ -97,11 +101,11 @@ class MainFragment : Fragment() {
                 viewBinding!!.relearnPager.visibility = View.GONE
             }
             is MainViewState.Loaded -> {
+                viewBinding!!.refresh.isRefreshing = false
                 viewBinding!!.relearnMainProgress.visibility = View.GONE
                 viewBinding!!.relearnPager.visibility = View.VISIBLE
-                if (!isViewPagerSetup()) {
-                    setupViewPager(viewState)
-                }
+                setupViewPager(viewState)
+
                 if (!viewState.isServiceEnabled) {
                     showServiceNotEnabledWarning()
                 }

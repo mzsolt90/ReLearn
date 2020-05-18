@@ -34,6 +34,7 @@ buildscript {
         recyclerViewVersion = '1.1.0'
         roboelectricVersion = "4.3"
         roomVersion = '2.2.5'
+        swipeRefreshVersion = '1.0.0'
         testExtJunit = '1.1.0'
         timberVersion = '4.7.1'
         viewPagerVersion = '1.0.0'

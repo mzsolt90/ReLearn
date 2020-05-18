@@ -69,6 +69,7 @@ dependencies {
     implementation "androidx.room:room-ktx:$roomVersion"
     implementation "androidx.viewpager2:viewpager2:$viewPagerVersion"
     implementation "androidx.work:work-runtime-ktx:$workVersion"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefreshVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "com.google.code.gson:gson:$gsonVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
