@@ -18,6 +18,7 @@ import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
 import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
+import com.azyoot.relearn.ui.animation.AnimatedTumbleweed
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -100,15 +101,22 @@ class MainFragment : Fragment() {
             is MainViewState.Loading, is MainViewState.Initial -> {
                 viewBinding!!.relearnMainProgress.visibility = View.VISIBLE
                 viewBinding!!.relearnPager.visibility = View.GONE
+                viewBinding!!.emptyImage.visibility = View.GONE
+                viewBinding!!.emptyText.visibility = View.GONE
             }
             is MainViewState.Loaded -> {
                 viewBinding!!.refresh.isRefreshing = false
                 viewBinding!!.relearnMainProgress.visibility = View.GONE
-                viewBinding!!.relearnPager.visibility = View.VISIBLE
-                setupViewPager(viewState)
 
-                if (!viewState.isServiceEnabled) {
-                    showServiceNotEnabledWarning()
+                if(viewState.sourceCount <= 20)   {
+                    showEmptyState(viewState)
+                } else {
+                    viewBinding!!.relearnPager.visibility = View.VISIBLE
+                    setupViewPager(viewState)
+
+                    if (!viewState.isServiceEnabled) {
+                        showServiceNotEnabledWarning()
+                    }
                 }
             }
         }
@@ -125,17 +133,28 @@ class MainFragment : Fragment() {
             .show()
     }
 
+    private fun showEmptyState(viewState: MainViewState.Loaded){
+        viewBinding!!.emptyText.visibility = View.VISIBLE
+        viewBinding!!.relearnPager.visibility = View.GONE
+        viewBinding!!.emptyImage.apply {
+            visibility = View.VISIBLE
+            val anim = AnimatedTumbleweed(context)
+            setImageDrawable(anim)
+            anim.start()
+        }
+    }
+
     private fun setupViewPager(viewState: MainViewState.Loaded) {
         val relearnAdapter = relearnAdapterFactory.create(viewState.sourceCount)
 
-        if(viewBinding!!.relearnPager.adapter == null) {
+        if (viewBinding!!.relearnPager.adapter == null) {
             viewBinding!!.relearnPager.apply {
                 adapter = relearnAdapter
                 currentItem = viewState.page
 
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                     override fun onPageSelected(position: Int) {
-                        if(position != (viewModel.currentState as? MainViewState.Loaded)?.page) {
+                        if (position != (viewModel.currentState as? MainViewState.Loaded)?.page) {
                             viewModel.onPageChanged(position)
                         }
                     }

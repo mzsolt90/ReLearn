@@ -12,7 +12,7 @@
         <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
         <item name="colorSurface">@color/secondaryBackgroundColor</item>
         <item name="colorOnPrimary">@color/primaryTextColor</item>
-        <item name="colorOnSecondary">@color/secondaryColor</item>
+        <item name="colorOnSecondary">@color/secondaryLightColor</item>
         <item name="colorOnBackground">@color/primaryTextColor</item>
         
     </style>

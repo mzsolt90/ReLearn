@@ -1,7 +1,5 @@
 package com.azyoot.relearn.ui.main
 
-import com.azyoot.relearn.domain.entity.SourceRange
-
 sealed class MainViewState {
     object Initial : MainViewState()
     object Loading : MainViewState()

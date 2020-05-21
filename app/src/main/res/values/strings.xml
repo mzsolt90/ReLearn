@@ -10,4 +10,5 @@
     <string name="action_notification_another">Another!</string>
     <string name="action_button_accept">OK</string>
     <string name="action_button_view">View</string>
+    <string name="message_empty">Nothing to learn here yet…</string>
 </resources>
