@@ -107,7 +107,7 @@ class ExtractWiktionaryTranslationUseCaseTest {
             ),
             TranslationTestCase(
                 "перераспределе́ниях", listOf(),
-                "https://en.wiktionary.org/wiki/перераспределениях.html"
+                "https://en.wiktionary.org/wiki/перераспределениях"
             )
         )
     }
