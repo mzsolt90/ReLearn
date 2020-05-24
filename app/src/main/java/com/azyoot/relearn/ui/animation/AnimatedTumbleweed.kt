@@ -26,6 +26,7 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         ContextCompat.getDrawable(context, R.drawable.tumbleweed) as VectorDrawable
     private val groundDrawable =
         ContextCompat.getDrawable(context, R.drawable.half_circle) as VectorDrawable
+    private val backgroundDrawable = ContextCompat.getDrawable(context, R.drawable.tumbleweed_background) as VectorDrawable
 
     private val animatorSet = AnimatorSet()
 
@@ -56,6 +57,13 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         duration = 1500
         repeatCount = ValueAnimator.INFINITE
         repeatMode = ValueAnimator.REVERSE
+    }
+
+    private val backgroundAnimator = ObjectAnimator.ofFloat(0F, 100F).apply {
+        interpolator = LinearInterpolator()
+        duration = 6000
+        repeatCount = ValueAnimator.INFINITE
+        repeatMode = ValueAnimator.RESTART
     }
 
     private val currentTranslationX
@@ -97,17 +105,20 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         )
 
     init {
-        animatorSet.playTogether(rotateAnimator, bounceAnimator, translateXAnimator)
+        animatorSet.playTogether(rotateAnimator, bounceAnimator, translateXAnimator, backgroundAnimator)
         tumbleweedDrawable.bounds =
             Rect(0, 0, tumbleweedDrawable.intrinsicWidth, tumbleweedDrawable.intrinsicHeight)
         groundDrawable.bounds =
             Rect(0, 0, tumbleweedDrawable.intrinsicWidth, tumbleweedDrawable.intrinsicHeight)
+        backgroundDrawable.bounds = getBackgroundBoundsFromTumbleweed()
 
         groundDrawable.alpha = (GROUND_ALPHA * 255).toInt()
+        backgroundDrawable.alpha = (BACKGROUND_ALPHA * 255).toInt()
         bounds = paddedBounds
 
         tumbleweedDrawable.setTint(primaryColor)
         groundDrawable.setTint(secondaryColor)
+        backgroundDrawable.setTint(secondaryColor)
     }
 
     override fun isRunning() = animatorSet.isRunning
@@ -121,9 +132,23 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         animatorSet.pause()
     }
 
-    override fun draw(canvas: Canvas) {
+    private fun drawBackground(canvas: Canvas){
         canvas.save()
 
+        val animatedTranslationX = (backgroundAnimator.animatedValue as Float) * backgroundDrawable.bounds.width() / 100F
+        val heightCorrection = tumbleweedDrawable.bounds.height() * BACKGROUND_CORRECTION
+
+        canvas.translate(paddedBounds.left - animatedTranslationX - backgroundDrawable.bounds.width().toFloat(), paddedBounds.top.toFloat() - heightCorrection)
+        backgroundDrawable.draw(canvas)
+        canvas.translate(backgroundDrawable.bounds.width().toFloat(), 0F)
+        backgroundDrawable.draw(canvas)
+        canvas.translate(backgroundDrawable.bounds.width().toFloat(), 0F)
+        backgroundDrawable.draw(canvas)
+
+        canvas.restore()
+    }
+
+    private fun drawGround(canvas: Canvas){
         canvas.save()
         canvas.translate(
             currentTranslationX,
@@ -139,7 +164,9 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         )
         groundDrawable.draw(canvas)
         canvas.restore()
+    }
 
+    private fun drawTumbleweed(canvas: Canvas){
         canvas.translate(currentTranslationX, currentTranslationY)
         canvas.rotate(
             currentRotation,
@@ -147,10 +174,20 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
             tumbleweedDrawable.bounds.exactCenterY()
         )
         tumbleweedDrawable.draw(canvas)
+    }
+
+    override fun draw(canvas: Canvas) {
+        canvas.save()
+
+        drawBackground(canvas)
+        drawGround(canvas)
+        drawTumbleweed(canvas)
+
+        canvas.restore()
+
         if (isRunning) {
             invalidateSelf()
         }
-        canvas.restore()
     }
 
     override fun getAlpha() = tumbleweedDrawable.alpha
@@ -165,12 +202,22 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         tumbleweedDrawable.colorFilter = colorFilter
     }
 
-    private fun getUnpaddedBounds(rect: Rect) = rect.let {
-        Rect(
-            rect.left + paddingHorizontal,
-            rect.top + paddingVertical,
-            rect.right - paddingHorizontal,
-            rect.bottom - paddingVertical
+    private fun getUnpaddedBounds(rect: Rect) = Rect(
+        rect.left + paddingHorizontal,
+        rect.top + paddingVertical,
+        rect.right - paddingHorizontal,
+        rect.bottom - paddingVertical
+    )
+
+    private fun getBackgroundBoundsFromTumbleweed(): Rect {
+        val xyRatio = backgroundDrawable.intrinsicWidth.toFloat() / backgroundDrawable.intrinsicHeight.toFloat()
+        val height = tumbleweedDrawable.bounds.height() * BACKGROUND_HEIGHT_RATIO
+        val width = height * xyRatio
+        return Rect(
+            tumbleweedDrawable.bounds.left,
+            (tumbleweedDrawable.bounds.bottom - height).toInt(),
+            (tumbleweedDrawable.bounds.left + width).toInt(),
+            tumbleweedDrawable.bounds.bottom
         )
     }
 
@@ -178,18 +225,21 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         bounds ?: return
         tumbleweedDrawable.bounds = getUnpaddedBounds(bounds)
         groundDrawable.bounds = getUnpaddedBounds(bounds)
+        backgroundDrawable.bounds = getBackgroundBoundsFromTumbleweed()
         invalidateSelf()
     }
 
     override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
         tumbleweedDrawable.bounds = getUnpaddedBounds(Rect(left, top, right, bottom))
         groundDrawable.bounds = getUnpaddedBounds(Rect(left, top, right, bottom))
+        backgroundDrawable.bounds = getBackgroundBoundsFromTumbleweed()
         invalidateSelf()
     }
 
     override fun setBounds(bounds: Rect) {
         tumbleweedDrawable.bounds = getUnpaddedBounds(bounds)
         groundDrawable.bounds = getUnpaddedBounds(bounds)
+        backgroundDrawable.bounds = getBackgroundBoundsFromTumbleweed()
         invalidateSelf()
     }
 
@@ -213,6 +263,7 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         super.setHotspotBounds(left, top, right, bottom)
         tumbleweedDrawable.setHotspotBounds(left, top, right, bottom)
         groundDrawable.setHotspotBounds(left, top, right, bottom)
+        backgroundDrawable.setHotspotBounds(left, top, right, bottom)
     }
 
     override fun getDirtyBounds(): Rect {
@@ -221,10 +272,16 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
 
     companion object {
         private const val BOUNCE_HEIGHT_FACTOR = 0.6F
+
         private const val GROUND_SCALE_FACTOR = 0.3F
         private const val GROUND_SCALE_MIN = 0.2F
         private const val GROUND_CORRECTION = 0.1F
         private const val GROUND_ALPHA = 0.7F
-        private const val TRANSLATE_X_RATIO = 0.2F
+
+        private const val BACKGROUND_ALPHA = 0.5F
+        private const val BACKGROUND_HEIGHT_RATIO = 0.3F
+        private const val BACKGROUND_CORRECTION = 0.4F
+
+        private const val TRANSLATE_X_RATIO = 0.3F
     }
 }
