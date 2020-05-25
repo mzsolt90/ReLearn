@@ -11,6 +11,7 @@ import com.azyoot.relearn.domain.entity.SourceType
 import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.AcceptOrSuppressReLearnWorker
 import com.azyoot.relearn.service.worker.ReLearnWorker
+import com.azyoot.relearn.ui.main.MainActivity
 import com.azyoot.relearn.ui.notification.ID_RELEARN
 import javax.inject.Inject
 
@@ -32,21 +33,18 @@ class ReLearnNotificationActionsReceiver : BroadcastReceiver() {
 
         when (actionType) {
             TYPE_LAUNCH -> {
-                val url = intent.getStringExtra(EXTRA_LAUNCH_URL) ?: ""
-                if (url.isEmpty().not()) {
-                    reLearnLauncher.launchUrl(url)
-                }
-                val text = intent.getStringExtra(EXTRA_TRANSLATE_TEXT) ?: ""
-                if (text.isEmpty().not()) {
-                    reLearnLauncher.launchTranslation(text)
-                }
-
-                scheduleAccept(context, sourceId, sourceType)
+                launchReLearn(context)
             }
             TYPE_ACCEPT -> scheduleAccept(context, sourceId, sourceType)
             TYPE_SUPPRESS -> scheduleSuppress(context, sourceId, sourceType)
             TYPE_ANOTHER -> scheduleAnother(context, sourceId, sourceType)
         }
+    }
+
+    private fun launchReLearn(context: Context){
+        val intent = Intent(context, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 
     private fun dismissNotification(context: Context) {

@@ -87,20 +87,6 @@ class ReLearnNotificationBuilder @Inject constructor(
             RELEARN_LAUNCH
         )
 
-    private fun getAcceptPendingIntent(reLearnTranslation: ReLearnTranslation) =
-        getPendingIntentForAction(
-            reLearnTranslation,
-            ReLearnNotificationActionsReceiver.TYPE_ACCEPT,
-            RELEARN_ACCEPT
-        )
-
-    private fun getSuppressPendingIntent(reLearnTranslation: ReLearnTranslation) =
-        getPendingIntentForAction(
-            reLearnTranslation,
-            ReLearnNotificationActionsReceiver.TYPE_SUPPRESS,
-            RELEARN_SUPPRESS
-        )
-
     private fun getAnotherPendingIntent(reLearnTranslation: ReLearnTranslation) =
         getPendingIntentForAction(
             reLearnTranslation,
@@ -112,8 +98,6 @@ class ReLearnNotificationBuilder @Inject constructor(
         ensureChannelCreated(context)
 
         val pendingLaunchIntent = getLaunchPendingIntent(reLearnTranslation)
-        val pendingAcceptIntent = getAcceptPendingIntent(reLearnTranslation)
-        val pendingSuppressIntent = getSuppressPendingIntent(reLearnTranslation)
         val pendingAnotherIntent = getAnotherPendingIntent(reLearnTranslation)
 
         val builder = NotificationCompat.Builder(
@@ -135,22 +119,7 @@ class ReLearnNotificationBuilder @Inject constructor(
                     pendingAnotherIntent
                 )
             )
-            .addAction(
-                NotificationCompat.Action(
-                    null,
-                    context.resources.getString(R.string.action_notification_dismiss),
-                    pendingAcceptIntent
-                )
-            )
-            .addAction(
-                NotificationCompat.Action(
-                    null,
-                    context.resources.getString(R.string.action_notification_suppress),
-                    pendingSuppressIntent
-                )
-            )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setAutoCancel(true)
             .setContentIntent(pendingLaunchIntent)
 
         NotificationManagerCompat.from(context).notify(ID_RELEARN, builder.build())

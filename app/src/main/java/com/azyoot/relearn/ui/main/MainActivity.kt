@@ -1,5 +1,6 @@
 package com.azyoot.relearn.ui.main
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.azyoot.relearn.R
@@ -19,6 +20,14 @@ class MainActivity : AppCompatActivity() {
             setDisplayShowHomeEnabled(true)
             setIcon(R.drawable.ic_logo)
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, MainFragment.newInstance())
+            .commitNow()
     }
 
 }
