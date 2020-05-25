@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.*
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.di.service.WorkerSubcomponent
+import com.azyoot.relearn.domain.config.MIN_SOURCES_COUNT
 import com.azyoot.relearn.domain.usecase.relearn.CountReLearnSourcesUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetNextAndShowReLearnUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetTranslationFromSourceUseCase
@@ -68,7 +69,6 @@ class ReLearnWorker(appContext: Context, params: WorkerParameters) : CoroutineWo
     }
 
     companion object {
-        private const val MIN_SOURCES_COUNT = 20
         private const val NAME = "ReLearnWorker"
 
         fun run(context: Context) {

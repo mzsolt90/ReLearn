@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import androidx.recyclerview.widget.RecyclerView
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
+import com.azyoot.relearn.domain.config.MAX_HISTORY
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.main.relearn.*
 import com.squareup.inject.assisted.Assisted
@@ -165,8 +166,6 @@ class ReLearnAdapter @AssistedInject constructor(
     }
 
     companion object {
-        const val MAX_HISTORY = 10
-
         private const val ITEM_TYPE_HISTORY = 1
         private const val ITEM_TYPE_NEXT = 2
     }

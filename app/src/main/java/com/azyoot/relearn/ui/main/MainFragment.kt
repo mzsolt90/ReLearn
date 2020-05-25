@@ -15,6 +15,7 @@ import com.azyoot.relearn.R
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.FragmentMainBinding
 import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
+import com.azyoot.relearn.domain.config.MIN_SOURCES_COUNT
 import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
@@ -108,7 +109,7 @@ class MainFragment : Fragment() {
                 viewBinding!!.refresh.isRefreshing = false
                 viewBinding!!.relearnMainProgress.visibility = View.GONE
 
-                if(viewState.sourceCount <= 20)   {
+                if(viewState.sourceCount <= MIN_SOURCES_COUNT)   {
                     showEmptyState(viewState)
                 } else {
                     viewBinding!!.relearnPager.visibility = View.VISIBLE
