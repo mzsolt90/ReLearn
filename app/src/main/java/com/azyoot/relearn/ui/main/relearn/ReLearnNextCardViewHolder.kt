@@ -25,9 +25,6 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         viewBinding.buttonAccept.setOnClickListener {
             actionsListener(ReLearnAction.AcceptReLearn)
         }
-        viewBinding.buttonView.setOnClickListener {
-            actionsListener(ReLearnAction.ViewReLearn)
-        }
         viewBinding.card.setOnClickListener {
             actionsListener(ReLearnAction.ViewReLearn)
         }
@@ -82,7 +79,6 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         val constraintSet = ConstraintSet()
         constraintSet.clone(viewBinding.scene)
         constraintSet.clear(R.id.button_accept, ConstraintSet.TOP)
-        constraintSet.clear(R.id.button_view, ConstraintSet.TOP)
         constraintSet.applyTo(viewBinding.scene)
 
         val fade = ObjectAnimator.ofFloat(1F, 0F)
@@ -90,7 +86,6 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
                 duration = (TRANSITION_DURATION_MS / 2).toLong()
                 addUpdateListener {
                     viewBinding.buttonAccept.alpha = it.animatedValue as Float
-                    viewBinding.buttonView.alpha = it.animatedValue as Float
                 }
             }
 
@@ -111,22 +106,14 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
                         originalBottomMargin
                     )
 
-                    constraintSet.setMargin(R.id.button_view, ConstraintSet.TOP, originalTopMargin)
                     constraintSet.setMargin(
                         R.id.button_accept,
                         ConstraintSet.TOP,
                         originalTopMargin
                     )
-                    constraintSet.setAlpha(R.id.button_view, 1F)
                     constraintSet.setAlpha(R.id.button_accept, 1F)
                     constraintSet.connect(
                         R.id.button_accept,
-                        ConstraintSet.TOP,
-                        R.id.source_translation,
-                        ConstraintSet.BOTTOM
-                    )
-                    constraintSet.connect(
-                        R.id.button_view,
                         ConstraintSet.TOP,
                         R.id.source_translation,
                         ConstraintSet.BOTTOM
