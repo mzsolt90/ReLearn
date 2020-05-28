@@ -21,7 +21,8 @@ object DataModule {
                 AddRelearnEventMigration(),
                 AddLatestSourcesViewMigration(),
                 UpdateLatestSourcesViewMigration(),
-                BumpParseVersionToRefreshWebpageTranslationsMigration()
+                BumpParseVersionToRefreshWebpageTranslationsMigration(),
+                NoMultipleWebpageVisitsForSameUrlMigration()
             ).build()
 
     @Provides

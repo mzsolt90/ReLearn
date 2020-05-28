@@ -3,7 +3,7 @@ package com.azyoot.relearn.util
 import android.net.Uri
 import javax.inject.Inject
 
-class UrlProcessing @Inject constructor(){
+class UrlProcessing @Inject constructor() {
     fun stripFragmentFromUrl(string: String) = Uri.parse(string)
         .buildUpon()
         .fragment("")
@@ -11,9 +11,19 @@ class UrlProcessing @Inject constructor(){
         .toString()
 
     fun ensureStartsWithHttpsScheme(string: String) = string.let {
-        if(it.startsWith("https")) it
-        else if(it.startsWith("http")) it.replace("http", "https")
+        if (it.startsWith("https")) it
+        else if (it.startsWith("http")) it.replace("http", "https")
         else "https://$it"
+    }
+
+    fun removeScheme(string: String) = try {
+        Uri.parse(string).buildUpon()
+            .scheme("")
+            .build()
+            .toString()
+            .replace(Regex(":(//)?"), "")
+    } catch (ex: IllegalArgumentException) {
+        string
     }
 
     fun isValidUrl(string: String) = try {

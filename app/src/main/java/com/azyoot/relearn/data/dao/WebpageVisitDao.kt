@@ -25,6 +25,10 @@ interface WebpageVisitDao {
     @Query("SELECT COUNT(*) FROM webpage_visit WHERE last_parse_version < :parseVersion")
     suspend fun getUnparsedWebpageVisitCount(parseVersion: Int = PARSE_VERSION): Int
 
-    @Query("SELECT * FROM webpage_visit WHERE url LIKE :url ORDER BY timestamp DESC")
+    @Query("SELECT * FROM webpage_visit WHERE url LIKE :url LIMIT 1")
     suspend fun getLastWebpageVisitByUrl(url: String): WebpageVisit?
+
+    @Query("""UPDATE webpage_visit SET timestamp = :timestamp
+            WHERE id = :id""")
+    suspend fun updateWebpageVisitUrlTimestamp(id: Int, timestamp: Long)
 }
