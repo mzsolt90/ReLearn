@@ -23,4 +23,8 @@
         <item name="strokeWidth">1dp</item>
     </style>
 
+    <style name="Widget.App.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/primaryColor</item>
+    </style>
+
 </resources>

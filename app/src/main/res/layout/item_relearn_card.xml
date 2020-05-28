@@ -76,7 +76,7 @@ Unless a valid reason is given, not attending the polling stations entails a fin
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:alpha="1"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    style="@style/Widget.App.TextButton"
                     android:text="@string/action_button_another"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -98,7 +98,7 @@ Unless a valid reason is given, not attending the polling stations entails a fin
                     android:id="@+id/group_loaded"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:constraint_referenced_ids="source_title, source_translation, button_accept, button_view" />
+                    app:constraint_referenced_ids="source_title, source_translation, button_accept" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>

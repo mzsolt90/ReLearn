@@ -14,8 +14,12 @@
         <item name="colorOnPrimary">@color/primaryTextColor</item>
         <item name="colorOnSecondary">@color/secondaryLightColor</item>
         <item name="colorOnBackground">@color/primaryTextColor</item>
-        
+        <item name="colorOnSurface">@color/primaryTextColor</item>
     </style>
 
+
+    <style name="Widget.App.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
 
 </resources>
