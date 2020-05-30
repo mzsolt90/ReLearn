@@ -97,6 +97,13 @@ class MainFragment : Fragment() {
         })
     }
 
+    private fun isAlreadyBound(viewState: MainViewState.Loaded): Boolean{
+        val adapter = viewBinding!!.relearnPager.adapter
+        if(adapter !is ReLearnAdapter) return false
+        if(adapter.itemCount > viewState.sourceCount) return false
+        return viewBinding!!.relearnPager.currentItem == viewState.page
+    }
+
     private fun bindState(viewState: MainViewState) {
         when (viewState) {
             is MainViewState.Loading, is MainViewState.Initial -> {
@@ -108,10 +115,12 @@ class MainFragment : Fragment() {
             is MainViewState.Loaded -> {
                 viewBinding!!.refresh.isRefreshing = false
                 viewBinding!!.relearnMainProgress.visibility = View.GONE
+                viewBinding!!.emptyImage.visibility = View.GONE
+                viewBinding!!.emptyText.visibility = View.GONE
 
                 if(viewState.sourceCount <= MIN_SOURCES_COUNT)   {
                     showEmptyState(viewState)
-                } else {
+                } else if(!isAlreadyBound(viewState)) {
                     viewBinding!!.relearnPager.visibility = View.VISIBLE
                     setupViewPager(viewState)
 
