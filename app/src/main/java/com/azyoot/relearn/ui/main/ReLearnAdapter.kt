@@ -78,7 +78,6 @@ class ReLearnAdapter @AssistedInject constructor(
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        recyclerView.itemAnimator = null
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
     }
@@ -119,7 +118,11 @@ class ReLearnAdapter @AssistedInject constructor(
                 viewModel,
                 (state as ReLearnCardViewState.ReLearnTranslationState).reLearnTranslation
             )
-            ReLearnAction.AcceptAnimationFinished -> addNewPageForNextReLearn()
+            ReLearnAction.AcceptAnimationFinished ->  {
+                //remove last item in history as it would be limit+1.
+                removeLastHistoryPage()
+                addNewPageForNextReLearn()
+            }
             ReLearnAction.DeleteReLearn -> deleteReLearn(viewModel, relearn!!, position)
         }
     }
@@ -133,19 +136,24 @@ class ReLearnAdapter @AssistedInject constructor(
     }
 
     private fun deleteReLearn(viewModel: ReLearnCardViewModel, relearn: ReLearnTranslation, position: Int) {
-        //set deleted flag in db
+        //remove viewmodel holding the deleted data, don't bind the deleting state
+        viewModel.stateLiveData.removeObservers(this)
+        viewModels.removeAt(position)
+
+        //do the delete
         viewModel.deleteReLearn()
 
+        notifyItemRemoved(position)
+
         if(isNextReLearn(position)){
+            //reindex other viewmodels, no need to reload their data
+            reindexViewModels()
+            
             addNewPageForNextReLearn()
             return
         }
 
-        //remove viewmodel holding the deleted data
-        viewModels[position].stateLiveData.removeObservers(this)
-        viewModels.removeAt(position)
-
-        //add new viewmodel at the end as we can now load one more in history
+        //add new viewmodel at the beginning as we can now load one more in history
         val newViewModel = setupViewModel(viewModelProvider.get(), 0)
         viewModels.add(0, newViewModel)
 
@@ -153,7 +161,6 @@ class ReLearnAdapter @AssistedInject constructor(
         reindexViewModels()
 
         //signal recyclerview
-        notifyItemRemoved(position)
         notifyItemInserted(0)
     }
 
@@ -163,20 +170,22 @@ class ReLearnAdapter @AssistedInject constructor(
         }
     }
 
-    private fun addNewPageForNextReLearn() {
-        //remove last item in history as it would be limit+1.
+    private fun removeLastHistoryPage(){
         viewModels[0].stateLiveData.removeObservers(this)
         viewModels.removeAt(0)
 
         //reindex viewmodels, but no need to reload their data
         reindexViewModels()
 
+        notifyItemRemoved(0)
+    }
+
+    private fun addNewPageForNextReLearn() {
         //add viewmodel for next relearn
         val newViewModel = setupViewModel(viewModelProvider.get(), itemCount - 1)
         viewModels.add(newViewModel)
 
         //signal recyclerview
-        notifyItemRemoved(0)
         notifyItemInserted(itemCount)
 
         //actually load next relearn's data

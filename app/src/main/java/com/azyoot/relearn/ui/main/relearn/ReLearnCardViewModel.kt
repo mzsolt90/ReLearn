@@ -70,9 +70,9 @@ class ReLearnCardViewModel @Inject constructor(
         val relearn =
             currentState.let { if (it is ReLearnCardViewState.FinishedLoading) it.reLearnTranslation else return }
         coroutineScope.launch {
-            stateInternal.postValue(ReLearnCardViewState.Deleting(relearn))
+            //this viewmodel can now be reused
+            stateInternal.postValue(ReLearnCardViewState.Initial)
             setReLearnDeletedUseCase.setReLearnDeleted(relearn.source, true)
-            stateInternal.postValue(ReLearnCardViewState.Deleted(relearn))
         }
     }
 }

@@ -10,7 +10,4 @@ sealed class ReLearnCardViewState {
     class Accepting(reLearnTranslation: ReLearnTranslation) : ReLearnTranslationState(reLearnTranslation)
     class FinishedLoading(reLearnTranslation: ReLearnTranslation) : ReLearnTranslationState(reLearnTranslation)
     class Accepted(reLearnTranslation: ReLearnTranslation) : ReLearnTranslationState(reLearnTranslation)
-
-    class Deleting(reLearnTranslation: ReLearnTranslation) : ReLearnTranslationState(reLearnTranslation)
-    class Deleted(reLearnTranslation: ReLearnTranslation) : ReLearnTranslationState(reLearnTranslation)
 }

@@ -90,7 +90,7 @@ Unless a valid reason is given, not attending the polling stations entails a fin
                     android:id="@+id/group_loaded"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:constraint_referenced_ids="source_title, source_translation" />
+                    app:constraint_referenced_ids="source_title, source_translation, button_delete" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
