@@ -60,19 +60,23 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
     private fun animateOutActions() {
         if (viewBinding.groupActions.visibility != View.VISIBLE) return
 
-        val originalTopMargin =
+        val originalButtonTopMargin =
             (viewBinding.buttonAccept.layoutParams as ConstraintLayout.LayoutParams).topMargin
 
         val slideUpPx =
             viewBinding.buttonAccept.height +
-                    (viewBinding.buttonAccept.layoutParams as ConstraintLayout.LayoutParams).topMargin
-        (viewBinding.buttonAccept.layoutParams as ConstraintLayout.LayoutParams).bottomMargin
+                    originalButtonTopMargin +
+                    (viewBinding.buttonAccept.layoutParams as ConstraintLayout.LayoutParams).bottomMargin
+        //we're going to compensate for the minimum height of the scene and the new state will not
+        //scroll up the entire height of the hidden view
         val originalHeightOverflow =
             viewBinding.scene.height - viewBinding.scene.minHeight
         val animationHeightCorrectionRatio = if (originalHeightOverflow < slideUpPx) {
             1F / (1F + (slideUpPx - originalHeightOverflow) / slideUpPx)
         } else 1F
 
+        //we're going to animate the bottom margin of the remaining view (the translation text)
+        //first we need to initialize it
         val translationLayoutParams =
             viewBinding.sourceTranslation.layoutParams as ConstraintLayout.LayoutParams
         val originalBottomMargin = translationLayoutParams.bottomMargin
@@ -81,7 +85,9 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
 
         val constraintSet = ConstraintSet()
         constraintSet.clone(viewBinding.scene)
+        //this will detach the buttons from the translation so it no longer prevents the card from collapsing
         constraintSet.clear(R.id.button_accept, ConstraintSet.TOP)
+        constraintSet.clear(R.id.button_delete, ConstraintSet.TOP)
         constraintSet.applyTo(viewBinding.scene)
 
         val fade = ObjectAnimator.ofFloat(1F, 0F)
@@ -89,6 +95,7 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
                 duration = (TRANSITION_DURATION_MS / 2).toLong()
                 addUpdateListener {
                     viewBinding.buttonAccept.alpha = it.animatedValue as Float
+                    viewBinding.buttonDelete.alpha = it.animatedValue as Float
                 }
             }
 
@@ -101,29 +108,7 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
             }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
-                    viewBinding.groupActions.visibility = View.GONE
-
-                    constraintSet.setMargin(
-                        R.id.source_translation,
-                        ConstraintSet.BOTTOM,
-                        originalBottomMargin
-                    )
-
-                    constraintSet.setMargin(
-                        R.id.button_accept,
-                        ConstraintSet.TOP,
-                        originalTopMargin
-                    )
-                    constraintSet.setAlpha(R.id.button_accept, 1F)
-                    constraintSet.connect(
-                        R.id.button_accept,
-                        ConstraintSet.TOP,
-                        R.id.source_translation,
-                        ConstraintSet.BOTTOM
-                    )
-
-                    constraintSet.applyTo(viewBinding.scene)
-
+                    setConstraintsAfterAcceptAnimation(constraintSet, originalButtonTopMargin, originalBottomMargin)
                     actionsListener(ReLearnAction.AcceptAnimationFinished)
                 }
             })
@@ -132,6 +117,37 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         val set = AnimatorSet()
         set.playSequentially(fade, move)
         set.start()
+    }
+
+    private fun connectButtonToTranslationAndSetAlpha(constraintSet: ConstraintSet, buttonId: Int, originalTopMargin: Int){
+        constraintSet.setMargin(
+            buttonId,
+            ConstraintSet.TOP,
+            originalTopMargin
+        )
+        constraintSet.setAlpha(buttonId, 1F)
+        constraintSet.connect(
+            buttonId,
+            ConstraintSet.TOP,
+            R.id.source_translation,
+            ConstraintSet.BOTTOM
+        )
+    }
+
+    private fun setConstraintsAfterAcceptAnimation(constraintSet: ConstraintSet, originalTopMargin: Int, originalBottomMargin: Int){
+        viewBinding.groupActions.visibility = View.GONE
+
+        constraintSet.setMargin(
+            R.id.source_translation,
+            ConstraintSet.BOTTOM,
+            originalBottomMargin
+        )
+
+       connectButtonToTranslationAndSetAlpha(constraintSet, R.id.button_accept, originalTopMargin)
+       connectButtonToTranslationAndSetAlpha(constraintSet, R.id.button_delete, originalTopMargin)
+
+        constraintSet.applyTo(viewBinding.scene)
+
     }
 
     private fun bindTranslationData(reLearnTranslation: ReLearnTranslation) {
