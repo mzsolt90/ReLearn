@@ -111,14 +111,16 @@ class ReLearnAdapter @AssistedInject constructor(
 
         val viewModel = viewModels[position]
         val state = viewModel.currentState
+        val relearn = (state as? ReLearnCardViewState.ReLearnTranslationState)?.reLearnTranslation
 
         when (action) {
-            ReLearnAction.ViewReLearn -> launchReLearn((state as ReLearnCardViewState.ReLearnTranslationState).reLearnTranslation)
+            ReLearnAction.ViewReLearn -> launchReLearn(relearn!!)
             ReLearnAction.AcceptReLearn -> acceptReLearn(
                 viewModel,
                 (state as ReLearnCardViewState.ReLearnTranslationState).reLearnTranslation
             )
             ReLearnAction.AcceptAnimationFinished -> addNewPageForNextReLearn()
+            ReLearnAction.DeleteReLearn -> deleteReLearn(viewModel, relearn!!, position)
         }
     }
 
@@ -130,22 +132,57 @@ class ReLearnAdapter @AssistedInject constructor(
         viewModel.acceptReLearn()
     }
 
-    private fun addNewPageForNextReLearn() {
-        viewModels[0].stateLiveData.removeObservers(this)
-        viewModels.removeAt(0)
+    private fun deleteReLearn(viewModel: ReLearnCardViewModel, relearn: ReLearnTranslation, position: Int) {
+        //set deleted flag in db
+        viewModel.deleteReLearn()
 
+        if(isNextReLearn(position)){
+            addNewPageForNextReLearn()
+            return
+        }
+
+        //remove viewmodel holding the deleted data
+        viewModels[position].stateLiveData.removeObservers(this)
+        viewModels.removeAt(position)
+
+        //add new viewmodel at the end as we can now load one more in history
+        val newViewModel = setupViewModel(viewModelProvider.get(), 0)
+        viewModels.add(0, newViewModel)
+
+        //reindex other viewmodels, no need to reload their data
+        reindexViewModels()
+
+        //signal recyclerview
+        notifyItemRemoved(position)
+        notifyItemInserted(0)
+    }
+
+    private fun reindexViewModels() {
         viewModels.forEachIndexed { index, viewModel ->
             setupViewModel(viewModel, index)
         }
+    }
 
+    private fun addNewPageForNextReLearn() {
+        //remove last item in history as it would be limit+1.
+        viewModels[0].stateLiveData.removeObservers(this)
+        viewModels.removeAt(0)
+
+        //reindex viewmodels, but no need to reload their data
+        reindexViewModels()
+
+        //add viewmodel for next relearn
         val newViewModel = setupViewModel(viewModelProvider.get(), itemCount - 1)
         viewModels.add(newViewModel)
 
+        //signal recyclerview
         notifyItemRemoved(0)
         notifyItemInserted(itemCount)
 
+        //actually load next relearn's data
         newViewModel.loadNextReLearn()
 
+        //signal host to scroll
         actionsInternal.postValue(ReLearnAdapterActions.ShowNextReLearn)
     }
 

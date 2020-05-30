@@ -7,6 +7,7 @@ sealed class ReLearnAction {
     object AcceptReLearn : ReLearnAction()
     object ViewReLearn : ReLearnAction()
     object AcceptAnimationFinished : ReLearnAction()
+    object DeleteReLearn : ReLearnAction()
 }
 
 abstract class ReLearnBaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

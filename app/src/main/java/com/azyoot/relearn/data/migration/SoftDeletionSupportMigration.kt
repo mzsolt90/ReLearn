@@ -1,13 +1,19 @@
-package com.azyoot.relearn.data.entity
+package com.azyoot.relearn.data.migration
 
-import androidx.room.ColumnInfo
-import androidx.room.DatabaseView
-import androidx.room.Embedded
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.azyoot.relearn.data.entity.ENTITY_TYPE_TRANSLATION
+import com.azyoot.relearn.data.entity.ENTITY_TYPE_WEBPAGE
+import com.azyoot.relearn.data.entity.PARSE_VERSION
 
-const val ENTITY_TYPE_WEBPAGE = 1
-const val ENTITY_TYPE_TRANSLATION = 2
+class SoftDeletionSupportMigration : Migration(10, 11) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE relearn_event ADD COLUMN `deleted` INTEGER NOT NULL DEFAULT 0")
+        database.execSQL("ALTER TABLE webpage_visit ADD COLUMN `deleted` INTEGER NOT NULL DEFAULT 0")
+        database.execSQL("ALTER TABLE translation_event ADD COLUMN `deleted` INTEGER NOT NULL DEFAULT 0")
 
-@DatabaseView("""SELECT
+        database.execSQL("DROP VIEW LatestSourcesView")
+        database.execSQL("""CREATE VIEW `LatestSourcesView` AS SELECT
      latest_visits.source AS source_text,
      latest_visits.latest_webpage_timestamp AS latest_source_timestamp,
      latest_visits.webpage_visit_id AS latest_source_id,
@@ -85,14 +91,6 @@ const val ENTITY_TYPE_TRANSLATION = 2
      LEFT JOIN relearn_event ON relearn_event.translation_event_id = latest_translation_events.translation_event_id
 		AND relearn_event.timestamp = latest_translation_events.latest_relearn_timestamp
 	 INNER JOIN translation_event ON translation_event.id = latest_translation_events.translation_event_id""")
-data class LatestSourcesView(
-    @ColumnInfo(name = "source_text") val sourceText : String,
-    @ColumnInfo(name = "latest_source_timestamp") val latestSourceTimestamp : Long,
-    @ColumnInfo(name = "latest_source_id") val latestSourceId : Long,
-    @ColumnInfo(name = "latest_relearn_timestamp") val latestReLearnTimestamp : Long?,
-    @ColumnInfo(name = "latest_relearn_status") val latestRelearnStatus : Int?,
-    @ColumnInfo(name = "latest_timestamp") val latestTimestamp : Long,
-    @ColumnInfo(name = "source_type") val sourceType : Int,
-    @Embedded(prefix = "webpage_visit_") val webpageVisit: WebpageVisit?,
-    @Embedded(prefix = "translation_event_") val translationEvent: TranslationEvent?
-)
+    }
+
+}

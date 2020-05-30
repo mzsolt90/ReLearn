@@ -22,7 +22,8 @@ object DataModule {
                 AddLatestSourcesViewMigration(),
                 UpdateLatestSourcesViewMigration(),
                 BumpParseVersionToRefreshWebpageTranslationsMigration(),
-                NoMultipleWebpageVisitsForSameUrlMigration()
+                NoMultipleWebpageVisitsForSameUrlMigration(),
+                SoftDeletionSupportMigration()
             ).build()
 
     @Provides

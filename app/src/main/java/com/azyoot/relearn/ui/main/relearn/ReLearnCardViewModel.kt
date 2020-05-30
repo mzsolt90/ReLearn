@@ -2,10 +2,7 @@ package com.azyoot.relearn.ui.main.relearn
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.azyoot.relearn.domain.usecase.relearn.AcceptRelearnSourceUseCase
-import com.azyoot.relearn.domain.usecase.relearn.GetNextAndShowReLearnUseCase
-import com.azyoot.relearn.domain.usecase.relearn.GetNthHistoryReLearnSourceUseCase
-import com.azyoot.relearn.domain.usecase.relearn.GetTranslationFromSourceUseCase
+import com.azyoot.relearn.domain.usecase.relearn.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,6 +12,7 @@ class ReLearnCardViewModel @Inject constructor(
     private val getNthHistoryReLearnSourceUseCase: GetNthHistoryReLearnSourceUseCase,
     private val getTranslationFromSourceUseCase: GetTranslationFromSourceUseCase,
     private val acceptRelearnSourceUseCase: AcceptRelearnSourceUseCase,
+    private val setReLearnDeletedUseCase: SetReLearnDeletedUseCase,
     private val coroutineScope: CoroutineScope
 ) {
 
@@ -65,6 +63,16 @@ class ReLearnCardViewModel @Inject constructor(
             val newSource = acceptRelearnSourceUseCase.acceptRelearnUseCase(relearn.source)
             val translation = getTranslationFromSourceUseCase.getTranslationFromSource(newSource)
             stateInternal.postValue(ReLearnCardViewState.Accepted(translation))
+        }
+    }
+
+    fun deleteReLearn(){
+        val relearn =
+            currentState.let { if (it is ReLearnCardViewState.FinishedLoading) it.reLearnTranslation else return }
+        coroutineScope.launch {
+            stateInternal.postValue(ReLearnCardViewState.Deleting(relearn))
+            setReLearnDeletedUseCase.setReLearnDeleted(relearn.source, true)
+            stateInternal.postValue(ReLearnCardViewState.Deleted(relearn))
         }
     }
 }

@@ -21,9 +21,11 @@ interface WebpageTranslationDao {
     suspend fun getTranslationsForWebpageVisit(webpageVisitId: Int): List<WebpageTranslation>
 
     @Transaction
-    suspend fun addWebpageTranslationForWebpageVisit(webpageVisit: WebpageVisit, webpageTranslation: List<WebpageTranslation>) {
+    suspend fun addWebpageTranslationForWebpageVisit(
+        webpageVisit: WebpageVisit,
+        webpageTranslation: List<WebpageTranslation>
+    ) {
         webpageTranslation.forEach { addWebpageTranslation(it) }
         updateLastParseVersionOfWebpageVisit(webpageVisit.id, PARSE_VERSION)
     }
-
 }

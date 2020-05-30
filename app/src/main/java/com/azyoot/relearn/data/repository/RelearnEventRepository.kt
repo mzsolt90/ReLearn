@@ -74,6 +74,10 @@ class RelearnEventRepository @Inject constructor(
 
     suspend fun reloadSourcesCache() = relearnEventDataHandler.reloadSourcesCache()
 
+    suspend fun setReLearnDeleted(source: ReLearnSource, isDeleted: Boolean) {
+        relearnEventDataHandler.setReLearnDeleted(source.latestSourceId, source.sourceType.value, isDeleted)
+    }
+
     companion object {
         const val SUPPRESSED_DAYS = 30
         const val ACCEPT_DELAY_HOURS = 48

@@ -18,6 +18,9 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
         viewBinding.card.setOnClickListener {
             actionsListener(ReLearnAction.ViewReLearn)
         }
+        viewBinding.buttonDelete.setOnClickListener {
+            actionsListener(ReLearnAction.DeleteReLearn)
+        }
     }
 
     override fun bind(state: ReLearnCardViewState) {

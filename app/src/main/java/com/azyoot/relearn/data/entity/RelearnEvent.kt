@@ -19,5 +19,6 @@ data class RelearnEvent(
     @ColumnInfo(name = "timestamp") val timestamp: Long,
     @ColumnInfo(name = "status") val status: Int,
     @ColumnInfo(name = "webpage_visit_id") val webpageVisitId: Int?,
-    @ColumnInfo(name = "translation_event_id") val translationEventId: Int?
+    @ColumnInfo(name = "translation_event_id") val translationEventId: Int?,
+    @ColumnInfo(name = "deleted") val isDeleted: Boolean = false
 )

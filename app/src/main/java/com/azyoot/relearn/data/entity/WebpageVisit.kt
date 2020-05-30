@@ -10,5 +10,6 @@ data class WebpageVisit(
     val url: String,
     val appPackageName: String,
     @ColumnInfo(name = "timestamp") val timestamp: Long,
-    @ColumnInfo(name = "last_parse_version") val lastParseVersion: Int
+    @ColumnInfo(name = "last_parse_version") val lastParseVersion: Int,
+    @ColumnInfo(name = "deleted") val isDeleted: Boolean = false
 )

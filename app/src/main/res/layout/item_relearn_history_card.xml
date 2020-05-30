@@ -67,6 +67,19 @@
 Nejávka na izbirátelʹnyje učástki bez uvažítelʹnyx pričín vlečót za sobój štraf v Ljuksemburge
 Unless a valid reason is given, not attending the polling stations entails a fine in Luxembourg" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:alpha="1"
+                    app:icon="@drawable/ic_delete_forever_24dp"
+                    style="@style/Widget.App.TextButton.IconOnly.DayNight"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/source_translation" />
+
                 <androidx.constraintlayout.widget.Group
                     android:id="@+id/group_progress"
                     android:layout_width="wrap_content"

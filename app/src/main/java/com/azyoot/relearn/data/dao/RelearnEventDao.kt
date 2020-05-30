@@ -35,6 +35,8 @@ interface RelearnEventDataHandler {
     suspend fun getNthLatestNotShowingSource(n: Int, showingStatusCode: Int): LatestSourcesView?
 
     suspend fun reloadSourcesCache()
+
+    suspend fun setReLearnDeleted(sourceId: Long, sourceType: Int, isDeleted: Boolean)
 }
 
 @Dao
@@ -55,7 +57,7 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
     suspend fun populateSourcesCache()
 
     @Transaction
-    suspend override fun reloadSourcesCache() {
+    override suspend fun reloadSourcesCache() {
         clearSourcesCache()
         populateSourcesCache()
     }
@@ -242,6 +244,34 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
         n: Int,
         showingStatusCode: Int
     ): LatestSourcesView?
+
+
+    @Query("""UPDATE webpage_visit SET deleted = :isDeleted WHERE id = :sourceId""")
+    suspend fun setWebpageVisitDeleted(sourceId: Long, isDeleted: Boolean)
+
+    @Query("""UPDATE translation_event SET deleted = :isDeleted WHERE id = :sourceId""")
+    suspend fun setTranslationEventDeleted(sourceId: Long, isDeleted: Boolean)
+
+    @Query("""UPDATE relearn_event SET deleted = :isDeleted WHERE webpage_visit_id = :sourceId""")
+    suspend fun setReLearnEventDeletedForWebpageVisit(sourceId: Long, isDeleted: Boolean)
+
+    @Query("""UPDATE relearn_event SET deleted = :isDeleted WHERE translation_event_id = :sourceId""")
+    suspend fun setReLearnEventDeletedForTranslationEvent(sourceId: Long, isDeleted: Boolean)
+
+    @Transaction
+    override suspend fun setReLearnDeleted(sourceId: Long, sourceType: Int, isDeleted: Boolean) {
+        when(sourceType){
+            ENTITY_TYPE_WEBPAGE ->  {
+                setWebpageVisitDeleted(sourceId, isDeleted)
+                setReLearnEventDeletedForWebpageVisit(sourceId, isDeleted)
+            }
+            ENTITY_TYPE_TRANSLATION -> {
+                setTranslationEventDeleted(sourceId, isDeleted)
+                setReLearnEventDeletedForTranslationEvent(sourceId, isDeleted)
+            }
+        }
+        reloadSourcesCache()
+    }
 
     companion object {
         const val MIN_CACHE_SIZE = 30

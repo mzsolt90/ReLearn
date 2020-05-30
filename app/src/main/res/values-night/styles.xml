@@ -8,7 +8,7 @@
         <item name="colorError">@color/errorColor</item>
         <item name="android:windowBackground">@color/primaryBackgroundColor</item>
 
-        <item name="colorPrimaryVariant">@color/primaryLightColor</item>
+        <item name="colorPrimaryVariant">@color/secondaryBackgroundColor</item>
         <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
         <item name="colorSurface">@color/secondaryBackgroundColor</item>
         <item name="colorOnPrimary">@color/primaryTextColor</item>
@@ -22,4 +22,7 @@
         <item name="android:textColor">@color/primaryTextColor</item>
     </style>
 
+    <style name="Widget.App.TextButton.IconOnly.DayNight" parent="Widget.App.TextButton.IconOnly">
+        <item name="iconTint">@color/primaryTextColor</item>
+    </style>
 </resources>

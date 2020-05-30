@@ -27,4 +27,19 @@
         <item name="android:textColor">@color/primaryColor</item>
     </style>
 
+    <style name="Widget.App.TextButton.IconOnly" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:text" />
+        <item name="iconPadding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="Widget.App.TextButton.IconOnly.DayNight" parent="Widget.App.TextButton.IconOnly">
+        <item name="iconTint">@color/primaryColor</item>
+    </style>
+
 </resources>
