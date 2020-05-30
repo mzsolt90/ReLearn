@@ -111,6 +111,7 @@ class MainFragment : Fragment() {
                 viewBinding!!.relearnPager.visibility = View.GONE
                 viewBinding!!.emptyImage.visibility = View.GONE
                 viewBinding!!.emptyText.visibility = View.GONE
+                viewBinding!!.relearnPager.adapter = null
             }
             is MainViewState.Loaded -> {
                 viewBinding!!.refresh.isRefreshing = false
@@ -160,7 +161,7 @@ class MainFragment : Fragment() {
         if (viewBinding!!.relearnPager.adapter == null) {
             viewBinding!!.relearnPager.apply {
                 adapter = relearnAdapter
-                currentItem = viewState.page
+                setCurrentItem(viewState.page, false)
 
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                     override fun onPageSelected(position: Int) {

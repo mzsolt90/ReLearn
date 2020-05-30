@@ -48,14 +48,18 @@ class MainViewModel @Inject constructor(
 
     fun refresh() {
         coroutineScope.launch {
+            val previousPage = (currentState as? MainViewState.Loaded)?.page
+            stateInternal.value = MainViewState.Loading
+
             syncReLearnsUseCase.syncReLearns()
             val count = countReLearnSourcesUseCase.countReLearnSourcesUseCase()
+
             withContext(Dispatchers.Main) {
                 stateInternal.value =
                     MainViewState.Loaded(
                         count,
                         MonitoringService.isRunning(applicationContext),
-                        (currentState as? MainViewState.Loaded)?.page ?: getDefaultPage(count)
+                        previousPage?.let { if(it >= count) null else it } ?: getDefaultPage(count)
                     )
             }
         }
