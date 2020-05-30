@@ -2,7 +2,9 @@ package com.azyoot.relearn.ui.main.relearn
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.domain.usecase.relearn.*
+import com.azyoot.relearn.ui.main.MainViewState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -73,6 +75,13 @@ class ReLearnCardViewModel @Inject constructor(
             //this viewmodel can now be reused
             stateInternal.postValue(ReLearnCardViewState.Initial)
             setReLearnDeletedUseCase.setReLearnDeleted(relearn.source, true)
+        }
+    }
+
+    fun undeleteReLearn(reLearnTranslation: ReLearnTranslation){
+        stateInternal.postValue(ReLearnCardViewState.FinishedLoading(reLearnTranslation))
+        coroutineScope.launch {
+            setReLearnDeletedUseCase.setReLearnDeleted(reLearnTranslation.source, false)
         }
     }
 }

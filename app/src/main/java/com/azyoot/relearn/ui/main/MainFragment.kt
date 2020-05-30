@@ -16,11 +16,13 @@ import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.FragmentMainBinding
 import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
 import com.azyoot.relearn.domain.config.MIN_SOURCES_COUNT
+import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import com.azyoot.relearn.ui.animation.AnimatedTumbleweed
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -97,10 +99,10 @@ class MainFragment : Fragment() {
         })
     }
 
-    private fun isAlreadyBound(viewState: MainViewState.Loaded): Boolean{
+    private fun isAlreadyBound(viewState: MainViewState.Loaded): Boolean {
         val adapter = viewBinding!!.relearnPager.adapter
-        if(adapter !is ReLearnAdapter) return false
-        if(adapter.itemCount > viewState.sourceCount) return false
+        if (adapter !is ReLearnAdapter) return false
+        if (adapter.itemCount > viewState.sourceCount) return false
         return viewBinding!!.relearnPager.currentItem == viewState.page
     }
 
@@ -119,9 +121,9 @@ class MainFragment : Fragment() {
                 viewBinding!!.emptyImage.visibility = View.GONE
                 viewBinding!!.emptyText.visibility = View.GONE
 
-                if(viewState.sourceCount <= MIN_SOURCES_COUNT)   {
+                if (viewState.sourceCount <= MIN_SOURCES_COUNT) {
                     showEmptyState(viewState)
-                } else if(!isAlreadyBound(viewState)) {
+                } else if (!isAlreadyBound(viewState)) {
                     viewBinding!!.relearnPager.visibility = View.VISIBLE
                     setupViewPager(viewState)
 
@@ -144,7 +146,7 @@ class MainFragment : Fragment() {
             .show()
     }
 
-    private fun showEmptyState(viewState: MainViewState.Loaded){
+    private fun showEmptyState(viewState: MainViewState.Loaded) {
         viewBinding!!.emptyText.visibility = View.VISIBLE
         viewBinding!!.relearnPager.visibility = View.GONE
         viewBinding!!.emptyImage.apply {
@@ -183,14 +185,32 @@ class MainFragment : Fragment() {
 
         relearnAdapter.actionsLiveData.observe(viewLifecycleOwner, Observer {
             when (it) {
-                is ReLearnAdapterActions.LaunchReLearn -> {
+                is ReLearnAdapterAction.LaunchReLearn -> {
                     relearnLauncher.launch(it.reLearnTranslation)
                 }
-                is ReLearnAdapterActions.ShowNextReLearn -> {
+                is ReLearnAdapterAction.ShowNextReLearn -> {
                     viewBinding!!.relearnPager.setCurrentItem(relearnAdapter.itemCount - 1, true)
+                }
+                is ReLearnAdapterAction.ReLearnDeletedEffect -> {
+                    onReLearnDeleted(it.relearn, it.position)
                 }
             }
         })
+    }
+
+    private fun onReLearnDeleted(reLearnTranslation: ReLearnTranslation, position: Int) {
+        Snackbar.make(
+            viewBinding!!.main,
+            R.string.message_relearn_deleted,
+            Snackbar.LENGTH_LONG
+        )
+            .setAction(R.string.action_undo) {
+                (viewBinding?.relearnPager?.adapter as? ReLearnAdapter)?.undoReLearnDelete(
+                    reLearnTranslation,
+                    position
+                )
+                viewBinding?.relearnPager?.setCurrentItem(position, true)
+            }.show()
     }
 
     private fun rescheduleWebpageDownloadWorker() {
