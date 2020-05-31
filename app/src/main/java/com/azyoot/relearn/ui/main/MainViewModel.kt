@@ -17,13 +17,18 @@ class MainViewModel @Inject constructor(
     private val reLearnPeriodicScheduler: ReLearnPeriodicScheduler,
     private val countReLearnSourcesUseCase: CountReLearnSourcesUseCase,
     private val syncReLearnsUseCase: SyncReLearnsUseCase
-) : BaseAndroidViewModel<MainViewState>() {
-
-    override val initialState = MainViewState.Initial
+) : BaseAndroidViewModel<MainViewState, MainViewEffect>(MainViewState.Initial) {
 
     init {
+        checkAccessibilityService()
         loadData()
         scheduleReLearn()
+    }
+
+    private fun checkAccessibilityService() {
+        if (!MonitoringService.isRunning(applicationContext)) {
+            effectsInternal.postValue(MainViewEffect.EnableAccessibilityService)
+        }
     }
 
     private fun loadData() {
@@ -35,7 +40,6 @@ class MainViewModel @Inject constructor(
                 stateInternal.value =
                     MainViewState.Loaded(
                         count,
-                        MonitoringService.isRunning(applicationContext),
                         getDefaultPage(count)
                     )
             }
@@ -58,8 +62,7 @@ class MainViewModel @Inject constructor(
                 stateInternal.value =
                     MainViewState.Loaded(
                         count,
-                        MonitoringService.isRunning(applicationContext),
-                        previousPage?.let { if(it >= count) null else it } ?: getDefaultPage(count)
+                        previousPage?.let { if (it >= count) null else it } ?: getDefaultPage(count)
                     )
             }
         }
@@ -72,5 +75,5 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getDefaultPage(relearnCount: Int) = relearnCount
+    private fun getDefaultPage(relearnCount: Int) = relearnCount
 }

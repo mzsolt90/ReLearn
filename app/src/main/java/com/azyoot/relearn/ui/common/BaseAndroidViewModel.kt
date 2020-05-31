@@ -6,15 +6,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 
-abstract class BaseAndroidViewModel<S> : ViewModel() {
+abstract class BaseAndroidViewModel<S, E>(initialState: S) : ViewModel() {
     protected val stateInternal : MutableLiveData<S> = MutableLiveData()
     val stateLiveData : LiveData<S>
     get() = stateInternal
 
     val currentState: S
-    get() = stateLiveData.value ?: initialState
+    get() = stateLiveData.value!!
 
-    protected abstract val initialState: S
+    protected val effectsInternal : MutableLiveData<E> = MutableLiveData()
+    val effectsLiveData : LiveData<E>
+    get() = effectsInternal
 
     init {
         stateInternal.value = initialState

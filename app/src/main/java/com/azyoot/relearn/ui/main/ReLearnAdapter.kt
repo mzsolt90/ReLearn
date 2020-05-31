@@ -15,10 +15,10 @@ import timber.log.Timber
 import javax.inject.Provider
 import kotlin.math.min
 
-sealed class ReLearnAdapterAction {
-    data class LaunchReLearn(val reLearnTranslation: ReLearnTranslation) : ReLearnAdapterAction()
-    data class ReLearnDeletedEffect(val relearn: ReLearnTranslation, val position: Int): ReLearnAdapterAction()
-    object ShowNextReLearn : ReLearnAdapterAction()
+sealed class ReLearnAdapterEffect {
+    data class LaunchReLearnEffect(val reLearnTranslation: ReLearnTranslation) : ReLearnAdapterEffect()
+    data class ReLearnDeletedEffect(val relearn: ReLearnTranslation, val position: Int): ReLearnAdapterEffect()
+    object ShowNextReLearnEffect : ReLearnAdapterEffect()
 }
 
 class ReLearnAdapter @AssistedInject constructor(
@@ -28,9 +28,9 @@ class ReLearnAdapter @AssistedInject constructor(
     @Assisted private val sourceCount: Int
 ) : RecyclerView.Adapter<ReLearnBaseViewHolder>(), LifecycleOwner {
 
-    private val actionsInternal = MutableLiveData<ReLearnAdapterAction>()
-    val actionsLiveData: LiveData<ReLearnAdapterAction>
-        get() = actionsInternal
+    private val effectsInternal = MutableLiveData<ReLearnAdapterEffect>()
+    val effectsLiveData: LiveData<ReLearnAdapterEffect>
+        get() = effectsInternal
 
     private val viewModels = mutableListOf<ReLearnCardViewModel>()
 
@@ -120,14 +120,14 @@ class ReLearnAdapter @AssistedInject constructor(
                 removeLastHistoryPage()
                 addNewPageForNextReLearn()
                 //signal host to scroll
-                actionsInternal.postValue(ReLearnAdapterAction.ShowNextReLearn)
+                effectsInternal.postValue(ReLearnAdapterEffect.ShowNextReLearnEffect)
             }
             ReLearnAction.DeleteReLearn -> deleteReLearn(viewModel, relearn!!, position)
         }
     }
 
     private fun launchReLearn(relearn: ReLearnTranslation) {
-        actionsInternal.postValue(ReLearnAdapterAction.LaunchReLearn(relearn))
+        effectsInternal.postValue(ReLearnAdapterEffect.LaunchReLearnEffect(relearn))
     }
 
     private fun acceptReLearn(viewModel: ReLearnCardViewModel, relearn: ReLearnTranslation) {
@@ -166,7 +166,7 @@ class ReLearnAdapter @AssistedInject constructor(
         //do the delete
         viewModel.deleteReLearn()
 
-        actionsInternal.postValue(ReLearnAdapterAction.ReLearnDeletedEffect(relearn, position))
+        effectsInternal.postValue(ReLearnAdapterEffect.ReLearnDeletedEffect(relearn, position))
 
         if(isNextReLearn(position)){
             //reindex other viewmodels, no need to reload their data

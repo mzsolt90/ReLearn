@@ -97,6 +97,12 @@ class MainFragment : Fragment() {
         viewModel.stateLiveData.observe(viewLifecycleOwner, Observer {
             bindState(it)
         })
+
+        viewModel.effectsLiveData.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                MainViewEffect.EnableAccessibilityService -> showServiceNotEnabledWarning()
+            }
+        })
     }
 
     private fun isAlreadyBound(viewState: MainViewState.Loaded): Boolean {
@@ -126,10 +132,6 @@ class MainFragment : Fragment() {
                 } else if (!isAlreadyBound(viewState)) {
                     viewBinding!!.relearnPager.visibility = View.VISIBLE
                     setupViewPager(viewState)
-
-                    if (!viewState.isServiceEnabled) {
-                        showServiceNotEnabledWarning()
-                    }
                 }
             }
         }
@@ -183,15 +185,15 @@ class MainFragment : Fragment() {
             viewBinding!!.relearnPager.adapter!!.notifyDataSetChanged()
         }
 
-        relearnAdapter.actionsLiveData.observe(viewLifecycleOwner, Observer {
+        relearnAdapter.effectsLiveData.observe(viewLifecycleOwner, Observer {
             when (it) {
-                is ReLearnAdapterAction.LaunchReLearn -> {
+                is ReLearnAdapterEffect.LaunchReLearnEffect -> {
                     relearnLauncher.launch(it.reLearnTranslation)
                 }
-                is ReLearnAdapterAction.ShowNextReLearn -> {
+                is ReLearnAdapterEffect.ShowNextReLearnEffect -> {
                     viewBinding!!.relearnPager.setCurrentItem(relearnAdapter.itemCount - 1, true)
                 }
-                is ReLearnAdapterAction.ReLearnDeletedEffect -> {
+                is ReLearnAdapterEffect.ReLearnDeletedEffect -> {
                     onReLearnDeleted(it.relearn, it.position)
                 }
             }
