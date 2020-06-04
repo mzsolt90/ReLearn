@@ -4,10 +4,8 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import androidx.work.*
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.domain.analytics.EVENT_SERVICE_CREATED
 import com.azyoot.relearn.domain.analytics.EVENT_SERVICE_DESTROYED
@@ -21,10 +19,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 typealias ViewInfoFlagger = (AccessibilityEventViewInfo) -> Boolean
+typealias ViewHierarchyProvider = (ViewInfoFlagger) -> List<AccessibilityEventViewInfo>
+
+internal interface RecyclableNodesOwner {
+    fun recycleNodeLater(node: AccessibilityNodeInfo)
+}
 
 class MonitoringService : AccessibilityService() {
 
@@ -63,10 +65,9 @@ class MonitoringService : AccessibilityService() {
         (0 until (parent?.childCount ?: 0)).map { parent?.getChild(it) }.indexOf(this)
     )
 
-    private fun getViewFlaggingTraverser(
-        nodesToRecycle: MutableList<AccessibilityNodeInfo>,
+    private fun RecyclableNodesOwner.traverseAndFlag(
         rootNode: AccessibilityNodeInfo
-    ): (flagger: ViewInfoFlagger) -> List<AccessibilityEventViewInfo> =
+    ): ViewHierarchyProvider =
         { flagger ->
             val flaggedViews = mutableListOf<AccessibilityEventViewInfo>()
 
@@ -85,8 +86,8 @@ class MonitoringService : AccessibilityService() {
             }
 
             traverseChildrenAndFlag(rootNode)
-            nodesToRecycle.add(rootNode)
-            rootNode.parent?.apply { nodesToRecycle.add(parent) }
+            recycleNodeLater(rootNode)
+            rootNode.parent?.apply { recycleNodeLater(parent) }
 
             flaggedViews
         }
@@ -109,12 +110,31 @@ class MonitoringService : AccessibilityService() {
         }
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+    private fun recycleNodes(codeBlock: RecyclableNodesOwner.() -> Unit) {
         val nodesToRecycle = mutableListOf<AccessibilityNodeInfo>()
+        val owner = object : RecyclableNodesOwner {
+            override fun recycleNodeLater(node: AccessibilityNodeInfo) {
+                nodesToRecycle.add(node)
+            }
+        }
 
-        val source = event?.source ?: return
-        nodesToRecycle.add(source)
-        nodesToRecycle.add(rootInActiveWindow)
+        try {
+            owner.codeBlock()
+        } finally {
+            nodesToRecycle.distinct().forEach {
+                try {
+                    it.recycle()
+                } catch (ex: Exception) {
+                    Timber.w(ex, "Error recycling node")
+                }
+            }
+        }
+    }
+
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) = recycleNodes {
+        val source = event?.source ?: return@recycleNodes
+        recycleNodeLater(source)
+        recycleNodeLater(rootInActiveWindow)
 
         val descriptor = AccessibilityEventDescriptor(
             event.packageName.toString(),
@@ -123,19 +143,11 @@ class MonitoringService : AccessibilityService() {
 
         val processingResult = processAccessibilityEventUseCase.onAccessibilityEvent(
             descriptor,
-            getViewFlaggingTraverser(nodesToRecycle, rootInActiveWindow ?: source)
+            traverseAndFlag(rootInActiveWindow ?: source)
         )
 
-        if(processingResult == ProcessAccessibilityEventUseCase.ProcessResult.PROCESSED) {
+        if (processingResult == ProcessAccessibilityEventUseCase.ProcessResult.PROCESSED) {
             rescheduleWebpageDownloadJob()
-        }
-
-        nodesToRecycle.distinct().forEach {
-            try {
-                it.recycle()
-            } catch (ex: Exception) {
-                Timber.w(ex, "Error recycling node")
-            }
         }
     }
 

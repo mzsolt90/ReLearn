@@ -4,11 +4,10 @@ import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
 import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
 import com.azyoot.relearn.service.ViewInfoFlagger
 import com.azyoot.relearn.di.service.ServiceScope
+import com.azyoot.relearn.service.ViewHierarchyProvider
 import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
-
-typealias ViewHierarchyProvider = (ViewInfoFlagger) -> List<AccessibilityEventViewInfo>
 
 @ServiceScope
 @JvmSuppressWildcards
