@@ -1,6 +1,6 @@
 package com.azyoot.relearn.di.service
 
-import com.azyoot.relearn.domain.usecase.monitoring.ChromeUrlBarFlagAndSaveDataUseCase
+import com.azyoot.relearn.domain.usecase.monitoring.BrowserUrlBarFlagAndSaveDataUseCase
 import com.azyoot.relearn.domain.usecase.monitoring.FlagAndSaveEventDataUseCase
 import com.azyoot.relearn.domain.usecase.monitoring.GoogleTranslateFlagAndSaveDataUseCase
 import dagger.Binds
@@ -12,7 +12,7 @@ interface ServiceUseCasesModule {
 
     @Binds
     @IntoSet
-    fun provideChromeUrlBarUseCase(chromeUrlBarFlagAndSaveDataUseCase: ChromeUrlBarFlagAndSaveDataUseCase): FlagAndSaveEventDataUseCase
+    fun provideUrlBarUseCase(browserUrlBarFlagAndSaveDataUseCase: BrowserUrlBarFlagAndSaveDataUseCase): FlagAndSaveEventDataUseCase
 
     @Binds
     @IntoSet

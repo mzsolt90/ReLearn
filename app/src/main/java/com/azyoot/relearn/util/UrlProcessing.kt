@@ -1,6 +1,7 @@
 package com.azyoot.relearn.util
 
 import android.net.Uri
+import java.net.URLDecoder
 import javax.inject.Inject
 
 class UrlProcessing @Inject constructor() {
@@ -36,5 +37,7 @@ class UrlProcessing @Inject constructor() {
     } catch (ex: IllegalArgumentException) {
         false
     }
+
+    fun urlDecode(string: String) = URLDecoder.decode(string, "UTF-8")
 }
 

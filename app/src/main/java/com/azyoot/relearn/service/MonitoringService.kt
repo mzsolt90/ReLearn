@@ -110,13 +110,9 @@ class MonitoringService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        if (event?.packageName?.contains("com.android.chrome") != true &&
-            event?.packageName?.contains("com.google.android.apps.translate") != true
-        ) return // TODO move to service config
-
         val nodesToRecycle = mutableListOf<AccessibilityNodeInfo>()
 
-        val source = event.source ?: return
+        val source = event?.source ?: return
         nodesToRecycle.add(source)
         nodesToRecycle.add(rootInActiveWindow)
 

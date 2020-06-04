@@ -9,9 +9,10 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @ServiceScope
-class ChromeUrlBarFlagAndSaveDataUseCase @Inject constructor(
+class BrowserUrlBarFlagAndSaveDataUseCase @Inject constructor(
     private val saveDataUseCase: LogWebpageVisitBufferUseCase,
     private val filterWebpageVisitUseCase: FilterWebpageVisitUseCase,
+    private val recognizeBrowserEventUseCase: RecognizeBrowserEventUseCase,
     private val urlProcessing: UrlProcessing
 ) : FlagAndSaveEventDataUseCase {
     override fun needsHierarchy(eventDescriptor: AccessibilityEventDescriptor) = false
@@ -20,9 +21,8 @@ class ChromeUrlBarFlagAndSaveDataUseCase @Inject constructor(
         eventInfo: AccessibilityEventDescriptor,
         viewInfo: AccessibilityEventViewInfo
     ) =
-        eventInfo.packageName == "com.android.chrome" &&
-                viewInfo.viewResourceIdName.contains("id/url_bar") &&
-                viewInfo.text.isBlank().not()
+        recognizeBrowserEventUseCase.isImportant(eventInfo, viewInfo)
+
 
     override suspend fun saveEventData(
         eventDescriptor: AccessibilityEventDescriptor,
@@ -31,6 +31,7 @@ class ChromeUrlBarFlagAndSaveDataUseCase @Inject constructor(
         val url = eventDescriptor.sourceViewInfo.text
             .let { urlProcessing.stripFragmentFromUrl(it) }
             .let { urlProcessing.ensureStartsWithHttpsScheme(it) }
+            .let { urlProcessing.urlDecode(it) }
 
         if (!filterWebpageVisitUseCase.isWebpageVisitValid(url)) {
             Timber.v("Filtering out $url")
