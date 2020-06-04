@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.net.URLEncoder
 
 @RunWith(RobolectricTestRunner::class)
 class UrlProcessingTest {
@@ -69,6 +70,24 @@ class UrlProcessingTest {
         val result = urlProcessing.isValidUrl("https://google.com")
 
         assertThat(result).isEqualTo(true)
+    }
+
+    @Test
+    fun `Given url encoded url When decoded Then original is returned`(){
+        val url = URLEncoder.encode("http://wiktionary.org/бог", "UTF-8")
+
+        val decoded = urlProcessing.urlDecode(url)
+
+        assertThat(decoded).isEqualTo("http://wiktionary.org/бог")
+    }
+
+    @Test
+    fun `Given partially url encoded url When decoded Then only encoded part is decoded`(){
+        val url = "https://en.m.wiktionary.org/wiki/%D0%B4%D0%B2%D0%B8%D0%BD%D1%83%D1%82%D1%8C#Russian"
+
+        val decoded = urlProcessing.urlDecode(url)
+
+        assertThat(decoded).isEqualTo("https://en.m.wiktionary.org/wiki/двинуть#Russian")
     }
 
     enum class InvalidUrl(val url: String){
