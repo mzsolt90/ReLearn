@@ -4,7 +4,7 @@ import android.app.Application
 import android.util.Log
 import com.azyoot.relearn.di.core.ApplicationComponent
 import com.azyoot.relearn.di.core.DaggerApplicationComponent
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 
 import timber.log.Timber.DebugTree
@@ -35,11 +35,11 @@ private class CrashReportingTree : Timber.Tree() {
             return;
         }
 
-        Crashlytics.log(priority, tag, message)
+        FirebaseCrashlytics.getInstance().log(message)
 
         if (t != null) {
             if (priority == Log.ERROR || priority == Log.WARN) {
-                Crashlytics.logException(t);
+                FirebaseCrashlytics.getInstance().recordException(t)
             }
         }
     }

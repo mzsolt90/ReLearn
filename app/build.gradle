@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 29
@@ -78,11 +78,11 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "com.google.dagger:dagger:$daggerVersion"
     implementation "com.google.firebase:firebase-analytics:$firebaseAnalyticsVersion"
+    implementation "com.google.firebase:firebase-crashlytics:$crashlyticsVersion"
     implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
     compileOnly "com.squareup.inject:assisted-inject-annotations-dagger2:$assistedInjectVersion"
     kapt "com.squareup.inject:assisted-inject-processor-dagger2:$assistedInjectVersion"
     implementation "org.jsoup:jsoup:$jsoupVersion"
-    implementation "com.crashlytics.sdk.android:crashlytics:$fabricVersion"
     implementation "com.jakewharton.timber:timber:$timberVersion"
 
     implementation 'com.facebook.stetho:stetho:1.5.1'
