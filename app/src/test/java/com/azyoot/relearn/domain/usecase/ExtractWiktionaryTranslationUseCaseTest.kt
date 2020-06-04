@@ -99,6 +99,7 @@ class ExtractWiktionaryTranslationUseCaseTest {
             TranslationTestCase(
                 "дом", listOf(
                     "house (building) ― обы́скивать дом за до́мом ― to search house by house",
+                    "building ― Synonym: зда́ние (zdánije)",
                     "home",
                     "family",
                     "household"

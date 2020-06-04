@@ -39,6 +39,15 @@ class ExtractWiktionaryTranslationUseCase @Inject constructor() {
             }
         }
 
+    private fun Collection<Element>.addDashForSynonym() =
+        apply {
+            forEach {
+                it.select(".synonym").forEach {
+                    it.insertChildren(0, TextNode(" ― "))
+                }
+            }
+        }
+
     private fun Element.indexOfNextTitle() =
         parent().select("strong")
             .map { it.parent().indexInParent() } /* title spans are wrapped in <p> */
@@ -54,6 +63,7 @@ class ExtractWiktionaryTranslationUseCase @Inject constructor() {
             ?.skipFormOfDefinitions()
             ?.removeTransliterations()
             ?.addDashForUsageExample()
+            ?.addDashForSynonym()
             ?.map {
                 it.text()
                     ?.simplifyDashes()
