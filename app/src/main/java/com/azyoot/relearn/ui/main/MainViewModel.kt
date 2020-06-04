@@ -27,17 +27,19 @@ class MainViewModel @Inject constructor(
 
     private fun checkAccessibilityService() {
         if (!MonitoringService.isRunning(applicationContext)) {
-            effectsInternal.postValue(MainViewEffect.EnableAccessibilityService)
+            coroutineScope.launch {
+                sendEffect(MainViewEffect.EnableAccessibilityService)
+            }
         }
     }
 
     private fun loadData() {
-        stateInternal.value = MainViewState.Loading
+        state.value = MainViewState.Loading
 
         viewModelScope.launch {
             val count = countReLearnSourcesUseCase.countReLearnSourcesUseCase()
             withContext(Dispatchers.Main) {
-                stateInternal.value =
+                state.value =
                     MainViewState.Loaded(
                         count,
                         getDefaultPage(count)
@@ -53,13 +55,13 @@ class MainViewModel @Inject constructor(
     fun refresh() {
         coroutineScope.launch {
             val previousPage = (currentState as? MainViewState.Loaded)?.page
-            stateInternal.value = MainViewState.Loading
+            state.value = MainViewState.Loading
 
             syncReLearnsUseCase.syncReLearns()
             val count = countReLearnSourcesUseCase.countReLearnSourcesUseCase()
 
             withContext(Dispatchers.Main) {
-                stateInternal.value =
+                state.value =
                     MainViewState.Loaded(
                         count,
                         previousPage?.let { if (it >= count) null else it } ?: getDefaultPage(count)
@@ -71,7 +73,7 @@ class MainViewModel @Inject constructor(
     fun onPageChanged(page: Int) {
         currentState.let {
             if (it !is MainViewState.Loaded) return@let
-            stateInternal.value = it.copy(page = page)
+            state.value = it.copy(page = page)
         }
     }
 

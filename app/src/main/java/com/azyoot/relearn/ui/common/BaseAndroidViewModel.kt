@@ -1,25 +1,28 @@
 package com.azyoot.relearn.ui.common
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 
-abstract class BaseAndroidViewModel<S, E>(initialState: S) : ViewModel() {
-    protected val stateInternal : MutableLiveData<S> = MutableLiveData()
-    val stateLiveData : LiveData<S>
-    get() = stateInternal
-
+@ExperimentalCoroutinesApi
+abstract class BaseAndroidViewModel<S : Any, E : Any>(initialState: S) : ViewModel() {
+    protected val state: MutableStateFlow<S?> = MutableStateFlow(null)
+    fun state(): Flow<S> = state.filterNotNull().distinctUntilChanged()
     val currentState: S
-    get() = stateLiveData.value!!
+        get() = state.value!!
 
-    protected val effectsInternal : MutableLiveData<E> = MutableLiveData()
-    val effectsLiveData : LiveData<E>
-    get() = effectsInternal
+    private val effectSent = MutableStateFlow(true)
+    private val effects: MutableStateFlow<E?> = MutableStateFlow(null)
+    protected fun sendEffect(effect: E){
+        effects.value = effect
+        effectSent.value = false
+    }
+    fun effects(): Flow<E> = effects.filterNotNull().distinctUntilChangedBy { !effectSent.value }.onEach { effectSent.value = true }
 
     init {
-        stateInternal.value = initialState
+        state.value = initialState
     }
 
     val coroutineScope: CoroutineScope = viewModelScope

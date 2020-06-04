@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.azyoot.relearn.R
 import com.azyoot.relearn.ReLearnApplication
@@ -23,13 +24,18 @@ import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import com.azyoot.relearn.ui.animation.AnimatedTumbleweed
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @FlowPreview
+@ExperimentalCoroutinesApi
 class MainFragment : Fragment() {
 
     companion object {
@@ -48,24 +54,16 @@ class MainFragment : Fragment() {
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
     private var viewBinding: FragmentMainBinding? = null
 
-    private val job = Job()
-    private val coroutineScope = CoroutineScope(job)
-
     private val component: MainFragmentSubcomponent by lazy {
         (context!!.applicationContext as ReLearnApplication).appComponent
             .mainFragmentSubcomponentFactory()
-            .create(coroutineScope)
+            .create(lifecycleScope)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         component.inject(this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        job.complete()
     }
 
     override fun onCreateView(
@@ -94,15 +92,15 @@ class MainFragment : Fragment() {
             viewModel.refresh()
         }
 
-        viewModel.stateLiveData.observe(viewLifecycleOwner, Observer {
-            bindState(it)
-        })
+        viewModel.state()
+            .onEach { bindState(it) }
+            .launchIn(lifecycleScope)
 
-        viewModel.effectsLiveData.observe(viewLifecycleOwner, Observer {
+        viewModel.effects().onEach {
             when (it) {
                 MainViewEffect.EnableAccessibilityService -> showServiceNotEnabledWarning()
             }
-        })
+        }.launchIn(lifecycleScope)
     }
 
     private fun isAlreadyBound(viewState: MainViewState.Loaded): Boolean {
