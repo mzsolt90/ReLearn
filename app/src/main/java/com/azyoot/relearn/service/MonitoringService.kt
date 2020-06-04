@@ -25,7 +25,7 @@ typealias ViewInfoFlagger = (AccessibilityEventViewInfo) -> Boolean
 typealias ViewHierarchyProvider = (ViewInfoFlagger) -> List<AccessibilityEventViewInfo>
 
 internal interface RecyclableNodesOwner {
-    fun recycleNodeLater(node: AccessibilityNodeInfo)
+    fun recycleNodeLater(node: AccessibilityNodeInfo?)
 }
 
 class MonitoringService : AccessibilityService() {
@@ -113,7 +113,8 @@ class MonitoringService : AccessibilityService() {
     private fun recycleNodes(codeBlock: RecyclableNodesOwner.() -> Unit) {
         val nodesToRecycle = mutableListOf<AccessibilityNodeInfo>()
         val owner = object : RecyclableNodesOwner {
-            override fun recycleNodeLater(node: AccessibilityNodeInfo) {
+            override fun recycleNodeLater(node: AccessibilityNodeInfo?) {
+                node ?: return
                 nodesToRecycle.add(node)
             }
         }
