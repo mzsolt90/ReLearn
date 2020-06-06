@@ -1,11 +1,16 @@
 package com.azyoot.relearn.ui.main
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -22,6 +27,7 @@ import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import com.azyoot.relearn.ui.animation.AnimatedTumbleweed
+import com.azyoot.relearn.util.dpToPx
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -92,6 +98,10 @@ class MainFragment : Fragment() {
             viewModel.refresh()
         }
 
+        viewBinding!!.fab.setOnClickListener {
+            viewBinding!!.relearnPager.setCurrentItem(viewBinding!!.relearnPager.adapter?.itemCount ?: 1 - 1, true)
+        }
+
         viewModel.state()
             .onEach { bindState(it) }
             .launchIn(lifecycleScope)
@@ -117,6 +127,7 @@ class MainFragment : Fragment() {
                 viewBinding!!.relearnPager.visibility = View.GONE
                 viewBinding!!.emptyImage.visibility = View.GONE
                 viewBinding!!.emptyText.visibility = View.GONE
+                viewBinding!!.fab.visibility = View.GONE
                 viewBinding!!.relearnPager.adapter = null
             }
             is MainViewState.Loaded -> {
@@ -127,9 +138,11 @@ class MainFragment : Fragment() {
 
                 if (viewState.sourceCount <= MIN_SOURCES_COUNT) {
                     showEmptyState(viewState)
+                    viewBinding!!.fab.visibility = View.GONE
                 } else if (!isAlreadyBound(viewState)) {
                     viewBinding!!.relearnPager.visibility = View.VISIBLE
                     setupViewPager(viewState)
+                    updateFabVisibility()
                 }
             }
         }
@@ -170,6 +183,7 @@ class MainFragment : Fragment() {
                         if (position != (viewModel.currentState as? MainViewState.Loaded)?.page) {
                             viewModel.onPageChanged(position)
                         }
+                        updateFabVisibility()
                     }
 
                     override fun onPageScrollStateChanged(state: Int) {
@@ -196,6 +210,51 @@ class MainFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun animateShowFab(){
+        ObjectAnimator.ofFloat(
+            viewBinding!!.fab,
+            "translationY",
+            requireContext().dpToPx(80),
+            0F
+        ).apply {
+            duration = 300
+            addListener(object : AnimatorListenerAdapter(){
+                override fun onAnimationStart(animation: Animator?) {
+                    viewBinding!!.fab.visibility = View.VISIBLE
+                }
+            })
+            interpolator = DecelerateInterpolator()
+            start()
+        }
+    }
+
+    private fun animateHideFab(){
+        ObjectAnimator.ofFloat(
+            viewBinding!!.fab,
+            "translationY",
+            0F,
+            requireContext().dpToPx(80)
+        ).apply {
+            duration = 300
+            addListener(object : AnimatorListenerAdapter(){
+                override fun onAnimationEnd(animation: Animator?) {
+                    viewBinding!!.fab.visibility = View.GONE
+                }
+            })
+            interpolator = AccelerateInterpolator()
+            start()
+        }
+    }
+
+    private fun updateFabVisibility() {
+        val visible = viewBinding!!.relearnPager.currentItem < viewBinding!!.relearnPager.adapter!!.itemCount - 1
+        if(visible && viewBinding!!.fab.visibility != View.VISIBLE) {
+            animateShowFab()
+        } else if(!visible && viewBinding!!.fab.visibility != View.GONE){
+            animateHideFab()
+        }
     }
 
     private fun onReLearnDeleted(reLearnTranslation: ReLearnTranslation, position: Int) {

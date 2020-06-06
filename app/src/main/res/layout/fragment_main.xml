@@ -9,10 +9,13 @@
     android:clipToPadding="false"
     tools:context=".ui.main.MainFragment">
 
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="-71dp"
+        tools:layout_editor_absoluteY="-16dp">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/relearn_pager"
@@ -24,7 +27,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 
     <ProgressBar
         android:id="@+id/relearn_main_progress"
@@ -61,5 +63,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/emptyText"
         android:layout_marginTop="54dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="24dp"
+        app:srcCompat="@drawable/ic_arrow_forward_24dp"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
