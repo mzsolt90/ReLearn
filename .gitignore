@@ -84,3 +84,4 @@ lint/tmp/
 app/schemas/
 db_backup/
 app/release/output.json
+.idea/jarRepositories.xml

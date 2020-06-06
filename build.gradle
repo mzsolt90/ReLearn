@@ -16,7 +16,7 @@ buildscript {
         daggerVersion = "2.27"
         firebaseAnalyticsVersion = '17.2.2'
         fragmentVersion = '1.1.0-alpha09'
-        gradleVersion = '3.6.3'
+        gradleVersion = '4.0.0'
         gsonVersion = '2.8.2'
         gmsVersion = '4.3.3'
         junitVersion = '4.13'
