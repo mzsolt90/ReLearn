@@ -2,15 +2,20 @@ package com.azyoot.relearn.ui.main.relearn
 
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 
+sealed class ReLearnCardReLearnState {
+    object Accepting : ReLearnCardReLearnState()
+    object FinishedLoading : ReLearnCardReLearnState()
+    object Accepted : ReLearnCardReLearnState()
+    object Deleted : ReLearnCardReLearnState()
+}
+
 sealed class ReLearnCardViewState {
     object Initial : ReLearnCardViewState()
     object Loading : ReLearnCardViewState()
     object NotFound : ReLearnCardViewState()
-    abstract class ReLearnTranslationState(val reLearnTranslation: ReLearnTranslation) : ReLearnCardViewState()
-    class Accepting(reLearn: ReLearnTranslation) : ReLearnTranslationState(reLearn)
-    class FinishedLoading(reLearn: ReLearnTranslation) : ReLearnTranslationState(reLearn)
-    class Accepted(reLearn: ReLearnTranslation) : ReLearnTranslationState(reLearn)
-    class Deleted(reLearn: ReLearnTranslation) : ReLearnTranslationState(reLearn)
+    data class ReLearnTranslationState(val reLearnTranslation: ReLearnTranslation,
+                                       val isExpanded: Boolean,
+                                       val relearnState: ReLearnCardReLearnState) : ReLearnCardViewState()
 }
 
 sealed class ReLearnCardEffect {

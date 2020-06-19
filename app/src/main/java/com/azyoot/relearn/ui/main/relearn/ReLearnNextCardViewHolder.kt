@@ -50,10 +50,10 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         if (state is ReLearnCardViewState.ReLearnTranslationState) {
             viewBinding.groupActions.visibility = View.VISIBLE
             bindTranslationData(state.reLearnTranslation)
-        }
 
-        if (state is ReLearnCardViewState.Accepted) {
-            animateOutActions()
+            if (state.relearnState is ReLearnCardReLearnState.Accepted) {
+                animateOutActions()
+            }
         }
     }
 

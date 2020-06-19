@@ -29,7 +29,11 @@ class ReLearnCardViewModel
                 return@launch
             }
             val translation = getTranslationFromSourceUseCase.getTranslationFromSource(source)
-            viewState.value = ReLearnCardViewState.FinishedLoading(translation)
+            viewState.value = ReLearnCardViewState.ReLearnTranslationState(
+                translation,
+                false,
+                ReLearnCardReLearnState.FinishedLoading
+            )
         }
     }
 
@@ -43,33 +47,42 @@ class ReLearnCardViewModel
                 return@launch
             }
             val translation = getTranslationFromSourceUseCase.getTranslationFromSource(source)
-            viewState.value = ReLearnCardViewState.FinishedLoading(translation)
+            viewState.value = ReLearnCardViewState.ReLearnTranslationState(
+                translation,
+                false,
+                ReLearnCardReLearnState.FinishedLoading
+            )
         }
     }
 
     fun acceptReLearn() {
-        val relearn =
-            currentViewState.let { if (it is ReLearnCardViewState.FinishedLoading) it.reLearnTranslation else return }
+        val relearnState =
+            currentViewState as? ReLearnCardViewState.ReLearnTranslationState ?: return
         coroutineScope.launch {
-            viewState.value = ReLearnCardViewState.Accepting(relearn)
-            val newSource = acceptRelearnSourceUseCase.acceptRelearnUseCase(relearn.source)
+            viewState.value = relearnState.copy(relearnState = ReLearnCardReLearnState.Accepting)
+            val newSource =
+                acceptRelearnSourceUseCase.acceptRelearnUseCase(relearnState.reLearnTranslation.source)
             val translation = getTranslationFromSourceUseCase.getTranslationFromSource(newSource)
-            viewState.value = ReLearnCardViewState.Accepted(translation)
+            viewState.value = relearnState.copy(reLearnTranslation = translation, relearnState = ReLearnCardReLearnState.Accepted)
         }
     }
 
     fun deleteReLearn() {
-        val relearn =
-            currentViewState.let { if (it is ReLearnCardViewState.ReLearnTranslationState) it.reLearnTranslation else return }
+        val relearnState =
+            currentViewState as? ReLearnCardViewState.ReLearnTranslationState ?: return
         coroutineScope.launch {
             //this viewmodel can now be reused
-            setReLearnDeletedUseCase.setReLearnDeleted(relearn.source, true)
-            viewState.value = ReLearnCardViewState.Deleted(relearn)
+            setReLearnDeletedUseCase.setReLearnDeleted(relearnState.reLearnTranslation.source, true)
+            viewState.value = relearnState.copy(relearnState = ReLearnCardReLearnState.Deleted)
         }
     }
 
     fun undeleteReLearn(reLearnTranslation: ReLearnTranslation) {
-        viewState.value = ReLearnCardViewState.FinishedLoading(reLearnTranslation)
+        viewState.value = ReLearnCardViewState.ReLearnTranslationState(
+            reLearnTranslation,
+            false,
+            ReLearnCardReLearnState.FinishedLoading
+        )
         coroutineScope.launch {
             setReLearnDeletedUseCase.setReLearnDeleted(reLearnTranslation.source, false)
         }
