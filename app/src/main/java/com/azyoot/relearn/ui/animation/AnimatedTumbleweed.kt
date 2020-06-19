@@ -94,7 +94,7 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
 
     private val primaryColor = getColorFromTheme(R.attr.colorOnSurface, R.color.primaryColor)
     private val secondaryColor =
-        getColorFromTheme(R.attr.colorOnSecondary, R.color.secondaryDarkColor)
+        getColorFromTheme(R.attr.colorSecondary, R.color.secondaryDarkColor)
 
     private val paddedBounds
         get() = Rect(
