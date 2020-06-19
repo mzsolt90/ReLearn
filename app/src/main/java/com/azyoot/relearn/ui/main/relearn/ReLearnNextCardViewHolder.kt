@@ -21,6 +21,9 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
 ) :
     ReLearnBaseViewHolder(viewBinding.root) {
 
+    override val isExpanded: Boolean
+        get() = viewBinding.groupShowHide.visibility == View.VISIBLE
+
     init {
         viewBinding.buttonAccept.setOnClickListener {
             actionsListener(ReLearnAction.AcceptReLearn)
@@ -30,6 +33,9 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         }
         viewBinding.buttonDelete.setOnClickListener {
             actionsListener(ReLearnAction.DeleteReLearn)
+        }
+        viewBinding.showHide.setOnClickListener {
+            actionsListener(ReLearnAction.SetExpanded(!isExpanded))
         }
     }
 
@@ -49,6 +55,10 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
 
         if (state is ReLearnCardViewState.ReLearnTranslationState) {
             viewBinding.groupActions.visibility = View.VISIBLE
+            viewBinding.groupShowHide.visibility = if(state.isExpanded) View.VISIBLE else View.INVISIBLE
+
+            viewBinding.showHide.setIconResource(if(state.isExpanded) R.drawable.ic_visible else R.drawable.ic_invisible)
+
             bindTranslationData(state.reLearnTranslation)
 
             if (state.relearnState is ReLearnCardReLearnState.Accepted) {
@@ -59,6 +69,7 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
 
     private fun animateOutActions() {
         if (viewBinding.groupActions.visibility != View.VISIBLE) return
+        viewBinding.showHide.isEnabled = false
 
         val originalButtonTopMargin =
             (viewBinding.buttonAccept.layoutParams as ConstraintLayout.LayoutParams).topMargin
@@ -136,6 +147,7 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
 
     private fun setConstraintsAfterAcceptAnimation(constraintSet: ConstraintSet, originalTopMargin: Int, originalBottomMargin: Int){
         viewBinding.groupActions.visibility = View.GONE
+        viewBinding.showHide.isEnabled = true
 
         constraintSet.setMargin(
             R.id.source_translation,

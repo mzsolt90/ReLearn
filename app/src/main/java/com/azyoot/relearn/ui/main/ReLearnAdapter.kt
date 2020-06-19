@@ -186,6 +186,10 @@ class ReLearnAdapter @AssistedInject constructor(
                 effectsInternal.postValue(ReLearnAdapterEffect.ShowNextReLearnEffect)
             }
             ReLearnAction.DeleteReLearn -> viewModel.deleteReLearn()
+            is ReLearnAction.SetExpanded -> {
+                viewModel.setExpanded(action.isExpanded)
+                notifyItemChanged(position)
+            }
         }
     }
 

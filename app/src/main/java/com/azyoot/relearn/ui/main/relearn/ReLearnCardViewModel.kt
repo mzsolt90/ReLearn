@@ -96,4 +96,10 @@ class ReLearnCardViewModel
             )
         )
     }
+
+    fun setExpanded(isExpanded: Boolean){
+        val relearnState =
+            currentViewState as? ReLearnCardViewState.ReLearnTranslationState ?: return
+        viewState.value = relearnState.copy(isExpanded = isExpanded)
+    }
 }
