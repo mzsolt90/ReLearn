@@ -73,6 +73,7 @@ class MainViewModel @Inject constructor(
     fun onPageChanged(page: Int) {
         currentViewState.let {
             if (it !is MainViewState.Loaded) return@let
+            if(it.page == page) return
             viewState.value = it.copy(page = page)
         }
     }

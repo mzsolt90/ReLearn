@@ -177,9 +177,8 @@ class MainFragment : Fragment() {
 
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                     override fun onPageSelected(position: Int) {
-                        if (position != (viewModel.currentViewState as? MainViewState.Loaded)?.page) {
-                            viewModel.onPageChanged(position)
-                        }
+                        viewModel.onPageChanged(position)
+
                         updateFabVisibility()
                     }
 

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.*
 abstract class BaseAndroidViewModel<S : Any, E : Any>(initialState: S) : ViewModel() {
     protected val viewState: MutableStateFlow<S?> = MutableStateFlow(null)
     fun getViewState(): Flow<S> = viewState.filterNotNull().distinctUntilChanged()
-    val currentViewState: S
+    protected val currentViewState: S
         get() = viewState.value!!
 
     private val effectSent = MutableStateFlow(true)
