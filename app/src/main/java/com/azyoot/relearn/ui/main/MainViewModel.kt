@@ -34,12 +34,12 @@ class MainViewModel @Inject constructor(
     }
 
     private fun loadData() {
-        state.value = MainViewState.Loading
+        viewState.value = MainViewState.Loading
 
         viewModelScope.launch {
             val count = countReLearnSourcesUseCase.countReLearnSourcesUseCase()
             withContext(Dispatchers.Main) {
-                state.value =
+                viewState.value =
                     MainViewState.Loaded(
                         count,
                         getDefaultPage(count)
@@ -54,14 +54,14 @@ class MainViewModel @Inject constructor(
 
     fun refresh() {
         coroutineScope.launch {
-            val previousPage = (currentState as? MainViewState.Loaded)?.page
-            state.value = MainViewState.Loading
+            val previousPage = (currentViewState as? MainViewState.Loaded)?.page
+            viewState.value = MainViewState.Loading
 
             syncReLearnsUseCase.syncReLearns()
             val count = countReLearnSourcesUseCase.countReLearnSourcesUseCase()
 
             withContext(Dispatchers.Main) {
-                state.value =
+                viewState.value =
                     MainViewState.Loaded(
                         count,
                         previousPage?.let { if (it >= count) null else it } ?: getDefaultPage(count)
@@ -71,9 +71,9 @@ class MainViewModel @Inject constructor(
     }
 
     fun onPageChanged(page: Int) {
-        currentState.let {
+        currentViewState.let {
             if (it !is MainViewState.Loaded) return@let
-            state.value = it.copy(page = page)
+            viewState.value = it.copy(page = page)
         }
     }
 

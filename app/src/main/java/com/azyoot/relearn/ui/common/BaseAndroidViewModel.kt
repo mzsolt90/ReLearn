@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.*
 
 @ExperimentalCoroutinesApi
 abstract class BaseAndroidViewModel<S : Any, E : Any>(initialState: S) : ViewModel() {
-    protected val state: MutableStateFlow<S?> = MutableStateFlow(null)
-    fun state(): Flow<S> = state.filterNotNull().distinctUntilChanged()
-    val currentState: S
-        get() = state.value!!
+    protected val viewState: MutableStateFlow<S?> = MutableStateFlow(null)
+    fun getViewState(): Flow<S> = viewState.filterNotNull().distinctUntilChanged()
+    val currentViewState: S
+        get() = viewState.value!!
 
     private val effectSent = MutableStateFlow(true)
     private val effects: MutableStateFlow<E?> = MutableStateFlow(null)
@@ -19,11 +19,11 @@ abstract class BaseAndroidViewModel<S : Any, E : Any>(initialState: S) : ViewMod
         effects.value = effect
         effectSent.value = false
     }
-    fun effects(): Flow<E> = effects.filterNotNull().distinctUntilChangedBy { !effectSent.value }.onEach { effectSent.value = true }
+    fun getEffects(): Flow<E> = effects.filterNotNull().distinctUntilChangedBy { !effectSent.value }.onEach { effectSent.value = true }
 
     init {
-        state.value = initialState
+        viewState.value = initialState
     }
 
-    val coroutineScope: CoroutineScope = viewModelScope
+    open val coroutineScope: CoroutineScope = viewModelScope
 }

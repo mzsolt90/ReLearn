@@ -11,3 +11,7 @@ sealed class ReLearnCardViewState {
     class FinishedLoading(reLearnTranslation: ReLearnTranslation) : ReLearnTranslationState(reLearnTranslation)
     class Accepted(reLearnTranslation: ReLearnTranslation) : ReLearnTranslationState(reLearnTranslation)
 }
+
+sealed class ReLearnCardEffect {
+
+}

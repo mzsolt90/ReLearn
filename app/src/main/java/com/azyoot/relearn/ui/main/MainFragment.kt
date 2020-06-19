@@ -32,11 +32,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -102,11 +99,11 @@ class MainFragment : Fragment() {
             viewBinding!!.relearnPager.setCurrentItem(viewBinding!!.relearnPager.adapter?.itemCount ?: 1 - 1, true)
         }
 
-        viewModel.state()
+        viewModel.getViewState()
             .onEach { bindState(it) }
             .launchIn(lifecycleScope)
 
-        viewModel.effects().onEach {
+        viewModel.getEffects().onEach {
             when (it) {
                 MainViewEffect.EnableAccessibilityService -> showServiceNotEnabledWarning()
             }
@@ -180,7 +177,7 @@ class MainFragment : Fragment() {
 
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                     override fun onPageSelected(position: Int) {
-                        if (position != (viewModel.currentState as? MainViewState.Loaded)?.page) {
+                        if (position != (viewModel.currentViewState as? MainViewState.Loaded)?.page) {
                             viewModel.onPageChanged(position)
                         }
                         updateFabVisibility()

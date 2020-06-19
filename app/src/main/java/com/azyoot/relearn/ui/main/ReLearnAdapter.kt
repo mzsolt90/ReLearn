@@ -88,15 +88,15 @@ class ReLearnAdapter @AssistedInject constructor(
         Timber.v("Binding view holder at position: $position")
         val viewModel = viewModels[position]
         if (isNextReLearn(position)) {
-            if (viewModel.currentState is ReLearnCardViewState.Initial) {
+            if (viewModel.currentViewState is ReLearnCardViewState.Initial) {
                 viewModel.loadNextReLearn()
             }
         } else {
-            if (viewModel.currentState is ReLearnCardViewState.Initial) {
+            if (viewModel.currentViewState is ReLearnCardViewState.Initial) {
                 viewModel.loadNthHistory(itemCount - position - 1)
             }
         }
-        holder.bind(viewModel.currentState)
+        holder.bind(viewModel.currentViewState)
         holder.actionsListener = {
             handleAction(it, position)
         }
@@ -106,7 +106,7 @@ class ReLearnAdapter @AssistedInject constructor(
         Timber.v("Adapter action $action at position $position")
 
         val viewModel = viewModels[position]
-        val state = viewModel.currentState
+        val state = viewModel.currentViewState
         val relearn = (state as? ReLearnCardViewState.ReLearnTranslationState)?.reLearnTranslation
 
         when (action) {
