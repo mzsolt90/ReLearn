@@ -176,7 +176,9 @@ class ReLearnAdapter @AssistedInject constructor(
         val viewModel = viewModels[position]
 
         when (action) {
-            ReLearnAction.ViewReLearn -> viewModel.launchReLearn()
+            ReLearnAction.ViewReLearn -> {
+                viewModel.launchReLearn()
+            }
             ReLearnAction.AcceptReLearn -> viewModel.acceptReLearn()
             ReLearnAction.AcceptAnimationFinished -> {
                 //remove last item in history as it would be limit+1.

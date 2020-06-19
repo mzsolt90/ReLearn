@@ -95,6 +95,7 @@ class ReLearnCardViewModel
                     ?: return
             )
         )
+        setExpanded(true)
     }
 
     fun setExpanded(isExpanded: Boolean){
