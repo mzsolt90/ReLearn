@@ -110,6 +110,14 @@ class MainFragment : Fragment() {
         }.launchIn(lifecycleScope)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if(viewBinding!!.groupEmpty.visibility == View.VISIBLE){
+            viewModel.refresh()
+        }
+    }
+
     private fun isAlreadyBound(viewState: MainViewState.Loaded): Boolean {
         val adapter = viewBinding!!.relearnPager.adapter
         if (adapter !is ReLearnAdapter) return false
@@ -120,29 +128,29 @@ class MainFragment : Fragment() {
     private fun bindState(viewState: MainViewState) {
         when (viewState) {
             is MainViewState.Loading, is MainViewState.Initial -> {
-                viewBinding!!.relearnMainProgress.visibility = View.VISIBLE
-                viewBinding!!.relearnPager.visibility = View.GONE
-                viewBinding!!.emptyImage.visibility = View.GONE
-                viewBinding!!.emptyText.visibility = View.GONE
-                viewBinding!!.fab.visibility = View.GONE
+                viewBinding!!.groupProgress.visibility = View.VISIBLE
+                viewBinding!!.groupLoaded.visibility = View.GONE
+                viewBinding!!.groupEmpty.visibility = View.GONE
+
                 viewBinding!!.relearnPager.adapter = null
             }
             is MainViewState.Loaded -> {
                 viewBinding!!.refresh.isRefreshing = false
-                viewBinding!!.relearnMainProgress.visibility = View.GONE
-                viewBinding!!.emptyImage.visibility = View.GONE
-                viewBinding!!.emptyText.visibility = View.GONE
+                viewBinding!!.groupProgress.visibility = View.GONE
 
                 if (viewState.sourceCount <= MIN_SOURCES_COUNT) {
+                    viewBinding!!.groupEmpty.visibility = View.VISIBLE
+                    viewBinding!!.groupLoaded.visibility = View.GONE
                     showEmptyState(viewState)
-                    viewBinding!!.fab.visibility = View.GONE
                 } else if (!isAlreadyBound(viewState)) {
-                    viewBinding!!.relearnPager.visibility = View.VISIBLE
+                    viewBinding!!.groupEmpty.visibility = View.GONE
+                    viewBinding!!.groupLoaded.visibility = View.VISIBLE
                     setupViewPager(viewState)
-                    updateFabVisibility()
                 }
             }
         }
+
+        updateFabVisibility()
     }
 
     private fun showServiceNotEnabledWarning() {
@@ -157,13 +165,19 @@ class MainFragment : Fragment() {
     }
 
     private fun showEmptyState(viewState: MainViewState.Loaded) {
-        viewBinding!!.emptyText.visibility = View.VISIBLE
-        viewBinding!!.relearnPager.visibility = View.GONE
-        viewBinding!!.emptyImage.apply {
-            visibility = View.VISIBLE
-            val anim = AnimatedTumbleweed(context)
-            setImageDrawable(anim)
-            anim.start()
+        viewBinding!!.apply {
+            groupEmpty.visibility = View.VISIBLE
+            groupLoaded.visibility = View.GONE
+            groupProgress.visibility = View.GONE
+
+            emptySubtitle.text = resources.getString(R.string.message_empty_remaining, MIN_SOURCES_COUNT - viewState.sourceCount)
+
+            emptyImage.apply {
+                visibility = View.VISIBLE
+                val anim = AnimatedTumbleweed(context)
+                setImageDrawable(anim)
+                anim.start()
+            }
         }
     }
 
@@ -245,6 +259,11 @@ class MainFragment : Fragment() {
     }
 
     private fun updateFabVisibility() {
+        if(viewBinding!!.groupLoaded.visibility != View.VISIBLE) {
+            viewBinding!!.fab.visibility = View.GONE
+            return
+        }
+
         val visible = viewBinding!!.relearnPager.currentItem < viewBinding!!.relearnPager.adapter!!.itemCount - 1
         if(visible && viewBinding!!.fab.visibility != View.VISIBLE) {
             animateShowFab()
