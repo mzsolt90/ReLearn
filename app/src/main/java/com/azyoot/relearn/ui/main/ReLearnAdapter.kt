@@ -4,7 +4,9 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.util.set
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.recyclerview.widget.RecyclerView
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
@@ -181,9 +183,9 @@ class ReLearnAdapter @AssistedInject constructor(
             }
             ReLearnAction.AcceptReLearn -> viewModel.acceptReLearn()
             ReLearnAction.AcceptAnimationFinished -> {
+                addNewPageForNextReLearn()
                 //remove last item in history as it would be limit+1.
                 removeLastHistoryPage()
-                addNewPageForNextReLearn()
                 //signal host to scroll
                 sendEffect(ReLearnAdapterEffect.ShowNextReLearnEffect)
             }
@@ -197,6 +199,9 @@ class ReLearnAdapter @AssistedInject constructor(
 
     private fun removeViewModelAt(position: Int) {
         Timber.d("Removing viewmodel @ position $position")
+
+        viewModelStateJobs[position].cancel()
+        viewModelStateJobs.remove(position)
         if (bindingJobs[position] != null) {
             bindingJobs[position].cancel()
             bindingJobs.remove(position)
@@ -205,6 +210,7 @@ class ReLearnAdapter @AssistedInject constructor(
             bindingEffectsJobs[position].cancel()
             bindingEffectsJobs.remove(position)
         }
+
         viewModels.removeAt(position)
         notifyItemRemoved(position)
         reindexViewModels()
@@ -234,7 +240,11 @@ class ReLearnAdapter @AssistedInject constructor(
         sendEffect(ReLearnAdapterEffect.ReLearnDeletedEffect(relearn, position))
 
         if (isNextReLearn(position)) {
-            addNewPageForNextReLearn()
+            //add viewmodel for next relearn
+            //at this point we only have 19 items!
+            val newViewModel = addViewModelAt(itemCount - 1)
+            //actually load next relearn's data
+            newViewModel.loadInitialNextReLearn()
             return
         }
 
@@ -244,7 +254,7 @@ class ReLearnAdapter @AssistedInject constructor(
 
     private fun addNewPageForNextReLearn() {
         //add viewmodel for next relearn
-        val newViewModel = addViewModelAt(itemCount - 1)
+        val newViewModel = addViewModelAt(itemCount)
 
         //actually load next relearn's data
         newViewModel.loadInitialNextReLearn()

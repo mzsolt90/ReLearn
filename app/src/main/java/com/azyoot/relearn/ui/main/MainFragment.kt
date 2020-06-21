@@ -3,6 +3,7 @@ package com.azyoot.relearn.ui.main
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.animation.TimeAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -34,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -135,6 +137,7 @@ class MainFragment : Fragment() {
                 viewBinding!!.relearnPager.adapter = null
             }
             is MainViewState.Loaded -> {
+                Timber.d("Loaded main view state $viewState")
                 viewBinding!!.refresh.isRefreshing = false
                 viewBinding!!.groupProgress.visibility = View.GONE
 
@@ -184,6 +187,8 @@ class MainFragment : Fragment() {
     private fun setupViewPager(viewState: MainViewState.Loaded) {
         val relearnAdapter = relearnAdapterFactory.create(viewState.sourceCount)
 
+        Timber.d("Creating new view pager")
+
         if (viewBinding!!.relearnPager.adapter == null) {
             viewBinding!!.relearnPager.apply {
                 adapter = relearnAdapter
@@ -191,6 +196,7 @@ class MainFragment : Fragment() {
 
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                     override fun onPageSelected(position: Int) {
+                        Timber.v("Page selected $position")
                         viewModel.onPageChanged(position)
 
                         updateFabVisibility()
@@ -213,7 +219,9 @@ class MainFragment : Fragment() {
                     relearnLauncher.launch(it.reLearnTranslation)
                 }
                 is ReLearnAdapterEffect.ShowNextReLearnEffect -> {
-                    viewBinding!!.relearnPager.setCurrentItem(relearnAdapter.itemCount - 1, true)
+                    viewBinding!!.relearnPager.post {
+                        viewBinding!!.relearnPager.setCurrentItem(relearnAdapter.itemCount - 1, true)
+                    }
                 }
                 is ReLearnAdapterEffect.ReLearnDeletedEffect -> {
                     onReLearnDeleted(it.relearn, it.position)
