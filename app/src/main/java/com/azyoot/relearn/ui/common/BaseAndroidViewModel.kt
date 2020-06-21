@@ -18,8 +18,8 @@ internal class AndroidEffectsProducer<E : Any> : ViewEffectsProducer<E> {
 
     override fun getEffects(): Flow<E> = effects
         .filter { !it.isSent && it.effect != null }
+        .onEach { effects.value = it.copy(isSent = true) }
         .map { it.effect!! }
-        .onEach { effects.value = effects.value.copy(isSent = true) }
 }
 
 @ExperimentalCoroutinesApi
