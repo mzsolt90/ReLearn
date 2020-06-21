@@ -10,6 +10,8 @@ import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
 import com.azyoot.relearn.domain.config.MAX_HISTORY
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
+import com.azyoot.relearn.ui.common.AndroidEffectsProducer
+import com.azyoot.relearn.ui.common.ViewEffectsProducer
 import com.azyoot.relearn.ui.main.relearn.*
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -39,11 +41,9 @@ class ReLearnAdapter @AssistedInject constructor(
     private val historyReLearnCardFactory: ReLearnHistoryCardViewHolder.Factory,
     private val coroutineScope: CoroutineScope,
     @Assisted private val sourceCount: Int
-) : RecyclerView.Adapter<ReLearnBaseViewHolder>(), LifecycleOwner {
-
-    private val effectsInternal = MutableLiveData<ReLearnAdapterEffect>()
-    val effectsLiveData: LiveData<ReLearnAdapterEffect>
-        get() = effectsInternal
+) : RecyclerView.Adapter<ReLearnBaseViewHolder>(),
+    LifecycleOwner,
+    ViewEffectsProducer<ReLearnAdapterEffect> by AndroidEffectsProducer() {
 
     private val viewModels = mutableListOf<ReLearnCardViewModel>()
     private val bindingJobs = SparseArray<Job>()
@@ -162,7 +162,7 @@ class ReLearnAdapter @AssistedInject constructor(
 
     private fun handleEffect(effect: ReLearnCardEffect, position: Int) {
         when (effect) {
-            is ReLearnCardEffect.Launch -> effectsInternal.postValue(
+            is ReLearnCardEffect.Launch -> sendEffect(
                 ReLearnAdapterEffect.LaunchReLearnEffect(
                     effect.reLearnTranslation
                 )
@@ -185,7 +185,7 @@ class ReLearnAdapter @AssistedInject constructor(
                 removeLastHistoryPage()
                 addNewPageForNextReLearn()
                 //signal host to scroll
-                effectsInternal.postValue(ReLearnAdapterEffect.ShowNextReLearnEffect)
+                sendEffect(ReLearnAdapterEffect.ShowNextReLearnEffect)
             }
             ReLearnAction.DeleteReLearn -> viewModel.deleteReLearn()
             is ReLearnAction.SetExpanded -> {
@@ -231,7 +231,7 @@ class ReLearnAdapter @AssistedInject constructor(
         //remove viewmodel holding the deleted data, don't bind the deleting state
         removeViewModelAt(position)
 
-        effectsInternal.postValue(ReLearnAdapterEffect.ReLearnDeletedEffect(relearn, position))
+        sendEffect(ReLearnAdapterEffect.ReLearnDeletedEffect(relearn, position))
 
         if (isNextReLearn(position)) {
             addNewPageForNextReLearn()

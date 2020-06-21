@@ -7,7 +7,7 @@
     <string name="action_notification_another">Another!</string>
     <string name="action_button_another">Another!</string>
     <string name="message_empty">Nothing to learn here yet…</string>
-    <string name="message_empty_remaining">%1$s more entries to start</string>
+    <string name="message_empty_remaining">%1$d more entries to start</string>
     <string name="message_relearn_deleted">Entry deleted</string>
     <string name="action_undo">Undo</string>
 </resources>

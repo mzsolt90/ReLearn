@@ -101,13 +101,13 @@ class MainFragment : Fragment() {
 
         viewModel.getViewState()
             .onEach { bindState(it) }
-            .launchIn(lifecycleScope)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
 
         viewModel.getEffects().onEach {
             when (it) {
                 MainViewEffect.EnableAccessibilityService -> showServiceNotEnabledWarning()
             }
-        }.launchIn(lifecycleScope)
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun onResume() {
@@ -204,10 +204,10 @@ class MainFragment : Fragment() {
                 })
             }
         } else {
-            viewBinding!!.relearnPager.adapter!!.notifyDataSetChanged()
+            viewBinding!!.relearnPager.adapter = relearnAdapter
         }
 
-        relearnAdapter.effectsLiveData.observe(viewLifecycleOwner, Observer {
+        relearnAdapter.getEffects().onEach {
             when (it) {
                 is ReLearnAdapterEffect.LaunchReLearnEffect -> {
                     relearnLauncher.launch(it.reLearnTranslation)
@@ -219,7 +219,7 @@ class MainFragment : Fragment() {
                     onReLearnDeleted(it.relearn, it.position)
                 }
             }
-        })
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     private fun animateShowFab(){
