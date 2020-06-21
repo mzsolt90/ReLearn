@@ -4,9 +4,6 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.util.set
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
 import androidx.recyclerview.widget.RecyclerView
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
@@ -44,7 +41,6 @@ class ReLearnAdapter @AssistedInject constructor(
     private val coroutineScope: CoroutineScope,
     @Assisted private val sourceCount: Int
 ) : RecyclerView.Adapter<ReLearnBaseViewHolder>(),
-    LifecycleOwner,
     ViewEffectsProducer<ReLearnAdapterEffect> by AndroidEffectsProducer() {
 
     private val viewModels = mutableListOf<ReLearnCardViewModel>()
@@ -52,16 +48,11 @@ class ReLearnAdapter @AssistedInject constructor(
     private val bindingEffectsJobs = SparseArray<Job>()
     private val viewModelStateJobs = SparseArray<Job>()
 
-    private val lifecycleRegistry = LifecycleRegistry(this)
-    override fun getLifecycle() = lifecycleRegistry
-
     init {
         Timber.v("Setting up viewmodels")
         repeat(itemCount) { position ->
             viewModels.add(viewModelProvider.get().also { setupViewModel(it, position) })
         }
-
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
     }
 
     private fun setupViewModel(viewModel: ReLearnCardViewModel, position: Int) {
@@ -108,12 +99,6 @@ class ReLearnAdapter @AssistedInject constructor(
             )
             else -> throw NotImplementedError("View type is not supported")
         }
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    }
 
     override fun getItemId(position: Int) =
         viewModels[position].hashCode().toLong()
@@ -277,12 +262,6 @@ class ReLearnAdapter @AssistedInject constructor(
         if (isNextReLearn(position)) ITEM_TYPE_NEXT else ITEM_TYPE_HISTORY
 
     private fun isNextReLearn(position: Int) = position == itemCount - 1
-
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
-    }
 
     @AssistedInject.Factory
     interface Factory {
