@@ -3,7 +3,6 @@ package com.azyoot.relearn.ui.main
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
-import android.animation.TimeAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -14,7 +13,6 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
@@ -98,7 +96,9 @@ class MainFragment : Fragment() {
         }
 
         viewBinding!!.fab.setOnClickListener {
-            viewBinding!!.relearnPager.setCurrentItem(viewBinding!!.relearnPager.adapter?.itemCount ?: 1 - 1, true)
+            viewBinding!!.relearnPager.setCurrentItem(
+                viewBinding!!.relearnPager.adapter?.itemCount ?: 1 - 1, true
+            )
         }
 
         viewModel.getViewState()
@@ -115,7 +115,7 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        if(viewBinding!!.groupEmpty.visibility == View.VISIBLE){
+        if (viewBinding!!.groupEmpty.visibility == View.VISIBLE) {
             viewModel.refresh()
         }
     }
@@ -173,7 +173,10 @@ class MainFragment : Fragment() {
             groupLoaded.visibility = View.GONE
             groupProgress.visibility = View.GONE
 
-            emptySubtitle.text = resources.getString(R.string.message_empty_remaining, MIN_SOURCES_COUNT - viewState.sourceCount)
+            emptySubtitle.text = resources.getString(
+                R.string.message_empty_remaining,
+                MIN_SOURCES_COUNT - viewState.sourceCount
+            )
 
             emptyImage.apply {
                 visibility = View.VISIBLE
@@ -185,7 +188,7 @@ class MainFragment : Fragment() {
     }
 
     private fun setupViewPager(viewState: MainViewState.Loaded) {
-        val relearnAdapter = relearnAdapterFactory.create(viewState.sourceCount)
+        val relearnAdapter = relearnAdapterFactory.create(viewState.sourceCount, this)
 
         Timber.d("Creating new view pager")
 
@@ -220,7 +223,10 @@ class MainFragment : Fragment() {
                 }
                 is ReLearnAdapterEffect.ShowNextReLearnEffect -> {
                     viewBinding!!.relearnPager.post {
-                        viewBinding!!.relearnPager.setCurrentItem(relearnAdapter.itemCount - 1, true)
+                        viewBinding!!.relearnPager.setCurrentItem(
+                            relearnAdapter.itemCount - 1,
+                            true
+                        )
                     }
                 }
                 is ReLearnAdapterEffect.ReLearnDeletedEffect -> {
@@ -230,7 +236,7 @@ class MainFragment : Fragment() {
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
-    private fun animateShowFab(){
+    private fun animateShowFab() {
         ObjectAnimator.ofFloat(
             viewBinding!!.fab,
             "translationY",
@@ -238,7 +244,7 @@ class MainFragment : Fragment() {
             0F
         ).apply {
             duration = 300
-            addListener(object : AnimatorListenerAdapter(){
+            addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator?) {
                     viewBinding!!.fab.visibility = View.VISIBLE
                 }
@@ -248,7 +254,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun animateHideFab(){
+    private fun animateHideFab() {
         ObjectAnimator.ofFloat(
             viewBinding!!.fab,
             "translationY",
@@ -256,7 +262,7 @@ class MainFragment : Fragment() {
             requireContext().dpToPx(80)
         ).apply {
             duration = 300
-            addListener(object : AnimatorListenerAdapter(){
+            addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     viewBinding!!.fab.visibility = View.GONE
                 }
@@ -267,15 +273,16 @@ class MainFragment : Fragment() {
     }
 
     private fun updateFabVisibility() {
-        if(viewBinding!!.groupLoaded.visibility != View.VISIBLE) {
+        if (viewBinding!!.groupLoaded.visibility != View.VISIBLE) {
             viewBinding!!.fab.visibility = View.GONE
             return
         }
 
-        val visible = viewBinding!!.relearnPager.currentItem < viewBinding!!.relearnPager.adapter!!.itemCount - 1
-        if(visible && viewBinding!!.fab.visibility != View.VISIBLE) {
+        val visible =
+            viewBinding!!.relearnPager.currentItem < viewBinding!!.relearnPager.adapter!!.itemCount - 1
+        if (visible && viewBinding!!.fab.visibility != View.VISIBLE) {
             animateShowFab()
-        } else if(!visible && viewBinding!!.fab.visibility != View.GONE){
+        } else if (!visible && viewBinding!!.fab.visibility != View.GONE) {
             animateHideFab()
         }
     }

@@ -1,6 +1,5 @@
 package com.azyoot.relearn.di.ui
 
-import androidx.lifecycle.LifecycleOwner
 import com.azyoot.relearn.ui.main.MainFragment
 import dagger.BindsInstance
 import dagger.Subcomponent

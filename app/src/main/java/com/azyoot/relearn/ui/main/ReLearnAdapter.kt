@@ -4,14 +4,18 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.util.set
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
+import com.azyoot.relearn.di.ui.LifecycleScopedFactory
 import com.azyoot.relearn.domain.config.MAX_HISTORY
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.common.AndroidEffectsProducer
 import com.azyoot.relearn.ui.common.ViewEffectsProducer
-import com.azyoot.relearn.ui.common.ViewModelsOwner
+import com.azyoot.relearn.ui.common.ViewModelsList
+import com.azyoot.relearn.ui.common.lifecycleScoped
 import com.azyoot.relearn.ui.main.relearn.*
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -21,7 +25,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
-import javax.inject.Provider
 import kotlin.math.min
 
 sealed class ReLearnAdapterEffect {
@@ -36,24 +39,30 @@ sealed class ReLearnAdapterEffect {
 
 @ExperimentalCoroutinesApi
 class ReLearnAdapter @AssistedInject constructor(
-    private val viewModelProvider: Provider<ReLearnCardViewModel>,
     private val nextReLearnCardFactory: ReLearnNextCardViewHolder.Factory,
     private val historyReLearnCardFactory: ReLearnHistoryCardViewHolder.Factory,
     private val coroutineScope: CoroutineScope,
-    private val viewModelsOwner: ViewModelsOwner<ReLearnCardViewState, ReLearnCardEffect, ReLearnCardViewModel>,
-    @Assisted private val sourceCount: Int
+    private val viewModelsFactory: ViewModelProvider.Factory,
+    private val lifecycleScopedFactory: LifecycleScopedFactory,
+    @Assisted private val sourceCount: Int,
+    @Assisted viewModelStoreOwner: ViewModelStoreOwner
 ) : RecyclerView.Adapter<ReLearnBaseViewHolder>(),
     ViewEffectsProducer<ReLearnAdapterEffect> by AndroidEffectsProducer() {
+
+    private val viewModelsList: ViewModelsList<ReLearnCardViewState, ReLearnCardEffect, ReLearnCardViewModel>
+            by viewModelStoreOwner.lifecycleScoped {
+        lifecycleScopedFactory
+    }
 
     private val bindingJobs = SparseArray<Job>()
 
     init {
         Timber.v("Setting up viewmodels")
         repeat(itemCount) {
-            viewModelsOwner.add(viewModelProvider.get())
+            viewModelsList.add(viewModelsFactory.create(ReLearnCardViewModel::class.java))
         }
 
-        viewModelsOwner.getEffects().onEach {
+        viewModelsList.getEffects().onEach {
             val effect = it.effect
             if (effect is ReLearnCardEffect.ReLearnDeleted) {
                 Timber.v("Relearn effect @ position ${it.position}: ${effect.reLearnTranslation.sourceText} - $effect")
@@ -85,7 +94,7 @@ class ReLearnAdapter @AssistedInject constructor(
         }
 
     override fun getItemId(position: Int) =
-        viewModelsOwner[position].hashCode().toLong()
+        viewModelsList[position].hashCode().toLong()
 
     override fun getItemCount() = min(sourceCount, MAX_HISTORY) + 1
 
@@ -110,7 +119,7 @@ class ReLearnAdapter @AssistedInject constructor(
 
     override fun onBindViewHolder(holder: ReLearnBaseViewHolder, position: Int) {
         Timber.v("Binding view holder at position: $position")
-        val viewModel = viewModelsOwner[position]
+        val viewModel = viewModelsList[position]
         if (isNextReLearn(position)) {
             viewModel.loadInitialNextReLearn()
         } else {
@@ -141,7 +150,7 @@ class ReLearnAdapter @AssistedInject constructor(
     private fun handleAction(action: ReLearnAction, position: Int) {
         Timber.v("Adapter action $action at position $position")
 
-        val viewModel = viewModelsOwner[position]
+        val viewModel = viewModelsList[position]
 
         when (action) {
             ReLearnAction.ViewReLearn -> {
@@ -171,7 +180,7 @@ class ReLearnAdapter @AssistedInject constructor(
             bindingJobs.remove(position)
         }
 
-        viewModelsOwner.removeAt(position)
+        viewModelsList.removeAt(position)
         notifyItemRemoved(position)
     }
 
@@ -180,9 +189,9 @@ class ReLearnAdapter @AssistedInject constructor(
     }
 
     private fun addViewModelAt(position: Int) =
-        viewModelProvider.get().also {
+        viewModelsFactory.create(ReLearnCardViewModel::class.java).also {
             Timber.v("Adding new view model @ position $position")
-            viewModelsOwner.add(position, it)
+            viewModelsList.add(position, it)
             notifyItemInserted(position)
         }
 
@@ -237,7 +246,7 @@ class ReLearnAdapter @AssistedInject constructor(
 
     @AssistedInject.Factory
     interface Factory {
-        fun create(sourceCount: Int): ReLearnAdapter
+        fun create(sourceCount: Int, viewModelStoreOwner: ViewModelStoreOwner): ReLearnAdapter
     }
 
     companion object {

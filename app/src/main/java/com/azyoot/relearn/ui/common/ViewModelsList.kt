@@ -1,5 +1,6 @@
 package com.azyoot.relearn.ui.common
 
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -8,12 +9,12 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class ViewModelsOwner<S : Any, E : Any, VM : BaseAndroidViewModel<S, E>>
+class ViewModelsList<S : Any, E : Any, VM : BaseAndroidViewModel<S, E>>
 @Inject
 constructor(
     private val coroutineScope: CoroutineScope
-) :
-    ViewEffectsProducer<ViewModelsOwner.ViewModelEffectAtPosition<E>> by AndroidEffectsProducer() {
+) : ViewModel(),
+    ViewEffectsProducer<ViewModelsList.ViewModelEffectAtPosition<E>> by AndroidEffectsProducer() {
 
     data class ViewModelEffectAtPosition<E>(val position: Int, val effect: E)
 
