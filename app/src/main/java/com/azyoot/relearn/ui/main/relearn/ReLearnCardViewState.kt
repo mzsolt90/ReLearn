@@ -21,4 +21,5 @@ sealed class ReLearnCardViewState {
 sealed class ReLearnCardEffect {
     abstract class ReLearnTranslationEffect(val reLearnTranslation: ReLearnTranslation) : ReLearnCardEffect()
     class Launch(reLearn: ReLearnTranslation): ReLearnTranslationEffect(reLearn)
+    class ReLearnDeleted(reLearn: ReLearnTranslation): ReLearnTranslationEffect(reLearn)
 }

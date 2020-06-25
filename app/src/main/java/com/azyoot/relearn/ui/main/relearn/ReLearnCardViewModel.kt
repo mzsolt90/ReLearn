@@ -63,16 +63,21 @@ class ReLearnCardViewModel
             val newSource =
                 acceptRelearnSourceUseCase.acceptRelearnUseCase(relearnState.reLearnTranslation.source)
             val translation = getTranslationFromSourceUseCase.getTranslationFromSource(newSource)
-            viewState.value = relearnState.copy(reLearnTranslation = translation, relearnState = ReLearnCardReLearnState.Accepted)
+            viewState.value = relearnState.copy(
+                reLearnTranslation = translation,
+                relearnState = ReLearnCardReLearnState.Accepted
+            )
         }
     }
 
     fun deleteReLearn() {
         val relearnState =
             currentViewState as? ReLearnCardViewState.ReLearnTranslationState ?: return
+        val relearn = relearnState.reLearnTranslation
         coroutineScope.launch {
             //this viewmodel can now be reused
-            setReLearnDeletedUseCase.setReLearnDeleted(relearnState.reLearnTranslation.source, true)
+            setReLearnDeletedUseCase.setReLearnDeleted(relearn.source, true)
+            sendEffect(ReLearnCardEffect.ReLearnDeleted(relearn))
             viewState.value = relearnState.copy(relearnState = ReLearnCardReLearnState.Deleted)
         }
     }
@@ -98,7 +103,7 @@ class ReLearnCardViewModel
         setExpanded(true)
     }
 
-    fun setExpanded(isExpanded: Boolean){
+    fun setExpanded(isExpanded: Boolean) {
         val relearnState =
             currentViewState as? ReLearnCardViewState.ReLearnTranslationState ?: return
         viewState.value = relearnState.copy(isExpanded = isExpanded)

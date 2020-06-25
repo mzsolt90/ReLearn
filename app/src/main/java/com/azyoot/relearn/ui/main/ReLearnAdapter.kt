@@ -11,6 +11,7 @@ import com.azyoot.relearn.domain.config.MAX_HISTORY
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.common.AndroidEffectsProducer
 import com.azyoot.relearn.ui.common.ViewEffectsProducer
+import com.azyoot.relearn.ui.common.ViewModelsOwner
 import com.azyoot.relearn.ui.main.relearn.*
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -39,46 +40,29 @@ class ReLearnAdapter @AssistedInject constructor(
     private val nextReLearnCardFactory: ReLearnNextCardViewHolder.Factory,
     private val historyReLearnCardFactory: ReLearnHistoryCardViewHolder.Factory,
     private val coroutineScope: CoroutineScope,
+    private val viewModelsOwner: ViewModelsOwner<ReLearnCardViewState, ReLearnCardEffect, ReLearnCardViewModel>,
     @Assisted private val sourceCount: Int
 ) : RecyclerView.Adapter<ReLearnBaseViewHolder>(),
     ViewEffectsProducer<ReLearnAdapterEffect> by AndroidEffectsProducer() {
 
-    private val viewModels = mutableListOf<ReLearnCardViewModel>()
     private val bindingJobs = SparseArray<Job>()
-    private val bindingEffectsJobs = SparseArray<Job>()
-    private val viewModelStateJobs = SparseArray<Job>()
 
     init {
         Timber.v("Setting up viewmodels")
-        repeat(itemCount) { position ->
-            viewModels.add(viewModelProvider.get().also { setupViewModel(it, position) })
+        repeat(itemCount) {
+            viewModelsOwner.add(viewModelProvider.get())
         }
-    }
 
-    private fun setupViewModel(viewModel: ReLearnCardViewModel, position: Int) {
-        if (viewModelStateJobs[position] != null) viewModelStateJobs[position].cancel()
-        viewModelStateJobs[position] = viewModel.getViewState().onEach {
-            if (it is ReLearnCardViewState.ReLearnTranslationState) {
-                Timber.v("View state update @ position $position: ${it.reLearnTranslation.sourceText} - $it")
-
-                when (it.relearnState) {
-                    is ReLearnCardReLearnState.Deleted -> onReLearnDeleted(
-                        viewModel,
-                        it.reLearnTranslation,
-                        position
-                    )
-                }
+        viewModelsOwner.getEffects().onEach {
+            val effect = it.effect
+            if (effect is ReLearnCardEffect.ReLearnDeleted) {
+                Timber.v("Relearn effect @ position ${it.position}: ${effect.reLearnTranslation.sourceText} - $effect")
             } else {
-                Timber.v("View state update @ position $position: $it")
+                Timber.v("Relearn effect @ position ${it.position}: $effect")
             }
 
+            handleEffect(it.effect, it.position)
         }.launchIn(coroutineScope)
-    }
-
-    private fun reindexViewModels() {
-        viewModels.forEachIndexed { index, viewModel ->
-            setupViewModel(viewModel, index)
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -101,7 +85,7 @@ class ReLearnAdapter @AssistedInject constructor(
         }
 
     override fun getItemId(position: Int) =
-        viewModels[position].hashCode().toLong()
+        viewModelsOwner[position].hashCode().toLong()
 
     override fun getItemCount() = min(sourceCount, MAX_HISTORY) + 1
 
@@ -122,18 +106,11 @@ class ReLearnAdapter @AssistedInject constructor(
 
             holder.bind(it)
         }.launchIn(coroutineScope)
-
-        if (bindingEffectsJobs[position] != null) {
-            bindingEffectsJobs[position].cancel()
-        }
-        bindingEffectsJobs[position] = viewModel.getEffects().onEach {
-            handleEffect(it, position)
-        }.launchIn(coroutineScope)
     }
 
     override fun onBindViewHolder(holder: ReLearnBaseViewHolder, position: Int) {
         Timber.v("Binding view holder at position: $position")
-        val viewModel = viewModels[position]
+        val viewModel = viewModelsOwner[position]
         if (isNextReLearn(position)) {
             viewModel.loadInitialNextReLearn()
         } else {
@@ -154,13 +131,17 @@ class ReLearnAdapter @AssistedInject constructor(
                     effect.reLearnTranslation
                 )
             )
+            is ReLearnCardEffect.ReLearnDeleted -> onReLearnDeleted(
+                effect.reLearnTranslation,
+                position
+            )
         }
     }
 
     private fun handleAction(action: ReLearnAction, position: Int) {
         Timber.v("Adapter action $action at position $position")
 
-        val viewModel = viewModels[position]
+        val viewModel = viewModelsOwner[position]
 
         when (action) {
             ReLearnAction.ViewReLearn -> {
@@ -185,20 +166,13 @@ class ReLearnAdapter @AssistedInject constructor(
     private fun removeViewModelAt(position: Int) {
         Timber.d("Removing viewmodel @ position $position")
 
-        viewModelStateJobs[position].cancel()
-        viewModelStateJobs.remove(position)
         if (bindingJobs[position] != null) {
             bindingJobs[position].cancel()
             bindingJobs.remove(position)
         }
-        if (bindingEffectsJobs[position] != null) {
-            bindingEffectsJobs[position].cancel()
-            bindingEffectsJobs.remove(position)
-        }
 
-        viewModels.removeAt(position)
+        viewModelsOwner.removeAt(position)
         notifyItemRemoved(position)
-        reindexViewModels()
     }
 
     private fun removeLastHistoryPage() {
@@ -208,13 +182,11 @@ class ReLearnAdapter @AssistedInject constructor(
     private fun addViewModelAt(position: Int) =
         viewModelProvider.get().also {
             Timber.v("Adding new view model @ position $position")
-            viewModels.add(position, it)
+            viewModelsOwner.add(position, it)
             notifyItemInserted(position)
-            reindexViewModels()
         }
 
     private fun onReLearnDeleted(
-        viewModel: ReLearnCardViewModel,
         relearn: ReLearnTranslation,
         position: Int
     ) {
