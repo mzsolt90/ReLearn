@@ -131,9 +131,9 @@ class OnboardingFragment : Fragment() {
     private val iconResId: Int
         get() = when (params.screen) {
             OnboardingScreen.WELCOME -> R.drawable.ic_logo_standalone
-            OnboardingScreen.HOW_IT_WORKS -> R.drawable.ic_logo_standalone
-            OnboardingScreen.ENABLE_ACCESSIBILITY -> R.drawable.ic_logo_standalone
-            OnboardingScreen.DONE -> R.drawable.ic_logo_standalone
+            OnboardingScreen.HOW_IT_WORKS -> R.drawable.ic_school
+            OnboardingScreen.ENABLE_ACCESSIBILITY -> R.drawable.ic_settings
+            OnboardingScreen.DONE -> R.drawable.ic_check
         }
 
     fun getParams() = params

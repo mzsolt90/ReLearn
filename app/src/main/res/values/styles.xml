@@ -24,7 +24,7 @@
     </style>
 
     <style name="Widget.App.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/primaryColor</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
     </style>
 
     <style name="Widget.App.TextButton.IconOnly" parent="Widget.MaterialComponents.Button.TextButton">
@@ -39,7 +39,7 @@
     </style>
 
     <style name="Widget.App.TextButton.IconOnly.DayNight" parent="Widget.App.TextButton.IconOnly">
-        <item name="iconTint">@color/primaryColor</item>
+        <item name="iconTint">?attr/colorOnBackground</item>
     </style>
 
 </resources>

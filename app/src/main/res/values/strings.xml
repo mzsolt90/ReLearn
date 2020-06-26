@@ -20,7 +20,7 @@
     <string name="onboarding_how_it_works_title">Built for explorers</string>
     <string name="onboarding_how_it_works_message">ReLearn works for you, with you. If you see a new word or expression, go ahead and look it up in your favorite dictionary.\n\nReLearn will take notice and makes sure that you will not forget it by prompting you for it later.</string>
     <string name="onboarding_enable_title">Your companion</string>
-    <string name="onboarding_enable_message">ReLearn works in the background, escorting you on your journey to expand your knowledge.\nIt requires some permissions, so to allow this, please enable the accessibility service.</string>
+    <string name="onboarding_enable_message">ReLearn works in the background, escorting you on your journey to expand your knowledge.\n\nTo enable this behavior, ReLearn needs to run in the background. Please enable the \'ReLearn monitoring\' service on the next screen.</string>
     <string name="onboarding_done_title">All set!</string>
     <string name="onboarding_done_message">Now you can go ahead and feed your curiosity. ReLearn has got your back.</string>
 </resources>

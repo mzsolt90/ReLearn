@@ -3,4 +3,5 @@
     <color name="notification_bullet_color">@android:color/white</color>
     <color name="primaryBackgroundColor">#0a0a0a</color>
     <color name="secondaryBackgroundColor">#151516</color>
+    <color name="checkedColor">#388E3C</color>
 </resources>

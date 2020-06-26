@@ -17,12 +17,4 @@
         <item name="colorOnSurface">@color/primaryTextColor</item>
     </style>
 
-
-    <style name="Widget.App.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/primaryTextColor</item>
-    </style>
-
-    <style name="Widget.App.TextButton.IconOnly.DayNight" parent="Widget.App.TextButton.IconOnly">
-        <item name="iconTint">@color/primaryTextColor</item>
-    </style>
 </resources>
