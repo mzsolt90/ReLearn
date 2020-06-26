@@ -1,6 +1,7 @@
 package com.azyoot.relearn.ui.onboarding
 
 import android.content.Intent
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.azyoot.relearn.R
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.FragmentOnboardingGeneralBinding
@@ -18,6 +20,8 @@ import com.azyoot.relearn.service.MonitoringService
 import com.azyoot.relearn.ui.main.MainViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 
 @ExperimentalCoroutinesApi
@@ -62,7 +66,17 @@ class OnboardingFragment : Fragment() {
         viewBinding!!.apply {
             title.setText(titleResId)
             message.setText(messageResId)
-            icon.setImageResource(iconResId)
+
+            if(params.screen == OnboardingScreen.DONE) {
+                lifecycleScope.launch {
+                    delay(750)
+                    val animVector = resources.getDrawable(R.drawable.ic_check_animated, view.context.theme) as AnimatedVectorDrawable
+                    icon.setImageDrawable(animVector)
+                    animVector.start()
+                }
+            } else {
+                icon.setImageResource(iconResId)
+            }
 
             next.setText(buttonResId)
             next.setOnClickListener {
@@ -133,7 +147,7 @@ class OnboardingFragment : Fragment() {
             OnboardingScreen.WELCOME -> R.drawable.ic_logo_standalone
             OnboardingScreen.HOW_IT_WORKS -> R.drawable.ic_school
             OnboardingScreen.ENABLE_ACCESSIBILITY -> R.drawable.ic_settings
-            OnboardingScreen.DONE -> R.drawable.ic_check
+            OnboardingScreen.DONE -> R.drawable.ic_check_animated
         }
 
     fun getParams() = params

@@ -2,9 +2,31 @@
     android:width="24dp"
     android:height="24dp"
     android:autoMirrored="true"
+    android:tint="@color/checkedColor"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path
-        android:fillColor="@color/checkedColor"
-        android:pathData="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41,-1.41z" />
+    <group>
+        <path
+            android:name="tick1"
+            android:pathData="M4.12,12.7L9,17.59"
+            android:strokeWidth="2"
+            android:strokeColor="@android:color/black"
+            android:strokeLineCap="square"
+            android:strokeLineJoin="miter" />
+        <clip-path
+            android:name="clip1"
+            android:pathData="M9,20L9,0 0,0 0,20" />
+    </group>
+    <group>
+        <path
+            android:name="tick2"
+            android:pathData="M9,17.59 20.3,6.3"
+            android:strokeWidth="2"
+            android:strokeColor="@android:color/black"
+            android:strokeLineCap="square"
+            android:strokeLineJoin="miter" />
+        <clip-path
+            android:name="clip2"
+            android:pathData="M9,20L9,0 0,0 0,20" />
+    </group>
 </vector>
