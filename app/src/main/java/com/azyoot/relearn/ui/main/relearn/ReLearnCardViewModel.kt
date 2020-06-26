@@ -15,8 +15,7 @@ class ReLearnCardViewModel
     private val getNthHistoryReLearnSourceUseCase: GetNthHistoryReLearnSourceUseCase,
     private val getTranslationFromSourceUseCase: GetTranslationFromSourceUseCase,
     private val acceptRelearnSourceUseCase: AcceptRelearnSourceUseCase,
-    private val setReLearnDeletedUseCase: SetReLearnDeletedUseCase,
-    override val coroutineScope: CoroutineScope
+    private val setReLearnDeletedUseCase: SetReLearnDeletedUseCase
 ) : BaseAndroidViewModel<ReLearnCardViewState, ReLearnCardEffect>(ReLearnCardViewState.Initial) {
 
     fun loadInitialNthHistory(n: Int) {
