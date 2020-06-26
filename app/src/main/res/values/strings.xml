@@ -10,4 +10,17 @@
     <string name="message_empty_remaining">%1$d more entries to start</string>
     <string name="message_relearn_deleted">Entry deleted</string>
     <string name="action_undo">Undo</string>
+
+    <string name="button_next">Next</string>
+    <string name="button_get_started">Get started</string>
+    <string name="button_enable">Enable</string>
+    <string name="button_done">Done</string>
+    <string name="onboarding_welcome_title">Welcome!</string>
+    <string name="onboarding_welcome_message">ReLearn is a tool for language learners that helps you remember those foreign words you\'ve looked up recently.\n\nLet\'s walk through how it works!</string>
+    <string name="onboarding_how_it_works_title">Built for explorers</string>
+    <string name="onboarding_how_it_works_message">ReLearn works for you, with you. If you see a new word or expression, go ahead and look it up in your favorite dictionary.\n\nReLearn will take notice and makes sure that you will not forget it by prompting you for it later.</string>
+    <string name="onboarding_enable_title">Your companion</string>
+    <string name="onboarding_enable_message">ReLearn works in the background, escorting you on your journey to expand your knowledge.\nIt requires some permissions, so to allow this, please enable the accessibility service.</string>
+    <string name="onboarding_done_title">All set!</string>
+    <string name="onboarding_done_message">Now you can go ahead and feed your curiosity. ReLearn has got your back.</string>
 </resources>

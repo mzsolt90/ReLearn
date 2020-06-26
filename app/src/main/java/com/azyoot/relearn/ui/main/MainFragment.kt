@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -26,6 +27,8 @@ import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import com.azyoot.relearn.ui.animation.AnimatedTumbleweed
+import com.azyoot.relearn.ui.onboarding.OnboardingFragment
+import com.azyoot.relearn.ui.onboarding.OnboardingFragmentParams
 import com.azyoot.relearn.util.dpToPx
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -151,9 +154,59 @@ class MainFragment : Fragment() {
                     setupViewPager(viewState)
                 }
             }
+            is MainViewState.Onboarding -> bindOnboardingState(viewState)
+        }
+
+        if (viewState is MainViewState.Onboarding) {
+            (activity as AppCompatActivity).supportActionBar?.hide()
+        } else {
+            (activity as AppCompatActivity).supportActionBar?.show()
+        }
+
+        if (currentOnboardingScreen() != null && viewState !is MainViewState.Onboarding) {
+            hideOnboardingFragment()
         }
 
         updateFabVisibility()
+    }
+
+    private fun currentOnboardingScreen() =
+        (childFragmentManager.findFragmentByTag(OnboardingFragment.TAG) as? OnboardingFragment?)
+            ?.getParams()
+            ?.screen
+
+    private fun showOnboardingFragment(params: OnboardingFragmentParams) {
+        childFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.slide_out_left,
+                android.R.anim.fade_in,
+                android.R.anim.fade_out
+            )
+            .replace(R.id.main, OnboardingFragment.newInstance(params), OnboardingFragment.TAG)
+            .commit()
+    }
+
+    private fun hideOnboardingFragment() {
+        val currentFragment =
+            childFragmentManager.findFragmentByTag(OnboardingFragment.TAG) ?: return
+        childFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                android.R.anim.fade_in, R.anim.slide_out_down, android.R.anim.fade_in,
+                android.R.anim.fade_out
+            )
+            .remove(currentFragment)
+            .commit()
+    }
+
+    private fun bindOnboardingState(state: MainViewState.Onboarding) {
+        viewBinding!!.groupProgress.visibility = View.GONE
+        viewBinding!!.groupLoaded.visibility = View.GONE
+        viewBinding!!.groupEmpty.visibility = View.GONE
+
+        if (currentOnboardingScreen() != state.screen) {
+            showOnboardingFragment(OnboardingFragmentParams((state.screen)))
+        }
     }
 
     private fun showServiceNotEnabledWarning() {

@@ -2,10 +2,13 @@ package com.azyoot.relearn.ui.main
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.azyoot.relearn.domain.config.PREFERENCES_NAME
+import com.azyoot.relearn.domain.config.PREF_ONBOARDING_SEEN
 import com.azyoot.relearn.domain.usecase.relearn.CountReLearnSourcesUseCase
 import com.azyoot.relearn.domain.usecase.relearn.SyncReLearnsUseCase
 import com.azyoot.relearn.service.MonitoringService
 import com.azyoot.relearn.ui.common.BaseAndroidViewModel
+import com.azyoot.relearn.ui.onboarding.OnboardingScreen
 import com.azyoot.relearn.ui.relearn.ReLearnPeriodicScheduler
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -20,8 +23,12 @@ class MainViewModel @Inject constructor(
 ) : BaseAndroidViewModel<MainViewState, MainViewEffect>(MainViewState.Initial) {
 
     init {
-        checkAccessibilityService()
-        loadData()
+        if (isOnboardingCompleted) {
+            checkAccessibilityService()
+            loadData()
+        } else {
+            startOnboarding()
+        }
         scheduleReLearn()
     }
 
@@ -32,6 +39,12 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    private val isOnboardingCompleted: Boolean
+        get() = applicationContext.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+            .getBoolean(
+                PREF_ONBOARDING_SEEN, false
+            )
 
     private fun loadData() {
         viewState.value = MainViewState.Loading
@@ -46,6 +59,10 @@ class MainViewModel @Inject constructor(
                     )
             }
         }
+    }
+
+    private fun startOnboarding() {
+        viewState.value = MainViewState.Onboarding(OnboardingScreen.WELCOME)
     }
 
     fun scheduleReLearn() {
@@ -70,13 +87,44 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private fun getDefaultPage(relearnCount: Int) = relearnCount
+
     fun onPageChanged(page: Int) {
         currentViewState.let {
             if (it !is MainViewState.Loaded) return@let
-            if(it.page == page) return
+            if (it.page == page) return
             viewState.value = it.copy(page = page)
         }
     }
 
-    private fun getDefaultPage(relearnCount: Int) = relearnCount
+    fun setOnboardingSeen(){
+        applicationContext.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(
+                PREF_ONBOARDING_SEEN, true
+            )
+            .apply()
+    }
+
+    fun onOnboardingScreenNext(screen: OnboardingScreen) {
+        currentViewState.also {
+            if(it !is MainViewState.Onboarding) return
+
+            when(it.screen){
+                OnboardingScreen.WELCOME -> viewState.value = MainViewState.Onboarding(OnboardingScreen.HOW_IT_WORKS)
+                OnboardingScreen.HOW_IT_WORKS -> viewState.value = MainViewState.Onboarding(OnboardingScreen.ENABLE_ACCESSIBILITY)
+                OnboardingScreen.ENABLE_ACCESSIBILITY -> viewState.value = MainViewState.Onboarding(OnboardingScreen.DONE)
+                OnboardingScreen.DONE -> {
+                    setOnboardingSeen()
+                    loadData()
+                }
+            }
+        }
+
+    }
+
+    fun onOnboardingScreenClosed(screen: OnboardingScreen) {
+        setOnboardingSeen()
+        loadData()
+    }
 }
