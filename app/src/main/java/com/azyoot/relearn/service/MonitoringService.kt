@@ -1,10 +1,12 @@
 package com.azyoot.relearn.service
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityManager
 import android.view.accessibility.AccessibilityNodeInfo
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.domain.analytics.EVENT_SERVICE_CREATED
@@ -165,11 +167,19 @@ class MonitoringService : AccessibilityService() {
     }
 
     companion object {
-        fun isRunning(context: Context) =
-            Settings.Secure.getString(
+        fun isRunning(context: Context): Boolean {
+            val secureSettingsList = Settings.Secure.getString(
                 context.applicationContext.contentResolver,
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-            )?.contains(context.packageName.toString() + "/" + MonitoringService::class.java.name)
-                ?: false
+            )
+            if(secureSettingsList?.contains(MonitoringService::class.java.name) == true) return true
+
+            val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+            return accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK).any {
+                it.packageNames.any { packageName -> packageName == context.packageName } &&
+                        it.resolveInfo.serviceInfo.name.contains(MonitoringService::class.java.simpleName)
+            }
+        }
+
     }
 }
