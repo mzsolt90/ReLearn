@@ -15,7 +15,7 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
 ) :
     ReLearnBaseViewHolder(viewBinding.root) {
 
-    override val isExpanded: Boolean
+    override val isRevealed: Boolean
         get() = viewBinding.groupShowHide.visibility == View.VISIBLE
 
     init {
@@ -26,7 +26,13 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
             actionsListener(ReLearnAction.DeleteReLearn)
         }
         viewBinding.showHide.setOnClickListener {
-            actionsListener(ReLearnAction.SetExpanded(!isExpanded))
+            if(isRevealed){
+                viewBinding.showHide.setIconResource(R.drawable.ic_invisible)
+                unreveal(viewBinding.groupShowHide, viewBinding.showHide)
+            } else {
+                viewBinding.showHide.setIconResource(R.drawable.ic_visible)
+                reveal(viewBinding.groupShowHide, viewBinding.showHide)
+            }
         }
     }
 
@@ -40,9 +46,16 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
             is ReLearnCardViewState.ReLearnTranslationState -> {
                 viewBinding.groupProgress.visibility = View.GONE
                 viewBinding.groupLoaded.visibility = View.VISIBLE
-                viewBinding.groupShowHide.visibility = if(state.isExpanded) View.VISIBLE else View.INVISIBLE
 
-                viewBinding.showHide.setIconResource(if(state.isExpanded) R.drawable.ic_visible else R.drawable.ic_invisible)
+                viewBinding.groupShowHide.visibility =
+                    if (state.isRevealed) View.VISIBLE
+                    else View.INVISIBLE
+
+                viewBinding.showHide.setIconResource(
+                    if (state.isRevealed)
+                        R.drawable.ic_visible
+                    else R.drawable.ic_invisible
+                )
 
                 bindTranslationData(state.reLearnTranslation)
             }

@@ -5,8 +5,10 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.view.View
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.constraintlayout.widget.Group
 import com.azyoot.relearn.R
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
@@ -21,7 +23,7 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
 ) :
     ReLearnBaseViewHolder(viewBinding.root) {
 
-    override val isExpanded: Boolean
+    override val isRevealed: Boolean
         get() = viewBinding.groupShowHide.visibility == View.VISIBLE
 
     init {
@@ -35,7 +37,13 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
             actionsListener(ReLearnAction.DeleteReLearn)
         }
         viewBinding.showHide.setOnClickListener {
-            actionsListener(ReLearnAction.SetExpanded(!isExpanded))
+            if(isRevealed){
+                viewBinding.showHide.setIconResource(R.drawable.ic_invisible)
+                unreveal(viewBinding.groupShowHide, viewBinding.showHide)
+            } else {
+                viewBinding.showHide.setIconResource(R.drawable.ic_visible)
+                reveal(viewBinding.groupShowHide, viewBinding.showHide)
+            }
         }
     }
 
@@ -55,9 +63,13 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
 
         if (state is ReLearnCardViewState.ReLearnTranslationState) {
             viewBinding.groupActions.visibility = View.VISIBLE
-            viewBinding.groupShowHide.visibility = if(state.isExpanded) View.VISIBLE else View.INVISIBLE
+            viewBinding.groupShowHide.visibility = if(state.isRevealed)
+                View.VISIBLE
+            else View.INVISIBLE
 
-            viewBinding.showHide.setIconResource(if(state.isExpanded) R.drawable.ic_visible else R.drawable.ic_invisible)
+            viewBinding.showHide.setIconResource(if(state.isRevealed)
+                R.drawable.ic_visible
+            else R.drawable.ic_invisible)
 
             bindTranslationData(state.reLearnTranslation)
 

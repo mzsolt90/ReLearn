@@ -3,7 +3,6 @@ package com.azyoot.relearn.ui.main.relearn
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.domain.usecase.relearn.*
 import com.azyoot.relearn.ui.common.BaseAndroidViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -105,6 +104,6 @@ class ReLearnCardViewModel
     fun setExpanded(isExpanded: Boolean) {
         val relearnState =
             currentViewState as? ReLearnCardViewState.ReLearnTranslationState ?: return
-        viewState.value = relearnState.copy(isExpanded = isExpanded)
+        viewState.value = relearnState.copy(isRevealed = isExpanded)
     }
 }

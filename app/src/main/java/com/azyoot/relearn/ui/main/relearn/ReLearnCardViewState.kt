@@ -14,7 +14,7 @@ sealed class ReLearnCardViewState {
     object Loading : ReLearnCardViewState()
     object NotFound : ReLearnCardViewState()
     data class ReLearnTranslationState(val reLearnTranslation: ReLearnTranslation,
-                                       val isExpanded: Boolean,
+                                       val isRevealed: Boolean,
                                        val relearnState: ReLearnCardReLearnState) : ReLearnCardViewState()
 }
 
