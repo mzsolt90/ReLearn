@@ -332,7 +332,7 @@ class MainFragment : Fragment() {
         }
 
         val visible =
-            viewBinding!!.relearnPager.currentItem < viewBinding!!.relearnPager.adapter!!.itemCount - 1
+            viewBinding!!.relearnPager.currentItem < viewBinding!!.relearnPager.adapter!!.itemCount - 2
         if (visible && viewBinding!!.fab.visibility != View.VISIBLE) {
             animateShowFab()
         } else if (!visible && viewBinding!!.fab.visibility != View.GONE) {
