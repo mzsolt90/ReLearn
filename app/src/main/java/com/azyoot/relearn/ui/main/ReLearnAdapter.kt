@@ -167,7 +167,6 @@ class ReLearnAdapter @AssistedInject constructor(
             ReLearnAction.DeleteReLearn -> viewModel.deleteReLearn()
             is ReLearnAction.SetExpanded -> {
                 viewModel.setExpanded(action.isExpanded)
-                notifyItemChanged(position)
             }
         }
     }
