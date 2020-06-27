@@ -175,10 +175,10 @@ class MonitoringService : AccessibilityService() {
             if(secureSettingsList?.contains(MonitoringService::class.java.name) == true) return true
 
             val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-            return accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK).any {
-                it.packageNames.any { packageName -> packageName == context.packageName } &&
-                        it.resolveInfo.serviceInfo.name.contains(MonitoringService::class.java.simpleName)
-            }
+            return accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)?.any {
+                it?.packageNames?.any { packageName -> packageName == context.packageName } == true &&
+                        it.resolveInfo?.serviceInfo?.name?.contains(MonitoringService::class.java.simpleName) == true
+            } ?: false
         }
 
     }
