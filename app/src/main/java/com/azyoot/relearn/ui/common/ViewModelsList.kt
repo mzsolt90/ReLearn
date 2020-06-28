@@ -1,6 +1,7 @@
 package com.azyoot.relearn.ui.common
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -11,9 +12,7 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class ViewModelsList<S : Any, E : Any, VM : BaseAndroidViewModel<S, E>>
 @Inject
-constructor(
-    private val coroutineScope: CoroutineScope
-) : ViewModel(),
+constructor() : ViewModel(),
     ViewEffectsProducer<ViewModelsList.ViewModelEffectAtPosition<E>> by AndroidEffectsProducer() {
 
     data class ViewModelEffectAtPosition<E>(val position: Int, val effect: E)
@@ -28,7 +27,7 @@ constructor(
             }
 
             sendEffect(ViewModelEffectAtPosition(position, it))
-        }.launchIn(coroutineScope)
+        }.launchIn(viewModelScope)
 
     fun removeAt(position: Int) {
         viewModels[position].job.cancel()
