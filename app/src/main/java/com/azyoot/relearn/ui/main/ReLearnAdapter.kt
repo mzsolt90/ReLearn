@@ -3,6 +3,7 @@ package com.azyoot.relearn.ui.main
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.util.forEach
 import androidx.core.util.set
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
@@ -49,12 +50,14 @@ class ReLearnAdapter @AssistedInject constructor(
 ) : RecyclerView.Adapter<ReLearnBaseViewHolder>(),
     ViewEffectsProducer<ReLearnAdapterEffect> by AndroidEffectsProducer() {
 
+    private data class HolderAndBindingJob(val holder: ReLearnBaseViewHolder, val job: Job)
+
     private val viewModelsList: ViewModelsList<ReLearnCardViewState, ReLearnCardEffect, ReLearnCardViewModel>
             by viewModelStoreOwner.lifecycleScoped {
-        lifecycleScopedFactory
-    }
+                lifecycleScopedFactory
+            }
 
-    private val bindingJobs = SparseArray<Job>()
+    private val bindingJobs = SparseArray<HolderAndBindingJob>()
 
     init {
         Timber.v("Setting up viewmodels")
@@ -104,9 +107,9 @@ class ReLearnAdapter @AssistedInject constructor(
         position: Int
     ) {
         if (bindingJobs[position] != null) {
-            bindingJobs[position].cancel()
+            bindingJobs[position].job.cancel()
         }
-        bindingJobs[position] = viewModel.getViewState().onEach {
+        val job = viewModel.getViewState().onEach {
             if (it is ReLearnCardViewState.ReLearnTranslationState) {
                 Timber.v("Binding view state @ position $position: ${it.reLearnTranslation.sourceText} - $it")
             } else {
@@ -115,6 +118,8 @@ class ReLearnAdapter @AssistedInject constructor(
 
             holder.bind(it)
         }.launchIn(coroutineScope)
+
+        bindingJobs[position] = HolderAndBindingJob(holder, job)
     }
 
     override fun onBindViewHolder(holder: ReLearnBaseViewHolder, position: Int) {
@@ -130,6 +135,23 @@ class ReLearnAdapter @AssistedInject constructor(
 
         holder.actionsListener = {
             handleAction(it, position)
+        }
+    }
+
+    override fun onViewRecycled(holder: ReLearnBaseViewHolder) {
+        super.onViewRecycled(holder)
+
+        var holderPosition: Int? = null
+        bindingJobs.forEach { position, job ->
+            if (job.holder === holder) {
+                holderPosition = position
+                return@forEach
+            }
+        }
+        holderPosition?.apply {
+            Timber.v("Recycling view holder, previously used at position $holderPosition")
+            bindingJobs[this].job.cancel()
+            bindingJobs.remove(this)
         }
     }
 
@@ -175,7 +197,7 @@ class ReLearnAdapter @AssistedInject constructor(
         Timber.d("Removing viewmodel @ position $position")
 
         if (bindingJobs[position] != null) {
-            bindingJobs[position].cancel()
+            bindingJobs[position].job.cancel()
             bindingJobs.remove(position)
         }
 
