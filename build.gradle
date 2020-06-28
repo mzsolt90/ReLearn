@@ -40,6 +40,16 @@ buildscript {
         viewPagerVersion = '1.0.0'
         workVersion = '2.3.4'
     }
+
+    ext {
+        versionCode = System.currentTimeMillis()/1000 - 1577836800 /* 2020.01.01 */
+        if(rootProject.hasProperty("versionNameFromGitTag")){
+            versionName = (rootProject.property("versionNameFromGitTag") as String).replaceAll("v", "")
+        } else {
+            versionName = "0.0.0-DEVELOPMENT"
+        }
+    }
+
     repositories {
         google()
         jcenter()

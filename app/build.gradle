@@ -8,12 +8,14 @@ apply plugin: 'com.google.firebase.crashlytics'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
+
     defaultConfig {
         applicationId "com.azyoot.relearn"
         minSdkVersion 26
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode rootProject.ext.versionCode as int
+        versionName rootProject.ext.versionName as String
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
@@ -23,15 +25,17 @@ android {
             }
         }
     }
+    buildFeatures {
+        viewBinding {
+            enabled = true
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-    }
-
-    viewBinding {
-        enabled = true
     }
 
     testOptions {
