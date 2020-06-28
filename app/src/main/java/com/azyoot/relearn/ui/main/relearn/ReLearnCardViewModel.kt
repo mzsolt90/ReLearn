@@ -1,6 +1,5 @@
 package com.azyoot.relearn.ui.main.relearn
 
-import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.domain.usecase.relearn.*
 import com.azyoot.relearn.ui.common.BaseAndroidViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -75,19 +74,15 @@ class ReLearnCardViewModel
         coroutineScope.launch {
             //this viewmodel can now be reused
             setReLearnDeletedUseCase.setReLearnDeleted(relearn.source, true)
-            sendEffect(ReLearnCardEffect.ReLearnDeleted(relearn))
+            sendEffect(ReLearnCardEffect.ReLearnDeleted(relearnState))
             viewState.value = relearnState.copy(relearnState = ReLearnCardReLearnState.Deleted)
         }
     }
 
-    fun undeleteReLearn(reLearnTranslation: ReLearnTranslation) {
-        viewState.value = ReLearnCardViewState.ReLearnTranslationState(
-            reLearnTranslation,
-            false,
-            ReLearnCardReLearnState.FinishedLoading
-        )
+    fun undeleteReLearn(state: ReLearnCardViewState.ReLearnTranslationState) {
+        viewState.value = state
         coroutineScope.launch {
-            setReLearnDeletedUseCase.setReLearnDeleted(reLearnTranslation.source, false)
+            setReLearnDeletedUseCase.setReLearnDeleted(state.reLearnTranslation.source, false)
         }
     }
 

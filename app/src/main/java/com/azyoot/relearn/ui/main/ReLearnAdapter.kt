@@ -32,7 +32,10 @@ sealed class ReLearnAdapterEffect {
     data class LaunchReLearnEffect(val reLearnTranslation: ReLearnTranslation) :
         ReLearnAdapterEffect()
 
-    data class ReLearnDeletedEffect(val relearn: ReLearnTranslation, val position: Int) :
+    data class ReLearnDeletedEffect(
+        val position: Int,
+        val state: ReLearnCardViewState.ReLearnTranslationState
+    ) :
         ReLearnAdapterEffect()
 
     object ShowNextReLearnEffect : ReLearnAdapterEffect()
@@ -163,8 +166,8 @@ class ReLearnAdapter @AssistedInject constructor(
                 )
             )
             is ReLearnCardEffect.ReLearnDeleted -> onReLearnDeleted(
-                effect.reLearnTranslation,
-                position
+                position,
+                effect.state
             )
         }
     }
@@ -217,14 +220,14 @@ class ReLearnAdapter @AssistedInject constructor(
         }
 
     private fun onReLearnDeleted(
-        relearn: ReLearnTranslation,
-        position: Int
+        position: Int,
+        state: ReLearnCardViewState.ReLearnTranslationState
     ) {
         Timber.d("View model deleted @ position $position")
         //remove viewmodel holding the deleted data, don't bind the deleting state
         removeViewModelAt(position)
 
-        sendEffect(ReLearnAdapterEffect.ReLearnDeletedEffect(relearn, position))
+        sendEffect(ReLearnAdapterEffect.ReLearnDeletedEffect(position, state))
 
         if (isNextReLearn(position)) {
             //add viewmodel for next relearn
@@ -247,7 +250,7 @@ class ReLearnAdapter @AssistedInject constructor(
         newViewModel.loadInitialNextReLearn()
     }
 
-    fun undoReLearnDelete(relearn: ReLearnTranslation, position: Int) {
+    fun undoReLearnDelete(position: Int, state: ReLearnCardViewState.ReLearnTranslationState) {
         if (isNextReLearn(position)) {
             removeViewModelAt(itemCount - 1)
         } else {
@@ -255,7 +258,7 @@ class ReLearnAdapter @AssistedInject constructor(
         }
 
         val newViewModel = addViewModelAt(position)
-        newViewModel.undeleteReLearn(relearn)
+        newViewModel.undeleteReLearn(state)
 
         notifyDataSetChanged()
     }

@@ -27,6 +27,7 @@ import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import com.azyoot.relearn.ui.animation.AnimatedTumbleweed
+import com.azyoot.relearn.ui.main.relearn.ReLearnCardViewState
 import com.azyoot.relearn.ui.onboarding.OnboardingFragment
 import com.azyoot.relearn.ui.onboarding.OnboardingFragmentParams
 import com.azyoot.relearn.util.dpToPx
@@ -283,7 +284,7 @@ class MainFragment : Fragment() {
                     }
                 }
                 is ReLearnAdapterEffect.ReLearnDeletedEffect -> {
-                    onReLearnDeleted(it.relearn, it.position)
+                    onReLearnDeleted(it.position, it.state)
                 }
             }
         }.launchIn(viewLifecycleOwner.lifecycleScope)
@@ -340,7 +341,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun onReLearnDeleted(reLearnTranslation: ReLearnTranslation, position: Int) {
+    private fun onReLearnDeleted(position: Int, state: ReLearnCardViewState.ReLearnTranslationState) {
         Snackbar.make(
             viewBinding!!.main,
             R.string.message_relearn_deleted,
@@ -348,8 +349,8 @@ class MainFragment : Fragment() {
         )
             .setAction(R.string.action_undo) {
                 (viewBinding?.relearnPager?.adapter as? ReLearnAdapter)?.undoReLearnDelete(
-                    reLearnTranslation,
-                    position
+                    position,
+                    state
                 )
                 viewBinding?.relearnPager?.setCurrentItem(position, true)
             }.show()
