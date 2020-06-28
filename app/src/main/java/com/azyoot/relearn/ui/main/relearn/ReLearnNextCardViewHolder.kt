@@ -5,10 +5,8 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.view.View
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.constraintlayout.widget.Group
 import com.azyoot.relearn.R
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
@@ -38,10 +36,10 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         }
         viewBinding.showHide.setOnClickListener {
             if(isRevealed){
-                viewBinding.showHide.setIconResource(R.drawable.ic_invisible)
+                viewBinding.showHide.isChecked = false
                 unreveal(viewBinding.groupShowHide, viewBinding.showHide)
             } else {
-                viewBinding.showHide.setIconResource(R.drawable.ic_visible)
+                viewBinding.showHide.isChecked = true
                 reveal(viewBinding.groupShowHide, viewBinding.showHide)
             }
         }
@@ -67,9 +65,7 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
                 View.VISIBLE
             else View.INVISIBLE
 
-            viewBinding.showHide.setIconResource(if(state.isRevealed)
-                R.drawable.ic_visible
-            else R.drawable.ic_invisible)
+            viewBinding.showHide.isChecked = state.isRevealed
 
             bindTranslationData(state.reLearnTranslation)
 

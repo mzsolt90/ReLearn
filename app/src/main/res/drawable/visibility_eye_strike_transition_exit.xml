@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_visibility_eye_strike">
+    <target
+        android:name="clip"
+        android:animation="@animator/visibility_eye_strike_clip_exit" />
+    <target
+        android:name="line"
+        android:animation="@animator/visibility_eye_strike_line_exit" />
+</animated-vector>

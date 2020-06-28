@@ -27,10 +27,10 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
         }
         viewBinding.showHide.setOnClickListener {
             if(isRevealed){
-                viewBinding.showHide.setIconResource(R.drawable.ic_invisible)
+                viewBinding.showHide.isChecked = false
                 unreveal(viewBinding.groupShowHide, viewBinding.showHide)
             } else {
-                viewBinding.showHide.setIconResource(R.drawable.ic_visible)
+                viewBinding.showHide.isChecked = true
                 reveal(viewBinding.groupShowHide, viewBinding.showHide)
             }
         }
@@ -51,11 +51,7 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
                     if (state.isRevealed) View.VISIBLE
                     else View.INVISIBLE
 
-                viewBinding.showHide.setIconResource(
-                    if (state.isRevealed)
-                        R.drawable.ic_visible
-                    else R.drawable.ic_invisible
-                )
+                viewBinding.showHide.isChecked = state.isRevealed
 
                 bindTranslationData(state.reLearnTranslation)
             }
