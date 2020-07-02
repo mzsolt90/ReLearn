@@ -49,6 +49,14 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         else -> true
     }
 
+    private fun needsAcceptedAnimation(newState: ReLearnCardViewState.ReLearnTranslationState,
+                                       oldState: ReLearnCardViewState) = when {
+        oldState !is ReLearnCardViewState.ReLearnTranslationState -> false
+        newState.relearnState !is ReLearnCardReLearnState.Accepted -> false
+        oldState.relearnState is ReLearnCardReLearnState.Accepted -> false
+        else -> true
+    }
+
     override fun bind(newState: ReLearnCardViewState, oldState: ReLearnCardViewState) {
         Timber.d("Binding state $newState")
 
@@ -71,7 +79,7 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
 
             bindRevealState(newState, oldState)
 
-            if (newState.relearnState is ReLearnCardReLearnState.Accepted) {
+            if (needsAcceptedAnimation(newState, oldState)) {
                 animateOutActions()
             }
         }
