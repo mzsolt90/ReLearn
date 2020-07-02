@@ -22,7 +22,6 @@ import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.databinding.FragmentMainBinding
 import com.azyoot.relearn.di.ui.MainFragmentSubcomponent
 import com.azyoot.relearn.domain.config.MIN_SOURCES_COUNT
-import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
@@ -242,7 +241,11 @@ class MainFragment : Fragment() {
     }
 
     private fun setupViewPager(viewState: MainViewState.Loaded) {
-        val relearnAdapter = relearnAdapterFactory.create(viewState.sourceCount, this)
+        val relearnAdapter = relearnAdapterFactory.create(
+            viewState.sourceCount,
+            this,
+            viewLifecycleOwner.lifecycleScope
+        )
 
         Timber.d("Creating new view pager")
 
@@ -341,7 +344,10 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun onReLearnDeleted(position: Int, state: ReLearnCardViewState.ReLearnTranslationState) {
+    private fun onReLearnDeleted(
+        position: Int,
+        state: ReLearnCardViewState.ReLearnTranslationState
+    ) {
         Snackbar.make(
             viewBinding!!.main,
             R.string.message_relearn_deleted,

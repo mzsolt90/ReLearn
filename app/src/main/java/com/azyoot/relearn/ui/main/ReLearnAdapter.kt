@@ -20,9 +20,7 @@ import com.azyoot.relearn.ui.common.viewmodels.lifecycleScoped
 import com.azyoot.relearn.ui.main.relearn.*
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -45,11 +43,11 @@ sealed class ReLearnAdapterEffect {
 class ReLearnAdapter @AssistedInject constructor(
     private val nextReLearnCardFactory: ReLearnNextCardViewHolder.Factory,
     private val historyReLearnCardFactory: ReLearnHistoryCardViewHolder.Factory,
-    private val coroutineScope: CoroutineScope,
     private val viewModelsFactory: ViewModelProvider.Factory,
     private val lifecycleScopedFactory: LifecycleScopedFactory,
     @Assisted private val sourceCount: Int,
-    @Assisted viewModelStoreOwner: ViewModelStoreOwner
+    @Assisted viewModelStoreOwner: ViewModelStoreOwner,
+    @Assisted private val viewLifecycleScope: CoroutineScope
 ) : RecyclerView.Adapter<ReLearnBaseViewHolder>(),
     ViewEffectsProducer<ReLearnAdapterEffect> by AndroidEffectsProducer() {
 
@@ -77,7 +75,7 @@ class ReLearnAdapter @AssistedInject constructor(
             }
 
             handleEffect(it.effect, it.position)
-        }.launchIn(coroutineScope)
+        }.launchIn(viewLifecycleScope)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -114,19 +112,19 @@ class ReLearnAdapter @AssistedInject constructor(
         }
         val job = viewModel.getViewState().onEach {
             if (it is ReLearnCardViewState.ReLearnTranslationState) {
-                Timber.v("Binding view state @ position $position: ${it.reLearnTranslation.sourceText} - $it")
+                Timber.v("Binding view state @ position $position to $holder: ${it.reLearnTranslation.sourceText} - $it")
             } else {
-                Timber.v("Binding view state @ position $position: $it")
+                Timber.v("Binding view state @ position $position to $holder: $it")
             }
 
             holder.bind(it)
-        }.launchIn(coroutineScope)
+        }.launchIn(viewLifecycleScope)
 
         bindingJobs[position] = HolderAndBindingJob(holder, job)
     }
 
     override fun onBindViewHolder(holder: ReLearnBaseViewHolder, position: Int) {
-        Timber.v("Binding view holder at position: $position")
+        Timber.v("Binding view holder $holder at position: $position")
         val viewModel = viewModelsList[position]
         if (isNextReLearn(position)) {
             viewModel.loadInitialNextReLearn()
@@ -141,8 +139,8 @@ class ReLearnAdapter @AssistedInject constructor(
         }
     }
 
-    override fun onViewRecycled(holder: ReLearnBaseViewHolder) {
-        super.onViewRecycled(holder)
+    override fun onViewDetachedFromWindow(holder: ReLearnBaseViewHolder) {
+        super.onViewDetachedFromWindow(holder)
 
         var holderPosition: Int? = null
         bindingJobs.forEach { position, job ->
@@ -152,7 +150,7 @@ class ReLearnAdapter @AssistedInject constructor(
             }
         }
         holderPosition?.apply {
-            Timber.v("Recycling view holder, previously used at position $holderPosition")
+            Timber.v("Detaching view holder, previously used at position $holderPosition")
             bindingJobs[this].job.cancel()
             bindingJobs.remove(this)
         }
@@ -270,7 +268,7 @@ class ReLearnAdapter @AssistedInject constructor(
 
     @AssistedInject.Factory
     interface Factory {
-        fun create(sourceCount: Int, viewModelStoreOwner: ViewModelStoreOwner): ReLearnAdapter
+        fun create(sourceCount: Int, viewModelStoreOwner: ViewModelStoreOwner, viewLifecycleScope: CoroutineScope): ReLearnAdapter
     }
 
     companion object {

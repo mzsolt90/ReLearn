@@ -11,7 +11,7 @@ interface MainFragmentSubcomponent {
     @Subcomponent.Factory
     interface Factory {
         fun create(
-            @BindsInstance coroutineScope: CoroutineScope
+            @BindsInstance instanceLifecycleScope: CoroutineScope
         ): MainFragmentSubcomponent
     }
 
