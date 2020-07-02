@@ -1,4 +1,4 @@
-package com.azyoot.relearn.ui.common
+package com.azyoot.relearn.ui.common.viewmodels
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
@@ -11,7 +11,11 @@ import kotlin.reflect.KClass
 inline fun <reified VM : ViewModel> ViewModelStoreOwner.lifecycleScoped(
     noinline ownerProducer: () -> ViewModelStoreOwner = { this },
     noinline factoryProducer: () -> ViewModelProvider.Factory
-) = ViewModelLazy(VM::class, { ownerProducer().viewModelStore }, factoryProducer)
+) = ViewModelLazy(
+    VM::class,
+    { ownerProducer().viewModelStore },
+    factoryProducer
+)
 
 class ViewModelLazy<VM : ViewModel>(
     private val viewModelClass: KClass<VM>,

@@ -1,4 +1,4 @@
-package com.azyoot.relearn.ui.common
+package com.azyoot.relearn.ui.common.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,13 +7,22 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
 @ExperimentalCoroutinesApi
-internal class AndroidEffectsProducer<E : Any> : ViewEffectsProducer<E> {
+internal class AndroidEffectsProducer<E : Any> :
+    ViewEffectsProducer<E> {
 
     data class EffectState<E>(val isSent: Boolean = true, val effect: E?)
 
-    private val effects = MutableStateFlow(EffectState<E>(effect = null))
+    private val effects = MutableStateFlow(
+        EffectState<E>(
+            effect = null
+        )
+    )
     override fun sendEffect(effect: E) {
-        effects.value = EffectState(isSent = false, effect = effect)
+        effects.value =
+            EffectState(
+                isSent = false,
+                effect = effect
+            )
     }
 
     override fun getEffects(): Flow<E> = effects

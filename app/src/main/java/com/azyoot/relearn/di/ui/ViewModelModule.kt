@@ -2,8 +2,8 @@ package com.azyoot.relearn.di.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.azyoot.relearn.ui.common.BaseAndroidViewModel
-import com.azyoot.relearn.ui.common.ViewModelsList
+import com.azyoot.relearn.ui.common.viewmodels.BaseAndroidViewModel
+import com.azyoot.relearn.ui.common.viewmodels.ViewModelsList
 import com.azyoot.relearn.ui.main.MainViewModel
 import com.azyoot.relearn.ui.main.relearn.ReLearnCardEffect
 import com.azyoot.relearn.ui.main.relearn.ReLearnCardViewModel

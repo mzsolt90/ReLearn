@@ -7,7 +7,7 @@ import com.azyoot.relearn.domain.config.PREF_ONBOARDING_SEEN
 import com.azyoot.relearn.domain.usecase.relearn.CountReLearnSourcesUseCase
 import com.azyoot.relearn.domain.usecase.relearn.SyncReLearnsUseCase
 import com.azyoot.relearn.service.MonitoringService
-import com.azyoot.relearn.ui.common.BaseAndroidViewModel
+import com.azyoot.relearn.ui.common.viewmodels.BaseAndroidViewModel
 import com.azyoot.relearn.ui.onboarding.OnboardingScreen
 import com.azyoot.relearn.ui.relearn.ReLearnPeriodicScheduler
 import kotlinx.coroutines.*

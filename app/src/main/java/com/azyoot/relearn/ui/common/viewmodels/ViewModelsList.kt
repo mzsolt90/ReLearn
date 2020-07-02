@@ -1,8 +1,7 @@
-package com.azyoot.relearn.ui.common
+package com.azyoot.relearn.ui.common.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -26,7 +25,12 @@ constructor() : ViewModel(),
                 vm.viewModel === viewModel
             }
 
-            sendEffect(ViewModelEffectAtPosition(position, it))
+            sendEffect(
+                ViewModelEffectAtPosition(
+                    position,
+                    it
+                )
+            )
         }.launchIn(viewModelScope)
 
     fun removeAt(position: Int) {
@@ -35,11 +39,21 @@ constructor() : ViewModel(),
     }
 
     fun add(viewModel: VM) {
-        viewModels.add(ViewModelAndJob(viewModel, job = getViewModelJob(viewModel)))
+        viewModels.add(
+            ViewModelAndJob(
+                viewModel,
+                job = getViewModelJob(viewModel)
+            )
+        )
     }
 
     fun add(position: Int, viewModel: VM) {
-        viewModels.add(position, ViewModelAndJob(viewModel, job = getViewModelJob(viewModel)))
+        viewModels.add(position,
+            ViewModelAndJob(
+                viewModel,
+                job = getViewModelJob(viewModel)
+            )
+        )
     }
 
     operator fun get(i: Int) = viewModels[i].viewModel

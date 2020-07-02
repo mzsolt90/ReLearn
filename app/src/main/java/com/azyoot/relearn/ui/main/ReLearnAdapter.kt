@@ -13,10 +13,10 @@ import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
 import com.azyoot.relearn.di.ui.LifecycleScopedFactory
 import com.azyoot.relearn.domain.config.MAX_HISTORY
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
-import com.azyoot.relearn.ui.common.AndroidEffectsProducer
-import com.azyoot.relearn.ui.common.ViewEffectsProducer
-import com.azyoot.relearn.ui.common.ViewModelsList
-import com.azyoot.relearn.ui.common.lifecycleScoped
+import com.azyoot.relearn.ui.common.viewmodels.AndroidEffectsProducer
+import com.azyoot.relearn.ui.common.viewmodels.ViewEffectsProducer
+import com.azyoot.relearn.ui.common.viewmodels.ViewModelsList
+import com.azyoot.relearn.ui.common.viewmodels.lifecycleScoped
 import com.azyoot.relearn.ui.main.relearn.*
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject

@@ -1,7 +1,7 @@
 package com.azyoot.relearn.ui.main.relearn
 
 import com.azyoot.relearn.domain.usecase.relearn.*
-import com.azyoot.relearn.ui.common.BaseAndroidViewModel
+import com.azyoot.relearn.ui.common.viewmodels.BaseAndroidViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject

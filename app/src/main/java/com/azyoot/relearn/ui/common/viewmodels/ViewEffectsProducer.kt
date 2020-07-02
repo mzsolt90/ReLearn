@@ -1,4 +1,4 @@
-package com.azyoot.relearn.ui.common
+package com.azyoot.relearn.ui.common.viewmodels
 
 import kotlinx.coroutines.flow.Flow
 
