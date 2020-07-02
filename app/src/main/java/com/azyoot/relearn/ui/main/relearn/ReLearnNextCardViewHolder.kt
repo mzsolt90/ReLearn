@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import com.azyoot.relearn.R
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
+import com.azyoot.relearn.ui.animation.GroupRevealAnimator
 import com.azyoot.relearn.ui.common.ReLearnTranslationFormatter
 import com.azyoot.relearn.util.setAlphaProper
 import com.squareup.inject.assisted.Assisted
@@ -18,6 +19,7 @@ import timber.log.Timber
 
 class ReLearnNextCardViewHolder @AssistedInject constructor(
     private val reLearnTranslationFormatter: ReLearnTranslationFormatter,
+    private val groupRevealAnimator: GroupRevealAnimator,
     @Assisted private val viewBinding: ItemRelearnCardBinding
 ) :
     ReLearnBaseViewHolder(viewBinding.root) {
@@ -84,9 +86,9 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         }
         if (needsRevealAnimation(newState, oldState)) {
             if (newState.isRevealed) {
-                reveal(viewBinding.groupShowHide, viewBinding.showHide)
+                groupRevealAnimator.reveal(viewBinding.groupShowHide, viewBinding.showHide)
             } else {
-                unreveal(viewBinding.groupShowHide, viewBinding.showHide)
+                groupRevealAnimator.unreveal(viewBinding.groupShowHide, viewBinding.showHide)
             }
         } else {
             viewBinding.groupShowHide.setAlphaProper(if (newState.isRevealed) 1F else 0F)
