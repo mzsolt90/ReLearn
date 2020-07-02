@@ -25,4 +25,7 @@ abstract class ReLearnBaseViewHolder(itemView: View) : RecyclerView.ViewHolder(i
     }
 
     abstract fun bind(newState: ReLearnCardViewState, oldState: ReLearnCardViewState)
+    fun unbind(){
+        boundState = ReLearnCardViewState.Initial
+    }
 }

@@ -139,9 +139,10 @@ class ReLearnAdapter @AssistedInject constructor(
         }
     }
 
-    override fun onViewDetachedFromWindow(holder: ReLearnBaseViewHolder) {
-        super.onViewDetachedFromWindow(holder)
+    override fun onViewRecycled(holder: ReLearnBaseViewHolder) {
+        super.onViewRecycled(holder)
 
+        holder.unbind()
         var holderPosition: Int? = null
         bindingJobs.forEach { position, job ->
             if (job.holder === holder) {
