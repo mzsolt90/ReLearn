@@ -11,6 +11,7 @@ import com.azyoot.relearn.R
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.common.ReLearnTranslationFormatter
+import com.azyoot.relearn.util.setAlphaProper
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import timber.log.Timber
@@ -20,9 +21,6 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
     @Assisted private val viewBinding: ItemRelearnCardBinding
 ) :
     ReLearnBaseViewHolder(viewBinding.root) {
-
-    override val isRevealed: Boolean
-        get() = viewBinding.groupShowHide.visibility == View.VISIBLE
 
     init {
         viewBinding.buttonAccept.setOnClickListener {
@@ -35,20 +33,24 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
             actionsListener(ReLearnAction.DeleteReLearn)
         }
         viewBinding.showHide.setOnClickListener {
-            if(isRevealed){
-                viewBinding.showHide.isChecked = false
-                unreveal(viewBinding.groupShowHide, viewBinding.showHide)
-            } else {
-                viewBinding.showHide.isChecked = true
-                reveal(viewBinding.groupShowHide, viewBinding.showHide)
-            }
+            actionsListener(ReLearnAction.SetExpanded(!isRevealed))
         }
     }
 
-    override fun bind(state: ReLearnCardViewState) {
-        Timber.d("Binding state $state")
+    private fun needsRevealAnimation(
+        newState: ReLearnCardViewState,
+        oldState: ReLearnCardViewState
+    ) = when {
+        newState !is ReLearnCardViewState.ReLearnTranslationState -> false
+        oldState !is ReLearnCardViewState.ReLearnTranslationState -> false
+        newState.isRevealed == oldState.isRevealed -> false
+        else -> true
+    }
 
-        when (state) {
+    override fun bind(newState: ReLearnCardViewState, oldState: ReLearnCardViewState) {
+        Timber.d("Binding state $newState")
+
+        when (newState) {
             is ReLearnCardViewState.Loading, is ReLearnCardViewState.Initial -> {
                 viewBinding.groupProgress.visibility = View.VISIBLE
                 viewBinding.groupLoaded.visibility = View.GONE
@@ -59,19 +61,35 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
             }
         }
 
-        if (state is ReLearnCardViewState.ReLearnTranslationState) {
+        if (newState is ReLearnCardViewState.ReLearnTranslationState) {
             viewBinding.groupActions.visibility = View.VISIBLE
-            viewBinding.groupShowHide.visibility = if(state.isRevealed)
-                View.VISIBLE
-            else View.INVISIBLE
+            viewBinding.groupLoaded.visibility = View.VISIBLE
 
-            viewBinding.showHide.isChecked = state.isRevealed
+            bindTranslationData(newState.reLearnTranslation)
 
-            bindTranslationData(state.reLearnTranslation)
+            bindRevealState(newState, oldState)
 
-            if (state.relearnState is ReLearnCardReLearnState.Accepted) {
+            if (newState.relearnState is ReLearnCardReLearnState.Accepted) {
                 animateOutActions()
             }
+        }
+    }
+
+    private fun bindRevealState(
+        newState: ReLearnCardViewState.ReLearnTranslationState,
+        oldState: ReLearnCardViewState
+    ) {
+        if (viewBinding.showHide.isChecked != newState.isRevealed) {
+            viewBinding.showHide.isChecked = newState.isRevealed
+        }
+        if (needsRevealAnimation(newState, oldState)) {
+            if (newState.isRevealed) {
+                reveal(viewBinding.groupShowHide, viewBinding.showHide)
+            } else {
+                unreveal(viewBinding.groupShowHide, viewBinding.showHide)
+            }
+        } else {
+            viewBinding.groupShowHide.setAlphaProper(if (newState.isRevealed) 1F else 0F)
         }
     }
 
@@ -127,7 +145,11 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
             }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
-                    setConstraintsAfterAcceptAnimation(constraintSet, originalButtonTopMargin, originalBottomMargin)
+                    setConstraintsAfterAcceptAnimation(
+                        constraintSet,
+                        originalButtonTopMargin,
+                        originalBottomMargin
+                    )
                     actionsListener(ReLearnAction.AcceptAnimationFinished)
                 }
             })
@@ -138,7 +160,11 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         set.start()
     }
 
-    private fun connectButtonToTranslationAndSetAlpha(constraintSet: ConstraintSet, buttonId: Int, originalTopMargin: Int){
+    private fun connectButtonToTranslationAndSetAlpha(
+        constraintSet: ConstraintSet,
+        buttonId: Int,
+        originalTopMargin: Int
+    ) {
         constraintSet.setMargin(
             buttonId,
             ConstraintSet.TOP,
@@ -153,7 +179,11 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         )
     }
 
-    private fun setConstraintsAfterAcceptAnimation(constraintSet: ConstraintSet, originalTopMargin: Int, originalBottomMargin: Int){
+    private fun setConstraintsAfterAcceptAnimation(
+        constraintSet: ConstraintSet,
+        originalTopMargin: Int,
+        originalBottomMargin: Int
+    ) {
         viewBinding.groupActions.visibility = View.GONE
         viewBinding.showHide.isEnabled = true
 
@@ -163,8 +193,8 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
             originalBottomMargin
         )
 
-       connectButtonToTranslationAndSetAlpha(constraintSet, R.id.button_accept, originalTopMargin)
-       connectButtonToTranslationAndSetAlpha(constraintSet, R.id.button_delete, originalTopMargin)
+        connectButtonToTranslationAndSetAlpha(constraintSet, R.id.button_accept, originalTopMargin)
+        connectButtonToTranslationAndSetAlpha(constraintSet, R.id.button_delete, originalTopMargin)
 
         constraintSet.applyTo(viewBinding.scene)
 

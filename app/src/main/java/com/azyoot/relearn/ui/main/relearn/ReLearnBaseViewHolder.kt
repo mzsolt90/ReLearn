@@ -5,10 +5,11 @@ import android.animation.AnimatorSet
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewAnimationUtils
-import android.widget.TextView
 import androidx.constraintlayout.widget.Group
 import androidx.core.animation.addListener
 import androidx.recyclerview.widget.RecyclerView
+import com.azyoot.relearn.util.getBoundingRect
+import com.azyoot.relearn.util.setAlphaProper
 import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
@@ -22,29 +23,21 @@ sealed class ReLearnAction {
 }
 
 abstract class ReLearnBaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    abstract fun bind(state: ReLearnCardViewState)
-
-    abstract val isRevealed: Boolean
-
     var actionsListener: (action: ReLearnAction) -> Unit = {}
 
-    private fun View.rect() = Rect(left, top, right, bottom)
+    private var boundState: ReLearnCardViewState = ReLearnCardViewState.Initial
+    protected val isRevealed: Boolean
+        get() = boundState.let { it is ReLearnCardViewState.ReLearnTranslationState && it.isRevealed }
 
-    private fun Group.getBoundingRect() =
-        referencedIds.fold((parent as View).findViewById<View>(referencedIds[0]).rect(),
-            { rect: Rect, id: Int ->
-                rect.let {
-                    val view = (parent as View).findViewById<View>(id)
-                    Rect(
-                        min(view.left, it.left),
-                        min(view.top, it.top),
-                        max(view.right, it.right),
-                        max(view.bottom, it.bottom)
-                    )
-                }
-            })
+
+    fun bind(state: ReLearnCardViewState){
+        bind(state, boundState)
+        boundState = state
+    }
+
 
     fun reveal(group: Group, buttonView: View) {
+        if(isRevealed) return
         val boundingRect = group.getBoundingRect().let {
             Rect(
                 min(buttonView.left, it.left),
@@ -68,7 +61,6 @@ abstract class ReLearnBaseViewHolder(itemView: View) : RecyclerView.ViewHolder(i
             val cx = buttonView.width / 2 + dx
             val cy = buttonView.height / 2 + dy
 
-            view.visibility = View.VISIBLE
             val anim =
                 ViewAnimationUtils.createCircularReveal(
                     view,
@@ -80,14 +72,14 @@ abstract class ReLearnBaseViewHolder(itemView: View) : RecyclerView.ViewHolder(i
             animators.add(anim)
         }
 
-        group.visibility = View.VISIBLE
+        group.setAlphaProper(1F)
 
-        set.addListener(onEnd = { actionsListener(ReLearnAction.SetExpanded(true)) })
         set.playTogether(animators)
         set.start()
     }
 
     fun unreveal(group: Group, buttonView: View) {
+        if(!isRevealed) return
         val boundingRect = group.getBoundingRect().let {
             Rect(
                 min(buttonView.left, it.left),
@@ -121,10 +113,11 @@ abstract class ReLearnBaseViewHolder(itemView: View) : RecyclerView.ViewHolder(i
         }
 
         set.addListener(onEnd = {
-            group.visibility = View.GONE
-            actionsListener(ReLearnAction.SetExpanded(false))
+            group.setAlphaProper(0F)
         })
         set.playTogether(animators)
         set.start()
     }
+
+    abstract fun bind(newState: ReLearnCardViewState, oldState: ReLearnCardViewState)
 }

@@ -1,10 +1,10 @@
 package com.azyoot.relearn.ui.main.relearn
 
 import android.view.View
-import com.azyoot.relearn.R
 import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.common.ReLearnTranslationFormatter
+import com.azyoot.relearn.util.setAlphaProper
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import timber.log.Timber
@@ -15,9 +15,6 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
 ) :
     ReLearnBaseViewHolder(viewBinding.root) {
 
-    override val isRevealed: Boolean
-        get() = viewBinding.groupShowHide.visibility == View.VISIBLE
-
     init {
         viewBinding.card.setOnClickListener {
             actionsListener(ReLearnAction.ViewReLearn)
@@ -26,19 +23,23 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
             actionsListener(ReLearnAction.DeleteReLearn)
         }
         viewBinding.showHide.setOnClickListener {
-            if(isRevealed){
-                viewBinding.showHide.isChecked = false
-                unreveal(viewBinding.groupShowHide, viewBinding.showHide)
-            } else {
-                viewBinding.showHide.isChecked = true
-                reveal(viewBinding.groupShowHide, viewBinding.showHide)
-            }
+            actionsListener(ReLearnAction.SetExpanded(!isRevealed))
         }
     }
 
-    override fun bind(state: ReLearnCardViewState) {
-        Timber.v("Binding history with state $state")
-        when (state) {
+    private fun needsRevealAnimation(
+        newState: ReLearnCardViewState,
+        oldState: ReLearnCardViewState
+    ) = when {
+        newState !is ReLearnCardViewState.ReLearnTranslationState -> false
+        oldState !is ReLearnCardViewState.ReLearnTranslationState -> false
+        newState.isRevealed == oldState.isRevealed -> false
+        else -> true
+    }
+
+    override fun bind(newState: ReLearnCardViewState, oldState: ReLearnCardViewState) {
+        Timber.v("Binding history with state $newState")
+        when (newState) {
             is ReLearnCardViewState.Loading, is ReLearnCardViewState.Initial -> {
                 viewBinding.groupProgress.visibility = View.VISIBLE
                 viewBinding.groupLoaded.visibility = View.GONE
@@ -47,15 +48,28 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
                 viewBinding.groupProgress.visibility = View.GONE
                 viewBinding.groupLoaded.visibility = View.VISIBLE
 
-                viewBinding.groupShowHide.visibility =
-                    if (state.isRevealed) View.VISIBLE
-                    else View.INVISIBLE
-
-                viewBinding.showHide.isChecked = state.isRevealed
-
-                bindTranslationData(state.reLearnTranslation)
+                bindTranslationData(newState.reLearnTranslation)
+                bindRevealState(newState, oldState)
             }
-            else -> throw IllegalStateException("Invalid state $state")
+            else -> throw IllegalStateException("Invalid state $newState")
+        }
+    }
+
+    private fun bindRevealState(
+        newState: ReLearnCardViewState.ReLearnTranslationState,
+        oldState: ReLearnCardViewState
+    ) {
+        if (viewBinding.showHide.isChecked != newState.isRevealed) {
+            viewBinding.showHide.isChecked = newState.isRevealed
+        }
+        if (needsRevealAnimation(newState, oldState)) {
+            if (newState.isRevealed) {
+                reveal(viewBinding.groupShowHide, viewBinding.showHide)
+            } else {
+                unreveal(viewBinding.groupShowHide, viewBinding.showHide)
+            }
+        } else {
+            viewBinding.groupShowHide.setAlphaProper(if (newState.isRevealed) 1F else 0F)
         }
     }
 
