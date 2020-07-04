@@ -22,9 +22,15 @@ fun Group.getBoundingRect() =
             }
         })
 
-fun Group.setAlphaProper(alpha: Float){
+fun Group.setAlphaForViews(alpha: Float){
     referencedIds.forEach { id ->
         (parent as View).findViewById<View>(id).alpha = alpha
+    }
+}
+
+fun Group.setEnabledForViews(isEnabled: Boolean){
+    referencedIds.forEach { id ->
+        (parent as View).findViewById<View>(id).isEnabled = isEnabled
     }
 }
 

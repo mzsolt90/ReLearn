@@ -12,7 +12,8 @@ import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.animation.GroupRevealAnimator
 import com.azyoot.relearn.ui.common.ReLearnTranslationFormatter
-import com.azyoot.relearn.util.setAlphaProper
+import com.azyoot.relearn.util.setAlphaForViews
+import com.azyoot.relearn.util.setEnabledForViews
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import timber.log.Timber
@@ -92,6 +93,9 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         if (viewBinding.showHide.isChecked != newState.isRevealed) {
             viewBinding.showHide.isChecked = newState.isRevealed
         }
+
+        viewBinding.groupShowHide.setEnabledForViews(newState.isRevealed)
+
         if (needsRevealAnimation(newState, oldState)) {
             if (newState.isRevealed) {
                 groupRevealAnimator.reveal(viewBinding.groupShowHide, viewBinding.showHide)
@@ -99,7 +103,7 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
                 groupRevealAnimator.unreveal(viewBinding.groupShowHide, viewBinding.showHide)
             }
         } else {
-            viewBinding.groupShowHide.setAlphaProper(if (newState.isRevealed) 1F else 0F)
+            viewBinding.groupShowHide.setAlphaForViews(if (newState.isRevealed) 1F else 0F)
         }
     }
 

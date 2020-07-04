@@ -8,7 +8,7 @@ import android.view.ViewAnimationUtils
 import androidx.constraintlayout.widget.Group
 import androidx.core.animation.addListener
 import com.azyoot.relearn.util.getBoundingRect
-import com.azyoot.relearn.util.setAlphaProper
+import com.azyoot.relearn.util.setAlphaForViews
 import javax.inject.Inject
 import kotlin.math.hypot
 import kotlin.math.max
@@ -50,7 +50,7 @@ class GroupRevealAnimator @Inject constructor() {
             animators.add(anim)
         }
 
-        group.setAlphaProper(1F)
+        group.setAlphaForViews(1F)
 
         set.playTogether(animators)
         set.start()
@@ -90,7 +90,7 @@ class GroupRevealAnimator @Inject constructor() {
         }
 
         set.addListener(onEnd = {
-            group.setAlphaProper(0F)
+            group.setAlphaForViews(0F)
         })
         set.playTogether(animators)
         set.start()
