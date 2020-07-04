@@ -2,11 +2,11 @@
     <string name="app_name">ReLearn</string>
     <string name="channel_name">ReLearn Notifications</string>
     <string name="accessibility_service_label">ReLearn monitoring</string>
-    <string name="accessibility_service_description">ReLearn monitoring TODO</string>
+    <string name="accessibility_service_description">ReLearn monitoring is required for ReLearn to take note of the dictionary entries you look up. ReLearn works by prompting you from time to time to help you remember the new words you\'ve learnt recently.</string>
     <string name="dialog_enable_accessibility_service">Please enable the accessibility service</string>
     <string name="action_notification_another">Another!</string>
     <string name="action_button_another">Another!</string>
-    <string name="message_empty">Nothing to learn here yet…</string>
+    <string name="message_empty">Keep on learning</string>
     <string name="message_empty_remaining">%1$d more entries to start</string>
     <string name="message_relearn_deleted">Entry deleted</string>
     <string name="action_undo">Undo</string>
