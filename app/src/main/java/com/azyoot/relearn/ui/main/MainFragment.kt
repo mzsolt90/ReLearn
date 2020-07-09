@@ -3,8 +3,12 @@ package com.azyoot.relearn.ui.main
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +16,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -344,10 +349,28 @@ class MainFragment : Fragment() {
         }
     }
 
+    private fun vibrate() {
+        val vibratorService =
+            requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator? ?: return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibratorService.vibrate(
+                VibrationEffect.createOneShot(
+                    500,
+                    VibrationEffect.DEFAULT_AMPLITUDE
+                )
+            )
+        } else {
+            //deprecated in API 26
+            vibratorService.vibrate(500)
+        }
+    }
+
     private fun onReLearnDeleted(
         position: Int,
         state: ReLearnCardViewState.ReLearnTranslationState
     ) {
+        vibrate()
+
         viewBinding!!.snackbarManager.show(
             text = getString(R.string.message_relearn_deleted, state.reLearnTranslation.sourceText),
             actionTextRes = R.string.action_undo,
