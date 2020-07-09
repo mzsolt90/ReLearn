@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -9,105 +9,116 @@
     android:clipToPadding="false"
     tools:context=".ui.main.MainFragment">
 
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/refresh"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="-71dp"
-        tools:layout_editor_absoluteY="-16dp">
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/relearn_pager"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="-71dp"
+            tools:layout_editor_absoluteY="-16dp">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/relearn_pager"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <ProgressBar
+            android:id="@+id/relearn_main_progress"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <ProgressBar
-        android:id="@+id/relearn_main_progress"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/emptyTitlesHolder"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/emptyImage"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.35">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/emptyTitle"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/emptyTitlesHolder"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/message_empty"
-            android:textAppearance="@android:style/TextAppearance.Material.Large" />
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/emptyImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.35">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/emptySubtitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/message_empty_remaining"
-            android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/emptyTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/message_empty"
+                android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
-    </LinearLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/emptySubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/message_empty_remaining"
+                android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
+
+        </LinearLayout>
 
 
-    <ImageView
-        android:id="@+id/emptyImage"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:layout_marginTop="54dp"
-        android:adjustViewBounds="true"
-        android:alpha="0.7"
-        android:cropToPadding="false"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/emptyTitlesHolder"
-        app:layout_constraintVertical_chainStyle="spread" />
+        <ImageView
+            android:id="@+id/emptyImage"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_marginTop="54dp"
+            android:adjustViewBounds="true"
+            android:alpha="0.7"
+            android:cropToPadding="false"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/emptyTitlesHolder"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_empty"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="emptyTitlesHolder, emptyImage" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_progress"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="relearn_main_progress" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_loaded"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="refresh" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_gravity="bottom|end"
         app:srcCompat="@drawable/ic_arrow_forward_24dp" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/group_empty"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:constraint_referenced_ids="emptyTitlesHolder, emptyImage" />
+    <com.azyoot.relearn.ui.common.SnackbarManager
+        android:id="@+id/snackbar_manager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/group_progress"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:constraint_referenced_ids="relearn_main_progress" />
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/group_loaded"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:constraint_referenced_ids="refresh" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

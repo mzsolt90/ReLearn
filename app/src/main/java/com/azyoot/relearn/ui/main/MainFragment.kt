@@ -31,12 +31,12 @@ import com.azyoot.relearn.ui.onboarding.OnboardingFragment
 import com.azyoot.relearn.ui.onboarding.OnboardingFragmentParams
 import com.azyoot.relearn.util.dpToPx
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -348,18 +348,17 @@ class MainFragment : Fragment() {
         position: Int,
         state: ReLearnCardViewState.ReLearnTranslationState
     ) {
-        Snackbar.make(
-            viewBinding!!.main,
-            R.string.message_relearn_deleted,
-            Snackbar.LENGTH_LONG
-        )
-            .setAction(R.string.action_undo) {
-                (viewBinding?.relearnPager?.adapter as? ReLearnAdapter)?.undoReLearnDelete(
-                    position,
-                    state
-                )
-                viewBinding?.relearnPager?.setCurrentItem(position, true)
-            }.show()
+        viewBinding!!.snackbarManager.show(
+            text = getString(R.string.message_relearn_deleted, state.reLearnTranslation.sourceText),
+            actionTextRes = R.string.action_undo,
+            duration = TimeUnit.SECONDS.toMillis(5)
+        ) {
+            (viewBinding?.relearnPager?.adapter as? ReLearnAdapter)?.undoReLearnDelete(
+                position,
+                state
+            )
+            viewBinding?.relearnPager?.setCurrentItem(position, true)
+        }
     }
 
     private fun rescheduleWebpageDownloadWorker() {

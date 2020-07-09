@@ -8,7 +8,7 @@
     <string name="action_button_another">Another!</string>
     <string name="message_empty">Keep on learning</string>
     <string name="message_empty_remaining">%1$d more entries to start</string>
-    <string name="message_relearn_deleted">Entry deleted</string>
+    <string name="message_relearn_deleted">Entry deleted: %1$s</string>
     <string name="action_undo">Undo</string>
 
     <string name="button_next">Next</string>
