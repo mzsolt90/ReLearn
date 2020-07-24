@@ -1,6 +1,7 @@
 package com.azyoot.relearn.service.worker
 
 import android.content.Context
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.di.service.WorkerSubcomponent
@@ -8,7 +9,9 @@ import com.azyoot.relearn.domain.config.MIN_SOURCES_COUNT
 import com.azyoot.relearn.domain.usecase.relearn.CountReLearnSourcesUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetNextAndShowReLearnUseCase
 import com.azyoot.relearn.domain.usecase.relearn.GetTranslationFromSourceUseCase
-import com.azyoot.relearn.ui.notification.ReLearnNotificationBuilder
+import com.azyoot.relearn.ui.notification.ID_RELEARN
+import com.azyoot.relearn.ui.notification.ReLearnNotificationFactory
+import com.azyoot.relearn.ui.notification.ensureChannelCreated
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -29,7 +32,7 @@ class ReLearnWorker(appContext: Context, params: WorkerParameters) : CoroutineWo
     lateinit var countRelearnSourceUseCase: CountReLearnSourcesUseCase
 
     @Inject
-    lateinit var notificationBuilder: ReLearnNotificationBuilder
+    lateinit var notificationFactory: ReLearnNotificationFactory
 
     private val component: WorkerSubcomponent by lazy { (appContext.applicationContext as ReLearnApplication).appComponent.workerSubcomponent() }
 
@@ -62,7 +65,11 @@ class ReLearnWorker(appContext: Context, params: WorkerParameters) : CoroutineWo
         }
 
         withContext(Dispatchers.Main) {
-            notificationBuilder.createAndNotify(translation)
+            ensureChannelCreated(applicationContext)
+
+            notificationFactory.create(translation).also {
+                NotificationManagerCompat.from(applicationContext).notify(ID_RELEARN, it)
+            }
         }
 
         return Result.success()

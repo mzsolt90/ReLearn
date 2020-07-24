@@ -1,19 +1,17 @@
 package com.azyoot.relearn.ui.notification
 
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.azyoot.relearn.R
 import com.azyoot.relearn.service.receiver.AccessibilityCheckNotificationReceiver
 import javax.inject.Inject
 
 class EnableAccessibilityServiceNotificationFactory @Inject constructor() {
 
-    fun createAndNotify(context: Context) {
-        ensureChannelCreated(context)
-
+    fun create(context: Context): Notification {
         val intent = Intent(AccessibilityCheckNotificationReceiver.ACTION)
             .apply {
                 putExtra(
@@ -32,6 +30,6 @@ class EnableAccessibilityServiceNotificationFactory @Inject constructor() {
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
 
-        NotificationManagerCompat.from(context).notify(ID_ACCESSIBILITY_CHECK, builder.build())
+        return builder.build();
     }
 }

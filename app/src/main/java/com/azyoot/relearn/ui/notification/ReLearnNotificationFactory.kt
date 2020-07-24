@@ -1,5 +1,6 @@
 package com.azyoot.relearn.ui.notification
 
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -8,17 +9,18 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.azyoot.relearn.R
 import com.azyoot.relearn.domain.entity.ReLearnSource
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.domain.entity.SourceType
 import com.azyoot.relearn.service.receiver.ReLearnNotificationActionsReceiver
-import com.azyoot.relearn.ui.common.*
+import com.azyoot.relearn.ui.common.RELEARN_ANOTHER
+import com.azyoot.relearn.ui.common.RELEARN_LAUNCH
+import com.azyoot.relearn.ui.common.ReLearnTranslationFormatter
 import javax.inject.Inject
 
 
-class ReLearnNotificationBuilder @Inject constructor(
+class ReLearnNotificationFactory @Inject constructor(
     private val context: Context,
     private val reLearnTranslationFormatter: ReLearnTranslationFormatter
 ) {
@@ -94,9 +96,7 @@ class ReLearnNotificationBuilder @Inject constructor(
             RELEARN_ANOTHER
         )
 
-    fun createAndNotify(reLearnTranslation: ReLearnTranslation) {
-        ensureChannelCreated(context)
-
+    fun create(reLearnTranslation: ReLearnTranslation): Notification {
         val pendingLaunchIntent = getLaunchPendingIntent(reLearnTranslation)
         val pendingAnotherIntent = getAnotherPendingIntent(reLearnTranslation)
 
@@ -122,6 +122,6 @@ class ReLearnNotificationBuilder @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingLaunchIntent)
 
-        NotificationManagerCompat.from(context).notify(ID_RELEARN, builder.build())
+        return builder.build();
     }
 }

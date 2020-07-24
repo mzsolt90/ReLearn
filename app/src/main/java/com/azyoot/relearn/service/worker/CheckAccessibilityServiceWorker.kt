@@ -1,11 +1,14 @@
 package com.azyoot.relearn.service.worker
 
 import android.content.Context
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.di.service.WorkerSubcomponent
 import com.azyoot.relearn.service.MonitoringService
 import com.azyoot.relearn.ui.notification.EnableAccessibilityServiceNotificationFactory
+import com.azyoot.relearn.ui.notification.ID_ACCESSIBILITY_CHECK
+import com.azyoot.relearn.ui.notification.ensureChannelCreated
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -33,7 +36,12 @@ class CheckAccessibilityServiceWorker(appContext: Context, workerParams: WorkerP
             schedule(applicationContext, 7)
         } else {
             Timber.d("It's NOT running, notifying")
-            notificationFactory.createAndNotify(applicationContext)
+
+            ensureChannelCreated(applicationContext)
+            notificationFactory.create(applicationContext).also {
+                NotificationManagerCompat.from(applicationContext).notify(ID_ACCESSIBILITY_CHECK, it)
+            }
+
             schedule(applicationContext, 1)
         }
 
