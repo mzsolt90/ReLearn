@@ -94,24 +94,6 @@ class MonitoringService : AccessibilityService() {
             flaggedViews
         }
 
-    private fun traverseNodeForDebug(nodeInfo: AccessibilityNodeInfo) {
-        Timber.d(
-            "id ${nodeInfo.viewIdResourceName} hint: ${nodeInfo.hintText} which child: ${(0 until (nodeInfo.parent?.childCount ?: 0)).map {
-                nodeInfo.parent?.getChild(it)
-            }
-                .indexOf(nodeInfo)} parent: ${nodeInfo.parent?.viewIdResourceName} text: ${nodeInfo.text}"
-        )
-        repeat(nodeInfo.childCount) {
-            val child = nodeInfo.getChild(it)
-            traverseNodeForDebug(child)
-        }
-        try {
-            nodeInfo.recycle()
-        } catch (ex: Exception) {
-            Timber.w(ex, "Error recycling node")
-        }
-    }
-
     private fun recycleNodes(codeBlock: RecyclableNodesOwner.() -> Unit) {
         val nodesToRecycle = mutableListOf<AccessibilityNodeInfo>()
         val owner = object : RecyclableNodesOwner {
