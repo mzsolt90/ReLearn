@@ -13,6 +13,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 import dagger.multibindings.IntoSet
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -59,4 +62,8 @@ class ViewModelModule {
                 ReLearnCardEffect,
                 BaseAndroidViewModel<ReLearnCardViewState, ReLearnCardEffect>>
     ): LifecycleScopedHolder<Any> = LifecycleScopedHolder(viewModelsList)
+
+    @Provides
+    @ViewModelScope
+    fun provideViewModelScope() = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 }

@@ -2,6 +2,8 @@ package com.azyoot.relearn.ui.common.viewmodels
 
 import com.squareup.burst.BurstJUnit4
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
@@ -17,51 +19,56 @@ class FlowEffectsProducerTest {
     @Test
     fun `Given some effects sent before When new effects is sent Then effects are received`(config: EffectsTestConfig) =
         runBlockingTest {
-
             val effectsProducer = FlowEffectsProducer<Int>()
+            val items = mutableListOf<Int>()
 
             config.effectsSentBefore.forEach {
                 effectsProducer.sendEffect(it)
             }
 
             launch {
-                val items = mutableListOf<Int>()
-
                 withTimeout(1000) {
-                    effectsProducer.getEffects().toList(items)
+                    effectsProducer.getEffects()
+                        .onEach { items.add(it) }
+                        .launchIn(this)
                 }
-
-                assertThat(items).isEqualTo(config.effectsSent)
             }
 
             config.effectsSent.forEach {
                 effectsProducer.sendEffect(it)
             }
+
+            assertThat(items).isEqualTo(
+                (config.effectsSentBefore.lastOrNull()
+                    ?.let { listOf(it) } ?: listOf())
+                    .plus(config.effectsSent))
         }
 
     @Test
     fun `Given some effects sent and existing subscriber When new subscriber Then effects are not received`() =
         runBlockingTest {
             val effectsProducer = FlowEffectsProducer<Int>()
+            val items = mutableListOf<Int>()
 
             launch {
-                val items = mutableListOf<Int>()
                 withTimeout(1000) {
                     effectsProducer.getEffects().toList(items)
                 }
-                assertThat(items).isEqualTo(listOf(EFFECT_1, EFFECT_2))
             }
 
             effectsProducer.sendEffect(EFFECT_1)
             effectsProducer.sendEffect(EFFECT_2)
 
+            assertThat(items).isEqualTo(listOf(EFFECT_1, EFFECT_2))
+
+            items.clear()
             launch {
-                val items = mutableListOf<Int>()
                 withTimeout(1000) {
                     effectsProducer.getEffects().toList(items)
                 }
-                assertThat(items).isEmpty()
             }
+
+            assertThat(items).isEmpty()
         }
 
     enum class EffectsTestConfig(

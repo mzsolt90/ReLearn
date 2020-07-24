@@ -2,8 +2,11 @@ package com.azyoot.relearn.ui.common.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.azyoot.relearn.di.ui.ViewModelScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -11,7 +14,7 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class ViewModelsList<S : Any, E : Any, VM : BaseAndroidViewModel<S, E>>
 @Inject
-constructor() : ViewModel(),
+constructor(@ViewModelScope private val viewModelScope: CoroutineScope) : ViewModel(),
     ViewEffectsProducer<ViewModelsList.ViewModelEffectAtPosition<E>> by FlowEffectsProducer() {
 
     data class ViewModelEffectAtPosition<E>(val position: Int, val effect: E)
@@ -57,4 +60,9 @@ constructor() : ViewModel(),
     }
 
     operator fun get(i: Int) = viewModels[i].viewModel
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.cancel()
+    }
 }
