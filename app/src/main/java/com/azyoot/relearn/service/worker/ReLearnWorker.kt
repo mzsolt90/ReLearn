@@ -34,7 +34,9 @@ class ReLearnWorker(appContext: Context, params: WorkerParameters) : CoroutineWo
     @Inject
     lateinit var notificationFactory: ReLearnNotificationFactory
 
-    private val component: WorkerSubcomponent by lazy { (appContext.applicationContext as ReLearnApplication).appComponent.workerSubcomponent() }
+    private val component: WorkerSubcomponent by lazy {
+        (appContext.applicationContext as ReLearnApplication).appComponent.workerSubcomponent()
+    }
 
     init {
         component.inject(this)

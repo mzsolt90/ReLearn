@@ -8,7 +8,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 
-class SnackbarManager(context: Context, attrs: AttributeSet) : View(context, attrs) {
+class SnackbarScheduler(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
 

@@ -1,4 +1,4 @@
-package com.azyoot.relearn.util
+package com.azyoot.relearn.ui.common
 
 import android.graphics.Rect
 import android.view.View

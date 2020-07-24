@@ -4,36 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
-
-@ExperimentalCoroutinesApi
-internal class AndroidEffectsProducer<E : Any> :
-    ViewEffectsProducer<E> {
-
-    data class EffectState<E>(val isSent: Boolean = true, val effect: E?)
-
-    private val effects = MutableStateFlow(
-        EffectState<E>(
-            effect = null
-        )
-    )
-    override fun sendEffect(effect: E) {
-        effects.value =
-            EffectState(
-                isSent = false,
-                effect = effect
-            )
-    }
-
-    override fun getEffects(): Flow<E> = effects
-        .filter { !it.isSent && it.effect != null }
-        .onEach { effects.value = it.copy(isSent = true) }
-        .map { it.effect!! }
-}
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 
 @ExperimentalCoroutinesApi
 abstract class BaseAndroidViewModel<S : Any, E : Any>(initialState: S) : ViewModel(),
-    ViewEffectsProducer<E> by AndroidEffectsProducer() {
+    ViewEffectsProducer<E> by FlowEffectsProducer() {
 
     protected val viewState: MutableStateFlow<S?> = MutableStateFlow(null)
     fun getViewState(): Flow<S> = viewState.filterNotNull().distinctUntilChanged()

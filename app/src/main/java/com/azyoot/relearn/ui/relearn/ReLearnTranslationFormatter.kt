@@ -1,4 +1,4 @@
-package com.azyoot.relearn.ui.common
+package com.azyoot.relearn.ui.relearn
 
 import android.content.Context
 import android.text.Spannable

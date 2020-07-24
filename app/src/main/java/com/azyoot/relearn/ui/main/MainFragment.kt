@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -31,7 +30,7 @@ import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import com.azyoot.relearn.ui.animation.AnimatedTumbleweed
-import com.azyoot.relearn.ui.main.relearn.ReLearnCardViewState
+import com.azyoot.relearn.ui.main.cards.ReLearnCardViewState
 import com.azyoot.relearn.ui.onboarding.OnboardingFragment
 import com.azyoot.relearn.ui.onboarding.OnboardingFragmentParams
 import com.azyoot.relearn.util.dpToPx
@@ -360,7 +359,7 @@ class MainFragment : Fragment() {
                 )
             )
         } else {
-            //deprecated in API 26
+            @Suppress("DEPRECATION")
             vibratorService.vibrate(500)
         }
     }

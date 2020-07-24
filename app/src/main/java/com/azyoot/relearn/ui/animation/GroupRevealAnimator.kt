@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import androidx.constraintlayout.widget.Group
 import androidx.core.animation.addListener
-import com.azyoot.relearn.util.getBoundingRect
-import com.azyoot.relearn.util.setAlphaForViews
+import com.azyoot.relearn.ui.common.getBoundingRect
+import com.azyoot.relearn.ui.common.setAlphaForViews
 import javax.inject.Inject
 import kotlin.math.hypot
 import kotlin.math.max

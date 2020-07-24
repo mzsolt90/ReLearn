@@ -24,14 +24,16 @@ class WebpageDownloadWorker(appContext: Context, workerParams: WorkerParameters)
     @Inject
     lateinit var countUseCase: CountUnparsedWebpagesUseCase
 
-    private val component: WorkerSubcomponent by lazy { (appContext.applicationContext as ReLearnApplication).appComponent.workerSubcomponent() }
+    private val component: WorkerSubcomponent by lazy {
+        (appContext.applicationContext as ReLearnApplication).appComponent.workerSubcomponent()
+    }
 
     init {
         component.inject(this)
     }
 
     private suspend fun needsReschedule() = countUseCase.countUntranslatedWebpages() > 0
-        
+
     override suspend fun doWork(): Result {
         try {
             Timber.i("Webpage download started")

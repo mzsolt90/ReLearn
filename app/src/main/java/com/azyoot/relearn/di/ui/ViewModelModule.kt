@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.azyoot.relearn.ui.common.viewmodels.BaseAndroidViewModel
 import com.azyoot.relearn.ui.common.viewmodels.ViewModelsList
 import com.azyoot.relearn.ui.main.MainViewModel
-import com.azyoot.relearn.ui.main.relearn.ReLearnCardEffect
-import com.azyoot.relearn.ui.main.relearn.ReLearnCardViewModel
-import com.azyoot.relearn.ui.main.relearn.ReLearnCardViewState
+import com.azyoot.relearn.ui.main.cards.ReLearnCardEffect
+import com.azyoot.relearn.ui.main.cards.ReLearnCardViewModel
+import com.azyoot.relearn.ui.main.cards.ReLearnCardViewState
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

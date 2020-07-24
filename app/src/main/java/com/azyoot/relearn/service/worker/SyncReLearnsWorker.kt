@@ -16,7 +16,10 @@ class SyncReLearnsWorker(
     @Inject
     lateinit var syncReLearnsUseCase: SyncReLearnsUseCase
 
-    private val component: WorkerSubcomponent by lazy { (appContext.applicationContext as ReLearnApplication).appComponent.workerSubcomponent() }
+    private val component: WorkerSubcomponent by lazy {
+        (appContext.applicationContext as ReLearnApplication)
+            .appComponent.workerSubcomponent()
+    }
 
     init {
         component.inject(this)

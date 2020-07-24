@@ -1,12 +1,12 @@
-package com.azyoot.relearn.ui.main.relearn
+package com.azyoot.relearn.ui.main.cards
 
 import android.view.View
 import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.animation.GroupRevealAnimator
-import com.azyoot.relearn.ui.common.ReLearnTranslationFormatter
-import com.azyoot.relearn.util.setAlphaForViews
-import com.azyoot.relearn.util.setEnabledForViews
+import com.azyoot.relearn.ui.relearn.ReLearnTranslationFormatter
+import com.azyoot.relearn.ui.common.setAlphaForViews
+import com.azyoot.relearn.ui.common.setEnabledForViews
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import timber.log.Timber
@@ -16,7 +16,7 @@ class ReLearnHistoryCardViewHolder @AssistedInject constructor(
     private val groupRevealAnimator: GroupRevealAnimator,
     @Assisted private val viewBinding: ItemRelearnHistoryCardBinding
 ) :
-    ReLearnBaseViewHolder(viewBinding.root) {
+    ReLearnCardBaseViewHolder(viewBinding.root) {
 
     init {
         viewBinding.card.setOnClickListener {

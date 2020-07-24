@@ -12,7 +12,7 @@ import javax.inject.Inject
 class ViewModelsList<S : Any, E : Any, VM : BaseAndroidViewModel<S, E>>
 @Inject
 constructor() : ViewModel(),
-    ViewEffectsProducer<ViewModelsList.ViewModelEffectAtPosition<E>> by AndroidEffectsProducer() {
+    ViewEffectsProducer<ViewModelsList.ViewModelEffectAtPosition<E>> by FlowEffectsProducer() {
 
     data class ViewModelEffectAtPosition<E>(val position: Int, val effect: E)
 

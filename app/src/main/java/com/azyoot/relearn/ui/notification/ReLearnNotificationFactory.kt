@@ -16,7 +16,7 @@ import com.azyoot.relearn.domain.entity.SourceType
 import com.azyoot.relearn.service.receiver.ReLearnNotificationActionsReceiver
 import com.azyoot.relearn.ui.common.RELEARN_ANOTHER
 import com.azyoot.relearn.ui.common.RELEARN_LAUNCH
-import com.azyoot.relearn.ui.common.ReLearnTranslationFormatter
+import com.azyoot.relearn.ui.relearn.ReLearnTranslationFormatter
 import javax.inject.Inject
 
 

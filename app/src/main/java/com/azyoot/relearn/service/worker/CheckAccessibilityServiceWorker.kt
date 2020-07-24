@@ -22,7 +22,9 @@ class CheckAccessibilityServiceWorker(appContext: Context, workerParams: WorkerP
     @Inject
     lateinit var notificationFactory: EnableAccessibilityServiceNotificationFactory
 
-    private val component: WorkerSubcomponent by lazy { (appContext.applicationContext as ReLearnApplication).appComponent.workerSubcomponent() }
+    private val component: WorkerSubcomponent by lazy {
+        (appContext.applicationContext as ReLearnApplication).appComponent.workerSubcomponent()
+    }
 
     init {
         component.inject(this)
@@ -39,7 +41,8 @@ class CheckAccessibilityServiceWorker(appContext: Context, workerParams: WorkerP
 
             ensureChannelCreated(applicationContext)
             notificationFactory.create(applicationContext).also {
-                NotificationManagerCompat.from(applicationContext).notify(ID_ACCESSIBILITY_CHECK, it)
+                NotificationManagerCompat.from(applicationContext)
+                    .notify(ID_ACCESSIBILITY_CHECK, it)
             }
 
             schedule(applicationContext, 1)

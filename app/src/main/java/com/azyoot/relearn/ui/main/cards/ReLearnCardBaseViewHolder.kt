@@ -1,4 +1,4 @@
-package com.azyoot.relearn.ui.main.relearn
+package com.azyoot.relearn.ui.main.cards
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +11,7 @@ sealed class ReLearnAction {
     data class SetExpanded(val isExpanded: Boolean) : ReLearnAction()
 }
 
-abstract class ReLearnBaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+abstract class ReLearnCardBaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     var actionsListener: (action: ReLearnAction) -> Unit = {}
 

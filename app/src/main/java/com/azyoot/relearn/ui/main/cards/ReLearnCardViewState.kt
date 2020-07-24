@@ -1,4 +1,4 @@
-package com.azyoot.relearn.ui.main.relearn
+package com.azyoot.relearn.ui.main.cards
 
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 
