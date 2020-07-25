@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.azyoot.relearn.testing.viewmodels.STATE_INIT
 import com.azyoot.relearn.testing.viewmodels.TestViewModelState
 import com.azyoot.relearn.testing.viewmodels.TestViewModelStub
-import com.azyoot.relearn.testing.viewmodels.getStatesObserved
+import com.azyoot.relearn.testing.viewmodels.getObservedStates
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
@@ -31,7 +31,7 @@ class BaseAndroidViewModelTest {
         testCoroutineScope.runBlockingTest {
             val viewModel = TestViewModelStub(testCoroutineScope)
 
-            val statesObserved = getStatesObserved(viewModel)
+            val statesObserved = getObservedStates(viewModel)
 
             assertThat(statesObserved)
                 .isEqualTo(listOf(TestViewModelState(STATE_INIT)))

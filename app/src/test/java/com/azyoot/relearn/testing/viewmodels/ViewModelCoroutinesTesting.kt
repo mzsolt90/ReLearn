@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 
 @ExperimentalCoroutinesApi
-fun <S : Any, E: Any> CoroutineScope.getStatesObserved(viewModel: BaseAndroidViewModel<S, E>): List<S> {
+fun <S : Any, E: Any> CoroutineScope.getObservedStates(viewModel: BaseAndroidViewModel<S, E>): List<S> {
     val statesObserved = mutableListOf<S>()
     launch {
         withTimeout(1000) {
@@ -20,7 +20,7 @@ fun <S : Any, E: Any> CoroutineScope.getStatesObserved(viewModel: BaseAndroidVie
 }
 
 @ExperimentalCoroutinesApi
-fun <E: Any> CoroutineScope.getEffectsObserved(viewModel: ViewEffectsProducer<E>): List<E> {
+fun <E: Any> CoroutineScope.getObservedEffects(viewModel: ViewEffectsProducer<E>): List<E> {
     val effectsObserved = mutableListOf<E>()
     launch {
         withTimeout(1000) {

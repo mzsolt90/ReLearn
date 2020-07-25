@@ -20,6 +20,6 @@ sealed class ReLearnCardViewState {
 
 sealed class ReLearnCardEffect {
     abstract class ReLearnTranslationEffect(val reLearnTranslation: ReLearnTranslation) : ReLearnCardEffect()
-    class Launch(reLearn: ReLearnTranslation): ReLearnTranslationEffect(reLearn)
-    class ReLearnDeleted(val state: ReLearnCardViewState.ReLearnTranslationState): ReLearnTranslationEffect(state.reLearnTranslation)
+    data class Launch(val reLearn: ReLearnTranslation): ReLearnTranslationEffect(reLearn)
+    data class ReLearnDeleted(val state: ReLearnCardViewState.ReLearnTranslationState): ReLearnTranslationEffect(state.reLearnTranslation)
 }

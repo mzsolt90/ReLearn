@@ -1,6 +1,6 @@
 package com.azyoot.relearn.ui.common.viewmodels
 
-import com.azyoot.relearn.testing.viewmodels.getEffectsObserved
+import com.azyoot.relearn.testing.viewmodels.getObservedEffects
 import com.squareup.burst.BurstJUnit4
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -21,7 +21,7 @@ class FlowEffectsProducerTest {
                 effectsProducer.sendEffect(it)
             }
 
-            val items = getEffectsObserved(effectsProducer)
+            val items = getObservedEffects(effectsProducer)
 
             config.effectsSent.forEach {
                 effectsProducer.sendEffect(it)
@@ -38,14 +38,14 @@ class FlowEffectsProducerTest {
         runBlockingTest {
             val effectsProducer = FlowEffectsProducer<Int>()
 
-            val items = getEffectsObserved(effectsProducer)
+            val items = getObservedEffects(effectsProducer)
 
             effectsProducer.sendEffect(EFFECT_1)
             effectsProducer.sendEffect(EFFECT_2)
 
             assertThat(items).isEqualTo(listOf(EFFECT_1, EFFECT_2))
 
-            val items2 = getEffectsObserved(effectsProducer)
+            val items2 = getObservedEffects(effectsProducer)
 
             assertThat(items2).isEmpty()
         }

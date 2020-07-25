@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.azyoot.relearn.testing.viewmodels.TestViewModelEffect
 import com.azyoot.relearn.testing.viewmodels.TestViewModelState
 import com.azyoot.relearn.testing.viewmodels.TestViewModelStub
-import com.azyoot.relearn.testing.viewmodels.getEffectsObserved
+import com.azyoot.relearn.testing.viewmodels.getObservedEffects
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
@@ -55,7 +55,7 @@ class ViewModelsListTest {
 
             vms.forEach { list.add(it) }
 
-            val effectsProduced = getEffectsObserved(list)
+            val effectsProduced = getObservedEffects(list)
 
             effectsToSend.forEach {
                 vms.last().sendEffect(it)
@@ -76,7 +76,7 @@ class ViewModelsListTest {
             list.add(viewModelAtPosition1)
             list.add(0, viewModelAtPosition0)
 
-            val effectsProduced = getEffectsObserved(list)
+            val effectsProduced = getObservedEffects(list)
 
             effectsToSend.forEach {
                 viewModelAtPosition0.sendEffect(it)
