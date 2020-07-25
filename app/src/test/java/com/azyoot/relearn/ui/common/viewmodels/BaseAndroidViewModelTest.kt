@@ -4,12 +4,10 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.azyoot.relearn.testing.viewmodels.STATE_INIT
 import com.azyoot.relearn.testing.viewmodels.TestViewModelState
 import com.azyoot.relearn.testing.viewmodels.TestViewModelStub
+import com.azyoot.relearn.testing.viewmodels.getStatesObserved
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.withTimeout
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Rule
@@ -33,14 +31,10 @@ class BaseAndroidViewModelTest {
         testCoroutineScope.runBlockingTest {
             val viewModel = TestViewModelStub(testCoroutineScope)
 
-            val statesObserved = mutableListOf<TestViewModelState>()
-            launch {
-                withTimeout(1000) {
-                    viewModel.getViewState().toList(statesObserved)
-                }
-            }
+            val statesObserved = getStatesObserved(viewModel)
 
-            assertThat(statesObserved).isEqualTo(listOf(TestViewModelState(STATE_INIT)))
+            assertThat(statesObserved)
+                .isEqualTo(listOf(TestViewModelState(STATE_INIT)))
         }
 
 }

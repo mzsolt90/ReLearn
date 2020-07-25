@@ -4,12 +4,10 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.azyoot.relearn.testing.viewmodels.TestViewModelEffect
 import com.azyoot.relearn.testing.viewmodels.TestViewModelState
 import com.azyoot.relearn.testing.viewmodels.TestViewModelStub
+import com.azyoot.relearn.testing.viewmodels.getEffectsObserved
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.withTimeout
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Rule
@@ -44,11 +42,10 @@ class ViewModelsListTest {
     }
 
     @Test
-    fun `Given viewmodels When viewmodels added and effect produced in the last Then effect received in the last`() =
+    fun `Given ViewModels When ViewModels added and effect produced in the last Then effect received in the last`() =
         testCoroutineScope.runBlockingTest {
             val list = givenViewModelList()
 
-            val effectsProduced = mutableListOf<ViewModelEffectAtPosition>()
             val effectsToSend = listOf(TestViewModelEffect(EFFECT_1))
 
             val vms = listOf(
@@ -58,11 +55,8 @@ class ViewModelsListTest {
 
             vms.forEach { list.add(it) }
 
-            launch {
-                withTimeout(1000) {
-                    list.getEffects().toList(effectsProduced)
-                }
-            }
+            val effectsProduced = getEffectsObserved(list)
+
             effectsToSend.forEach {
                 vms.last().sendEffect(it)
             }
@@ -71,11 +65,10 @@ class ViewModelsListTest {
         }
 
     @Test
-    fun `Given viewmodels When viewmodels added to specific position and effect produced in first Then effect received in the first`() =
+    fun `Given ViewModels When ViewModels added to specific position and effect produced in first Then effect received in the first`() =
         testCoroutineScope.runBlockingTest {
             val list = givenViewModelList()
 
-            val effectsProduced = mutableListOf<ViewModelEffectAtPosition>()
             val effectsToSend = listOf(TestViewModelEffect(EFFECT_1), TestViewModelEffect(EFFECT_2))
 
             val viewModelAtPosition0 = TestViewModelStub(testCoroutineScope)
@@ -83,11 +76,8 @@ class ViewModelsListTest {
             list.add(viewModelAtPosition1)
             list.add(0, viewModelAtPosition0)
 
-            launch {
-                withTimeout(1000) {
-                    list.getEffects().toList(effectsProduced)
-                }
-            }
+            val effectsProduced = getEffectsObserved(list)
+
             effectsToSend.forEach {
                 viewModelAtPosition0.sendEffect(it)
             }
@@ -96,11 +86,10 @@ class ViewModelsListTest {
         }
 
     @Test
-    fun `Given viewmodels When viewmodels added or removed and effect produced in a removed one Then effect not received`() =
+    fun `Given ViewModels When ViewModels added or removed and effect produced in a removed one Then effect not received`() =
         testCoroutineScope.runBlockingTest {
             val list = givenViewModelList()
 
-            val effectsProduced = mutableListOf<ViewModelEffectAtPosition>()
             val effectsToSend = listOf(TestViewModelEffect(EFFECT_1))
 
             val viewModelToDelete = TestViewModelStub(testCoroutineScope)
@@ -108,11 +97,8 @@ class ViewModelsListTest {
             list.add(viewModelToDelete)
             list.removeAt(1)
 
-            launch {
-                withTimeout(1000) {
-                    list.getEffects().toList(effectsProduced)
-                }
-            }
+            val effectsProduced = mutableListOf<ViewModelEffectAtPosition>()
+
             effectsToSend.forEach {
                 viewModelToDelete.sendEffect(it)
             }

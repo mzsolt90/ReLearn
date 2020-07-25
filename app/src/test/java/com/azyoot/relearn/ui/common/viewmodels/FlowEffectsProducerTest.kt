@@ -1,13 +1,9 @@
 package com.azyoot.relearn.ui.common.viewmodels
 
+import com.azyoot.relearn.testing.viewmodels.getEffectsObserved
 import com.squareup.burst.BurstJUnit4
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.withTimeout
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,19 +16,12 @@ class FlowEffectsProducerTest {
     fun `Given some effects sent before When new effects is sent Then effects are received`(config: EffectsTestConfig) =
         runBlockingTest {
             val effectsProducer = FlowEffectsProducer<Int>()
-            val items = mutableListOf<Int>()
 
             config.effectsSentBefore.forEach {
                 effectsProducer.sendEffect(it)
             }
 
-            launch {
-                withTimeout(1000) {
-                    effectsProducer.getEffects()
-                        .onEach { items.add(it) }
-                        .launchIn(this)
-                }
-            }
+            val items = getEffectsObserved(effectsProducer)
 
             config.effectsSent.forEach {
                 effectsProducer.sendEffect(it)
@@ -48,27 +37,17 @@ class FlowEffectsProducerTest {
     fun `Given some effects sent and existing subscriber When new subscriber Then effects are not received`() =
         runBlockingTest {
             val effectsProducer = FlowEffectsProducer<Int>()
-            val items = mutableListOf<Int>()
 
-            launch {
-                withTimeout(1000) {
-                    effectsProducer.getEffects().toList(items)
-                }
-            }
+            val items = getEffectsObserved(effectsProducer)
 
             effectsProducer.sendEffect(EFFECT_1)
             effectsProducer.sendEffect(EFFECT_2)
 
             assertThat(items).isEqualTo(listOf(EFFECT_1, EFFECT_2))
 
-            items.clear()
-            launch {
-                withTimeout(1000) {
-                    effectsProducer.getEffects().toList(items)
-                }
-            }
+            val items2 = getEffectsObserved(effectsProducer)
 
-            assertThat(items).isEmpty()
+            assertThat(items2).isEmpty()
         }
 
     enum class EffectsTestConfig(
