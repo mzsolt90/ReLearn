@@ -1,6 +1,9 @@
 package com.azyoot.relearn.ui.common.viewmodels
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.azyoot.relearn.testing.viewmodels.TestViewModelEffect
+import com.azyoot.relearn.testing.viewmodels.TestViewModelState
+import com.azyoot.relearn.testing.viewmodels.TestViewModelStub
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -12,21 +15,10 @@ import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 
-typealias ViewModelEffectAtPosition = ViewModelsList.ViewModelEffectAtPosition<ViewModelsListTest.TestViewModelEffect>
+typealias ViewModelEffectAtPosition = ViewModelsList.ViewModelEffectAtPosition<TestViewModelEffect>
 
 @ExperimentalCoroutinesApi
 class ViewModelsListTest {
-
-    class TestViewModelStub : BaseAndroidViewModel<TestViewModelState, TestViewModelEffect>(
-        TestViewModelState(STATE_INIT)
-    ) {
-        fun setState(state: TestViewModelState) {
-            viewState.value = state
-        }
-    }
-
-    data class TestViewModelState(val state: Int)
-    data class TestViewModelEffect(val effect: Int)
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
@@ -60,8 +52,8 @@ class ViewModelsListTest {
             val effectsToSend = listOf(TestViewModelEffect(EFFECT_1))
 
             val vms = listOf(
-                TestViewModelStub(),
-                TestViewModelStub()
+                TestViewModelStub(testCoroutineScope),
+                TestViewModelStub(testCoroutineScope)
             )
 
             vms.forEach { list.add(it) }
@@ -86,8 +78,8 @@ class ViewModelsListTest {
             val effectsProduced = mutableListOf<ViewModelEffectAtPosition>()
             val effectsToSend = listOf(TestViewModelEffect(EFFECT_1), TestViewModelEffect(EFFECT_2))
 
-            val viewModelAtPosition0 = TestViewModelStub()
-            val viewModelAtPosition1 = TestViewModelStub()
+            val viewModelAtPosition0 = TestViewModelStub(testCoroutineScope)
+            val viewModelAtPosition1 = TestViewModelStub(testCoroutineScope)
             list.add(viewModelAtPosition1)
             list.add(0, viewModelAtPosition0)
 
@@ -111,8 +103,8 @@ class ViewModelsListTest {
             val effectsProduced = mutableListOf<ViewModelEffectAtPosition>()
             val effectsToSend = listOf(TestViewModelEffect(EFFECT_1))
 
-            val viewModelToDelete = TestViewModelStub()
-            list.add(TestViewModelStub())
+            val viewModelToDelete = TestViewModelStub(testCoroutineScope)
+            list.add(TestViewModelStub(testCoroutineScope))
             list.add(viewModelToDelete)
             list.removeAt(1)
 
@@ -134,8 +126,6 @@ class ViewModelsListTest {
         )
 
     companion object {
-        const val STATE_INIT = 1
-
         const val EFFECT_1 = 1
         const val EFFECT_2 = 2
     }

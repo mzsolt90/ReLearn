@@ -1,7 +1,9 @@
 package com.azyoot.relearn.ui.main.cards
 
+import com.azyoot.relearn.di.ui.ViewModelScope
 import com.azyoot.relearn.domain.usecase.relearn.*
 import com.azyoot.relearn.ui.common.viewmodels.BaseAndroidViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,12 +15,13 @@ class ReLearnCardViewModel
     private val getNthHistoryReLearnSourceUseCase: GetNthHistoryReLearnSourceUseCase,
     private val getTranslationFromSourceUseCase: GetTranslationFromSourceUseCase,
     private val acceptRelearnSourceUseCase: AcceptRelearnSourceUseCase,
-    private val setReLearnDeletedUseCase: SetReLearnDeletedUseCase
-) : BaseAndroidViewModel<ReLearnCardViewState, ReLearnCardEffect>(ReLearnCardViewState.Initial) {
+    private val setReLearnDeletedUseCase: SetReLearnDeletedUseCase,
+    @ViewModelScope viewModelScope: CoroutineScope
+) : BaseAndroidViewModel<ReLearnCardViewState, ReLearnCardEffect>(ReLearnCardViewState.Initial, viewModelScope) {
 
     fun loadInitialNthHistory(n: Int) {
         if (currentViewState !is ReLearnCardViewState.Initial) return
-        coroutineScope.launch {
+        viewModelScope.launch {
             viewState.value = ReLearnCardViewState.Loading
             val source = getNthHistoryReLearnSourceUseCase.getNthHistoryReLearnSourceUseCase(n)
             if (source == null) {
@@ -36,7 +39,7 @@ class ReLearnCardViewModel
 
     fun loadInitialNextReLearn() {
         if (currentViewState !is ReLearnCardViewState.Initial) return
-        coroutineScope.launch {
+        viewModelScope.launch {
             viewState.value = ReLearnCardViewState.Loading
             val source = getNextAndShowReLearnUseCase.getNextAndShowReLearnUseCase()
             if (source == null) {
@@ -55,7 +58,7 @@ class ReLearnCardViewModel
     fun acceptReLearn() {
         val relearnState =
             currentViewState as? ReLearnCardViewState.ReLearnTranslationState ?: return
-        coroutineScope.launch {
+        viewModelScope.launch {
             viewState.value = relearnState.copy(relearnState = ReLearnCardReLearnState.Accepting)
             val newSource =
                 acceptRelearnSourceUseCase.acceptRelearnUseCase(relearnState.reLearnTranslation.source)
@@ -71,7 +74,7 @@ class ReLearnCardViewModel
         val relearnState =
             currentViewState as? ReLearnCardViewState.ReLearnTranslationState ?: return
         val relearn = relearnState.reLearnTranslation
-        coroutineScope.launch {
+        viewModelScope.launch {
             //this viewmodel can now be reused
             setReLearnDeletedUseCase.setReLearnDeleted(relearn.source, true)
             sendEffect(ReLearnCardEffect.ReLearnDeleted(relearnState))
@@ -81,7 +84,7 @@ class ReLearnCardViewModel
 
     fun undeleteReLearn(state: ReLearnCardViewState.ReLearnTranslationState) {
         viewState.value = state
-        coroutineScope.launch {
+        viewModelScope.launch {
             setReLearnDeletedUseCase.setReLearnDeleted(state.reLearnTranslation.source, false)
         }
     }

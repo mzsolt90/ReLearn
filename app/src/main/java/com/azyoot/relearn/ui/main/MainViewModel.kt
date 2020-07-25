@@ -2,6 +2,7 @@ package com.azyoot.relearn.ui.main
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.azyoot.relearn.di.ui.ViewModelScope
 import com.azyoot.relearn.domain.config.PREFERENCES_NAME
 import com.azyoot.relearn.domain.config.PREF_ONBOARDING_SEEN
 import com.azyoot.relearn.domain.usecase.relearn.CountReLearnSourcesUseCase
@@ -19,8 +20,9 @@ class MainViewModel @Inject constructor(
     private val applicationContext: Context,
     private val reLearnPeriodicScheduler: ReLearnPeriodicScheduler,
     private val countReLearnSourcesUseCase: CountReLearnSourcesUseCase,
-    private val syncReLearnsUseCase: SyncReLearnsUseCase
-) : BaseAndroidViewModel<MainViewState, MainViewEffect>(MainViewState.Initial) {
+    private val syncReLearnsUseCase: SyncReLearnsUseCase,
+    @ViewModelScope viewModelScope: CoroutineScope
+) : BaseAndroidViewModel<MainViewState, MainViewEffect>(MainViewState.Initial, viewModelScope) {
 
     init {
         if (isOnboardingCompleted) {
@@ -34,7 +36,7 @@ class MainViewModel @Inject constructor(
 
     private fun checkAccessibilityService() {
         if (!MonitoringService.isRunning(applicationContext)) {
-            coroutineScope.launch {
+            viewModelScope.launch {
                 sendEffect(MainViewEffect.EnableAccessibilityService)
             }
         }
@@ -70,7 +72,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun refresh() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val previousPage = (currentViewState as? MainViewState.Loaded)?.page
             viewState.value = MainViewState.Loading
 
