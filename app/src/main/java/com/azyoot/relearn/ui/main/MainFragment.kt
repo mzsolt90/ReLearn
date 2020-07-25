@@ -30,6 +30,8 @@ import com.azyoot.relearn.service.common.ReLearnLauncher
 import com.azyoot.relearn.service.worker.CheckAccessibilityServiceWorker
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import com.azyoot.relearn.ui.animation.AnimatedTumbleweed
+import com.azyoot.relearn.ui.common.runOnAnimationEnd
+import com.azyoot.relearn.ui.common.runOnAnimationStart
 import com.azyoot.relearn.ui.main.cards.ReLearnCardViewState
 import com.azyoot.relearn.ui.onboarding.OnboardingFragment
 import com.azyoot.relearn.ui.onboarding.OnboardingFragmentParams
@@ -39,9 +41,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 
 @FlowPreview
@@ -305,11 +310,11 @@ class MainFragment : Fragment() {
             0F
         ).apply {
             duration = 300
-            addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
-                    viewBinding!!.fab.visibility = View.VISIBLE
-                }
-            })
+
+            viewLifecycleOwner.lifecycleScope.runOnAnimationStart(this) {
+                viewBinding?.fab?.visibility = View.VISIBLE
+            }
+
             interpolator = DecelerateInterpolator()
             start()
         }
@@ -323,11 +328,11 @@ class MainFragment : Fragment() {
             requireContext().dpToPx(80)
         ).apply {
             duration = 300
-            addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator?) {
-                    viewBinding!!.fab.visibility = View.GONE
-                }
-            })
+
+            viewLifecycleOwner.lifecycleScope.runOnAnimationEnd(this) {
+                viewBinding?.fab?.visibility = View.GONE
+            }
+
             interpolator = AccelerateInterpolator()
             start()
         }

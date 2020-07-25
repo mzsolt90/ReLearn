@@ -159,6 +159,7 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
             }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
+                    if(!viewBinding.root.isAttachedToWindow) return
                     setConstraintsAfterAcceptAnimation(
                         constraintSet,
                         originalButtonTopMargin,
