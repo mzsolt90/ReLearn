@@ -44,6 +44,7 @@
                     android:id="@+id/source_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
@@ -55,18 +56,14 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/show_hide"
                     style="@style/Widget.App.TextButton.IconOnly.DayNight"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:scaleType="centerInside"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:checkable="true"
+                    android:scaleType="centerInside"
                     app:icon="@drawable/ic_visibility_selector"
-                    app:layout_constraintHeight_min="48dp"
-                    app:layout_constraintWidth_min="48dp"
-                    app:layout_constraintBottom_toBottomOf="@id/source_title"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/source_title"
-                    app:layout_constraintTop_toTopOf="@id/source_title"
-                    app:layout_constraintWidth_default="wrap" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/source_translation"
