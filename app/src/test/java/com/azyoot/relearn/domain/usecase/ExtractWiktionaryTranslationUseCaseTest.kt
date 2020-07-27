@@ -7,7 +7,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.io.BufferedReader
 
 class ExtractWiktionaryTranslationUseCaseTest {
 

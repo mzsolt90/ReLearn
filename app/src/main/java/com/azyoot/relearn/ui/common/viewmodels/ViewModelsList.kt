@@ -1,7 +1,6 @@
 package com.azyoot.relearn.ui.common.viewmodels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.azyoot.relearn.di.ui.ViewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +19,7 @@ constructor(@ViewModelScope private val viewModelScope: CoroutineScope) : ViewMo
     data class ViewModelEffectAtPosition<E>(val position: Int, val effect: E)
 
     private class ViewModelAndJob<VM>(val viewModel: VM, val job: Job)
+
     private val viewModels: MutableList<ViewModelAndJob<VM>> = mutableListOf()
 
     private fun getViewModelJob(viewModel: VM) =
@@ -51,7 +51,8 @@ constructor(@ViewModelScope private val viewModelScope: CoroutineScope) : ViewMo
     }
 
     fun add(position: Int, viewModel: VM) {
-        viewModels.add(position,
+        viewModels.add(
+            position,
             ViewModelAndJob(
                 viewModel,
                 job = getViewModelJob(viewModel)

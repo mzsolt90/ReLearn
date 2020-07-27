@@ -13,7 +13,8 @@ class SoftDeletionSupportMigration : Migration(10, 11) {
         database.execSQL("ALTER TABLE translation_event ADD COLUMN `deleted` INTEGER NOT NULL DEFAULT 0")
 
         database.execSQL("DROP VIEW LatestSourcesView")
-        database.execSQL("""CREATE VIEW `LatestSourcesView` AS SELECT
+        database.execSQL(
+            """CREATE VIEW `LatestSourcesView` AS SELECT
      latest_visits.source AS source_text,
      latest_visits.latest_webpage_timestamp AS latest_source_timestamp,
      latest_visits.webpage_visit_id AS latest_source_id,
@@ -90,7 +91,8 @@ class SoftDeletionSupportMigration : Migration(10, 11) {
      ) AS latest_translation_events
      LEFT JOIN relearn_event ON relearn_event.translation_event_id = latest_translation_events.translation_event_id
 		AND relearn_event.timestamp = latest_translation_events.latest_relearn_timestamp
-	 INNER JOIN translation_event ON translation_event.id = latest_translation_events.translation_event_id""")
+	 INNER JOIN translation_event ON translation_event.id = latest_translation_events.translation_event_id"""
+        )
     }
 
 }

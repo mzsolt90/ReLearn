@@ -3,7 +3,7 @@ package com.azyoot.relearn.data.migration
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-class AddLatestSourcesViewMigration  : Migration(4, 5) {
+class AddLatestSourcesViewMigration : Migration(4, 5) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL(
             """CREATE VIEW `LatestSourcesView` AS SELECT

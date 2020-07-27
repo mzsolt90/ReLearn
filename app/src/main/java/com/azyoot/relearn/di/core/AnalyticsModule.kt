@@ -10,5 +10,6 @@ object AnalyticsModule {
 
     @Provides
     @AppScope
-    fun provideFirebaseAnalytics(context: Context): FirebaseAnalytics = FirebaseAnalytics.getInstance(context)
+    fun provideFirebaseAnalytics(context: Context): FirebaseAnalytics =
+        FirebaseAnalytics.getInstance(context)
 }

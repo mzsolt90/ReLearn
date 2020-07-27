@@ -75,7 +75,11 @@ class RelearnEventRepository @Inject constructor(
     suspend fun reloadSourcesCache() = relearnEventDataHandler.reloadSourcesCache()
 
     suspend fun setReLearnDeleted(source: ReLearnSource, isDeleted: Boolean) {
-        relearnEventDataHandler.setReLearnDeleted(source.latestSourceId, source.sourceType.value, isDeleted)
+        relearnEventDataHandler.setReLearnDeleted(
+            source.latestSourceId,
+            source.sourceType.value,
+            isDeleted
+        )
     }
 
     companion object {

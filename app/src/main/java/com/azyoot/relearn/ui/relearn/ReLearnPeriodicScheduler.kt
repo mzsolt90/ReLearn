@@ -7,7 +7,6 @@ import android.content.Intent
 import com.azyoot.relearn.service.receiver.ReLearnScheduleReceiver
 import com.azyoot.relearn.ui.common.RELEARN_SCHEDULE
 import com.azyoot.relearn.util.DateTimeMapper
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject

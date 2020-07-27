@@ -1,7 +1,6 @@
 package com.azyoot.relearn.testing.viewmodels
 
 import com.azyoot.relearn.ui.common.viewmodels.BaseAndroidViewModel
-import com.azyoot.relearn.ui.common.viewmodels.ViewModelsListTest
 import kotlinx.coroutines.CoroutineScope
 
 class TestViewModelStub(viewModelScope: CoroutineScope) :

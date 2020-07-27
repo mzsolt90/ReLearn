@@ -9,12 +9,12 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
 import android.view.accessibility.AccessibilityNodeInfo
 import com.azyoot.relearn.ReLearnApplication
+import com.azyoot.relearn.di.service.ServiceSubcomponent
 import com.azyoot.relearn.domain.analytics.EVENT_SERVICE_CREATED
 import com.azyoot.relearn.domain.analytics.EVENT_SERVICE_DESTROYED
 import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
 import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
 import com.azyoot.relearn.domain.usecase.monitoring.ProcessAccessibilityEventUseCase
-import com.azyoot.relearn.di.service.ServiceSubcomponent
 import com.azyoot.relearn.service.worker.WebpageDownloadWorker
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.CoroutineScope
@@ -154,13 +154,15 @@ class MonitoringService : AccessibilityService() {
                 context.applicationContext.contentResolver,
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
             )
-            if(secureSettingsList?.contains(MonitoringService::class.java.name) == true) return true
+            if (secureSettingsList?.contains(MonitoringService::class.java.name) == true) return true
 
-            val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-            return accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)?.any {
-                it?.packageNames?.any { packageName -> packageName == context.packageName } == true &&
-                        it.resolveInfo?.serviceInfo?.name?.contains(MonitoringService::class.java.simpleName) == true
-            } ?: false
+            val accessibilityManager =
+                context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+            return accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+                ?.any {
+                    it?.packageNames?.any { packageName -> packageName == context.packageName } == true &&
+                            it.resolveInfo?.serviceInfo?.name?.contains(MonitoringService::class.java.simpleName) == true
+                } ?: false
         }
 
     }

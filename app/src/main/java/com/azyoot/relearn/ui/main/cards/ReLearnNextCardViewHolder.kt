@@ -11,9 +11,9 @@ import com.azyoot.relearn.R
 import com.azyoot.relearn.databinding.ItemRelearnCardBinding
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.animation.GroupRevealAnimator
-import com.azyoot.relearn.ui.relearn.ReLearnTranslationFormatter
 import com.azyoot.relearn.ui.common.setAlphaForViews
 import com.azyoot.relearn.ui.common.setEnabledForViews
+import com.azyoot.relearn.ui.relearn.ReLearnTranslationFormatter
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import timber.log.Timber
@@ -50,8 +50,10 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
         else -> true
     }
 
-    private fun needsAcceptedAnimation(newState: ReLearnCardViewState.ReLearnTranslationState,
-                                       oldState: ReLearnCardViewState) = when {
+    private fun needsAcceptedAnimation(
+        newState: ReLearnCardViewState.ReLearnTranslationState,
+        oldState: ReLearnCardViewState
+    ) = when {
         oldState !is ReLearnCardViewState.ReLearnTranslationState -> false
         newState.relearnState !is ReLearnCardReLearnState.Accepted -> false
         oldState.relearnState is ReLearnCardReLearnState.Accepted -> false
@@ -159,7 +161,7 @@ class ReLearnNextCardViewHolder @AssistedInject constructor(
             }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
-                    if(!viewBinding.root.isAttachedToWindow) return
+                    if (!viewBinding.root.isAttachedToWindow) return
                     setConstraintsAfterAcceptAnimation(
                         constraintSet,
                         originalButtonTopMargin,

@@ -260,8 +260,8 @@ interface RelearnEventDaoInternal : RelearnEventDataHandler {
 
     @Transaction
     override suspend fun setReLearnDeleted(sourceId: Long, sourceType: Int, isDeleted: Boolean) {
-        when(sourceType){
-            ENTITY_TYPE_WEBPAGE ->  {
+        when (sourceType) {
+            ENTITY_TYPE_WEBPAGE -> {
                 setWebpageVisitDeleted(sourceId, isDeleted)
                 setReLearnEventDeletedForWebpageVisit(sourceId, isDeleted)
             }

@@ -1,9 +1,8 @@
 package com.azyoot.relearn.domain.usecase.monitoring
 
+import com.azyoot.relearn.di.service.ServiceScope
 import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
 import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
-import com.azyoot.relearn.service.ViewInfoFlagger
-import com.azyoot.relearn.di.service.ServiceScope
 import com.azyoot.relearn.service.ViewHierarchyProvider
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -16,8 +15,8 @@ class ProcessAccessibilityEventUseCase @Inject constructor(
     private val coroutineScope: CoroutineScope
 ) {
     sealed class ProcessResult {
-        object NOT_IMPORTANT: ProcessResult()
-        object PROCESSED: ProcessResult()
+        object NOT_IMPORTANT : ProcessResult()
+        object PROCESSED : ProcessResult()
     }
 
     fun onAccessibilityEvent(

@@ -1,14 +1,12 @@
 package com.azyoot.relearn.data.mapper
 
+
 import com.azyoot.relearn.domain.entity.WebpageVisit
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-
-
-import com.azyoot.relearn.domain.entity.WebpageTranslation as DomainEntity
-import com.azyoot.relearn.data.entity.WebpageTranslation as DataEntity
-
 import java.time.LocalDateTime
+import com.azyoot.relearn.data.entity.WebpageTranslation as DataEntity
+import com.azyoot.relearn.domain.entity.WebpageTranslation as DomainEntity
 
 class WebpageTranslationMapperTest {
 
@@ -29,7 +27,15 @@ class WebpageTranslationMapperTest {
 
         val mapped = mapper.toDomainEntity(dataEntity)
 
-        assertThat(mapped).isEqualTo(DomainEntity(FROM_TEXT, TO_TEXT, UNSET_WEBPAGE_VISIT, PARSE_VERSION, ID))
+        assertThat(mapped).isEqualTo(
+            DomainEntity(
+                FROM_TEXT,
+                TO_TEXT,
+                UNSET_WEBPAGE_VISIT,
+                PARSE_VERSION,
+                ID
+            )
+        )
     }
 
     companion object {

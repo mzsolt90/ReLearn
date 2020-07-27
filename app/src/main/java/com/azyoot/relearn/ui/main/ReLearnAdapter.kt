@@ -20,7 +20,9 @@ import com.azyoot.relearn.ui.common.viewmodels.lifecycleScoped
 import com.azyoot.relearn.ui.main.cards.*
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -269,7 +271,11 @@ class ReLearnAdapter @AssistedInject constructor(
 
     @AssistedInject.Factory
     interface Factory {
-        fun create(sourceCount: Int, viewModelStoreOwner: ViewModelStoreOwner, viewLifecycleScope: CoroutineScope): ReLearnAdapter
+        fun create(
+            sourceCount: Int,
+            viewModelStoreOwner: ViewModelStoreOwner,
+            viewLifecycleScope: CoroutineScope
+        ): ReLearnAdapter
     }
 
     companion object {

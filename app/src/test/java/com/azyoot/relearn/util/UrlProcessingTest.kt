@@ -12,7 +12,7 @@ class UrlProcessingTest {
     private val urlProcessing = UrlProcessing()
 
     @Test
-    fun `Given url with fragments When stripFragmentFromUrl called Then no more fragments in result`(){
+    fun `Given url with fragments When stripFragmentFromUrl called Then no more fragments in result`() {
         val url = "http://wiktionary.org/бог#Russian"
 
         val result = urlProcessing.stripFragmentFromUrl(url)
@@ -21,7 +21,7 @@ class UrlProcessingTest {
     }
 
     @Test
-    fun `Given url with no fragments When stripFragmentFromUrl called Then url is unchanged`(){
+    fun `Given url with no fragments When stripFragmentFromUrl called Then url is unchanged`() {
         val url = "http://wiktionary.org/бог"
 
         val result = urlProcessing.stripFragmentFromUrl(url)
@@ -30,7 +30,7 @@ class UrlProcessingTest {
     }
 
     @Test
-    fun `Given url with no scheme When ensureStartsWithHttpsScheme called Then https is prepended`(){
+    fun `Given url with no scheme When ensureStartsWithHttpsScheme called Then https is prepended`() {
         val url = "wiktionary.org/бог"
 
         val result = urlProcessing.ensureStartsWithHttpsScheme(url)
@@ -39,7 +39,7 @@ class UrlProcessingTest {
     }
 
     @Test
-    fun `Given url with http When ensureStartsWithHttpsScheme called Then http is replaced to https`(){
+    fun `Given url with http When ensureStartsWithHttpsScheme called Then http is replaced to https`() {
         val url = "http://wiktionary.org/бог"
 
         val result = urlProcessing.ensureStartsWithHttpsScheme(url)
@@ -48,7 +48,7 @@ class UrlProcessingTest {
     }
 
     @Test
-    fun `Given url with https When ensureStartsWithHttpsScheme called Then url is unchanged`(){
+    fun `Given url with https When ensureStartsWithHttpsScheme called Then url is unchanged`() {
         val url = "https://wiktionary.org/бог"
 
         val result = urlProcessing.ensureStartsWithHttpsScheme(url)
@@ -57,7 +57,7 @@ class UrlProcessingTest {
     }
 
     @Test
-    fun `Given invalid url When isValidUrl called Then url is not valid`(){
+    fun `Given invalid url When isValidUrl called Then url is not valid`() {
         InvalidUrl.values().forEach {
             val result = urlProcessing.isValidUrl(it.url)
 
@@ -66,14 +66,14 @@ class UrlProcessingTest {
     }
 
     @Test
-    fun `Given valid url When isValidUrl called Then url valid`(){
+    fun `Given valid url When isValidUrl called Then url valid`() {
         val result = urlProcessing.isValidUrl("https://google.com")
 
         assertThat(result).isEqualTo(true)
     }
 
     @Test
-    fun `Given url encoded url When decoded Then original is returned`(){
+    fun `Given url encoded url When decoded Then original is returned`() {
         val url = URLEncoder.encode("http://wiktionary.org/бог", "UTF-8")
 
         val decoded = urlProcessing.urlDecode(url)
@@ -82,15 +82,16 @@ class UrlProcessingTest {
     }
 
     @Test
-    fun `Given partially url encoded url When decoded Then only encoded part is decoded`(){
-        val url = "https://en.m.wiktionary.org/wiki/%D0%B4%D0%B2%D0%B8%D0%BD%D1%83%D1%82%D1%8C#Russian"
+    fun `Given partially url encoded url When decoded Then only encoded part is decoded`() {
+        val url =
+            "https://en.m.wiktionary.org/wiki/%D0%B4%D0%B2%D0%B8%D0%BD%D1%83%D1%82%D1%8C#Russian"
 
         val decoded = urlProcessing.urlDecode(url)
 
         assertThat(decoded).isEqualTo("https://en.m.wiktionary.org/wiki/двинуть#Russian")
     }
 
-    enum class InvalidUrl(val url: String){
+    enum class InvalidUrl(val url: String) {
         INVALID_SCHEME("://wiktionary.org/бог"),
         NO_HOST("https://Search"),
         SHORT_TLD("https://wiktionary.o")

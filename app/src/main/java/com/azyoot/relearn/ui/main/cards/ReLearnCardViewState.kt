@@ -13,13 +13,18 @@ sealed class ReLearnCardViewState {
     object Initial : ReLearnCardViewState()
     object Loading : ReLearnCardViewState()
     object NotFound : ReLearnCardViewState()
-    data class ReLearnTranslationState(val reLearnTranslation: ReLearnTranslation,
-                                       val isRevealed: Boolean,
-                                       val relearnState: ReLearnCardReLearnState) : ReLearnCardViewState()
+    data class ReLearnTranslationState(
+        val reLearnTranslation: ReLearnTranslation,
+        val isRevealed: Boolean,
+        val relearnState: ReLearnCardReLearnState
+    ) : ReLearnCardViewState()
 }
 
 sealed class ReLearnCardEffect {
-    abstract class ReLearnTranslationEffect(val reLearnTranslation: ReLearnTranslation) : ReLearnCardEffect()
-    data class Launch(val reLearn: ReLearnTranslation): ReLearnTranslationEffect(reLearn)
-    data class ReLearnDeleted(val state: ReLearnCardViewState.ReLearnTranslationState): ReLearnTranslationEffect(state.reLearnTranslation)
+    abstract class ReLearnTranslationEffect(val reLearnTranslation: ReLearnTranslation) :
+        ReLearnCardEffect()
+
+    data class Launch(val reLearn: ReLearnTranslation) : ReLearnTranslationEffect(reLearn)
+    data class ReLearnDeleted(val state: ReLearnCardViewState.ReLearnTranslationState) :
+        ReLearnTranslationEffect(state.reLearnTranslation)
 }

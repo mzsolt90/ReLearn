@@ -9,7 +9,7 @@ import com.azyoot.relearn.R
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import javax.inject.Inject
 
-class ReLearnTranslationFormatter @Inject constructor(private val applicationContext: Context){
+class ReLearnTranslationFormatter @Inject constructor(private val applicationContext: Context) {
 
     private val bulletSpan: BulletSpan
         get() = BulletSpan(

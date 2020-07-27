@@ -5,7 +5,8 @@ import javax.inject.Inject
 import com.azyoot.relearn.data.entity.TranslationEvent as DataEntity
 import com.azyoot.relearn.domain.entity.TranslationEvent as DomainEntity
 
-class TranslationEventMapper @Inject constructor(private val dateTimeMapper: DateTimeMapper) : EntityMapper<DomainEntity, DataEntity> {
+class TranslationEventMapper @Inject constructor(private val dateTimeMapper: DateTimeMapper) :
+    EntityMapper<DomainEntity, DataEntity> {
 
     override fun toDataEntity(domainEntity: DomainEntity): DataEntity = DataEntity(
         id = domainEntity.databaseId,

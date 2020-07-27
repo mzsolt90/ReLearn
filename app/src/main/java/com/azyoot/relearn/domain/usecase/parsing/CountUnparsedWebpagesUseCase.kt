@@ -8,6 +8,7 @@ import javax.inject.Inject
 
 class CountUnparsedWebpagesUseCase @Inject constructor(private val repository: WebpageVisitRepository) {
     suspend fun countUntranslatedWebpages(): Int = withContext(Dispatchers.IO) {
-        return@withContext repository.getUnparsedWebpageVisitCount().also { Timber.d("We have $it unparsed webpage visits") }
+        return@withContext repository.getUnparsedWebpageVisitCount()
+            .also { Timber.d("We have $it unparsed webpage visits") }
     }
 }

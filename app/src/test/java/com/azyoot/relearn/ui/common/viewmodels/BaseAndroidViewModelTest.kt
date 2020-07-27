@@ -22,7 +22,7 @@ class BaseAndroidViewModelTest {
     private val testCoroutineScope = TestCoroutineScope()
 
     @After
-    fun cleanup(){
+    fun cleanup() {
         testCoroutineScope.cleanupTestCoroutines()
     }
 

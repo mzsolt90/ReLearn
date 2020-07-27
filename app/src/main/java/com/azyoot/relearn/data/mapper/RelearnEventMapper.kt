@@ -6,7 +6,8 @@ import javax.inject.Inject
 import com.azyoot.relearn.data.entity.RelearnEvent as DataEntity
 import com.azyoot.relearn.domain.entity.RelearnEvent as DomainEntity
 
-class RelearnEventMapper @Inject constructor(private val dateTimeMapper: DateTimeMapper) : EntityMapper<DomainEntity, DataEntity> {
+class RelearnEventMapper @Inject constructor(private val dateTimeMapper: DateTimeMapper) :
+    EntityMapper<DomainEntity, DataEntity> {
     override fun toDataEntity(domainEntity: DomainEntity) = DataEntity(
         id = domainEntity.databaseId,
         timestamp = dateTimeMapper.mapToTimestamp(domainEntity.time),

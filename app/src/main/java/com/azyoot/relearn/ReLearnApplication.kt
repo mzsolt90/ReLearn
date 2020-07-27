@@ -17,7 +17,7 @@ class ReLearnApplication : Application() {
 
         appComponent = DaggerApplicationComponent.factory().create(this)
 
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             com.facebook.stetho.Stetho.initializeWithDefaults(this)
         }
 

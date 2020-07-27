@@ -17,7 +17,10 @@ class ReLearnCardViewModel
     private val acceptRelearnSourceUseCase: AcceptRelearnSourceUseCase,
     private val setReLearnDeletedUseCase: SetReLearnDeletedUseCase,
     @ViewModelScope viewModelScope: CoroutineScope
-) : BaseAndroidViewModel<ReLearnCardViewState, ReLearnCardEffect>(ReLearnCardViewState.Initial, viewModelScope) {
+) : BaseAndroidViewModel<ReLearnCardViewState, ReLearnCardEffect>(
+    ReLearnCardViewState.Initial,
+    viewModelScope
+) {
 
     fun loadInitialNthHistory(n: Int) {
         if (currentViewState !is ReLearnCardViewState.Initial) return

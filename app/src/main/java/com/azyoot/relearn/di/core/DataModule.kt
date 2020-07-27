@@ -28,5 +28,6 @@ object DataModule {
 
     @Provides
     @AppScope
-    fun provideRelearnEventDataHandler(appDatabase: AppDatabase): RelearnEventDataHandler = appDatabase.relearnEventDao()
+    fun provideRelearnEventDataHandler(appDatabase: AppDatabase): RelearnEventDataHandler =
+        appDatabase.relearnEventDao()
 }

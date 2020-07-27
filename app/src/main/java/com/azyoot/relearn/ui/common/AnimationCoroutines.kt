@@ -2,7 +2,6 @@ package com.azyoot.relearn.ui.common
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.view.animation.Animation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine

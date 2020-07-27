@@ -26,7 +26,8 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         ContextCompat.getDrawable(context, R.drawable.tumbleweed) as VectorDrawable
     private val groundDrawable =
         ContextCompat.getDrawable(context, R.drawable.half_circle) as VectorDrawable
-    private val backgroundDrawable = ContextCompat.getDrawable(context, R.drawable.tumbleweed_background) as VectorDrawable
+    private val backgroundDrawable =
+        ContextCompat.getDrawable(context, R.drawable.tumbleweed_background) as VectorDrawable
 
     private val animatorSet = AnimatorSet()
 
@@ -105,7 +106,12 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         )
 
     init {
-        animatorSet.playTogether(rotateAnimator, bounceAnimator, translateXAnimator, backgroundAnimator)
+        animatorSet.playTogether(
+            rotateAnimator,
+            bounceAnimator,
+            translateXAnimator,
+            backgroundAnimator
+        )
         tumbleweedDrawable.bounds =
             Rect(0, 0, tumbleweedDrawable.intrinsicWidth, tumbleweedDrawable.intrinsicHeight)
         groundDrawable.bounds =
@@ -132,13 +138,17 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         animatorSet.pause()
     }
 
-    private fun drawBackground(canvas: Canvas){
+    private fun drawBackground(canvas: Canvas) {
         canvas.save()
 
-        val animatedTranslationX = (backgroundAnimator.animatedValue as Float) * backgroundDrawable.bounds.width() / 100F
+        val animatedTranslationX =
+            (backgroundAnimator.animatedValue as Float) * backgroundDrawable.bounds.width() / 100F
         val heightCorrection = tumbleweedDrawable.bounds.height() * BACKGROUND_CORRECTION
 
-        canvas.translate(paddedBounds.left - animatedTranslationX - backgroundDrawable.bounds.width().toFloat(), paddedBounds.top.toFloat() - heightCorrection)
+        canvas.translate(
+            paddedBounds.left - animatedTranslationX - backgroundDrawable.bounds.width().toFloat(),
+            paddedBounds.top.toFloat() - heightCorrection
+        )
         backgroundDrawable.draw(canvas)
         canvas.translate(backgroundDrawable.bounds.width().toFloat(), 0F)
         backgroundDrawable.draw(canvas)
@@ -148,7 +158,7 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         canvas.restore()
     }
 
-    private fun drawGround(canvas: Canvas){
+    private fun drawGround(canvas: Canvas) {
         canvas.save()
         canvas.translate(
             currentTranslationX,
@@ -166,7 +176,7 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
         canvas.restore()
     }
 
-    private fun drawTumbleweed(canvas: Canvas){
+    private fun drawTumbleweed(canvas: Canvas) {
         canvas.translate(currentTranslationX, currentTranslationY)
         canvas.rotate(
             currentRotation,
@@ -210,7 +220,8 @@ class AnimatedTumbleweed(val context: Context) : Drawable(), Animatable {
     )
 
     private fun getBackgroundBoundsFromTumbleweed(): Rect {
-        val xyRatio = backgroundDrawable.intrinsicWidth.toFloat() / backgroundDrawable.intrinsicHeight.toFloat()
+        val xyRatio =
+            backgroundDrawable.intrinsicWidth.toFloat() / backgroundDrawable.intrinsicHeight.toFloat()
         val height = tumbleweedDrawable.bounds.height() * BACKGROUND_HEIGHT_RATIO
         val width = height * xyRatio
         return Rect(

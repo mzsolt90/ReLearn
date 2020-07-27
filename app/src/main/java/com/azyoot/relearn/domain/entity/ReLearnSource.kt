@@ -9,11 +9,13 @@ enum class SourceType(val value: Int) {
     TRANSLATION(ENTITY_TYPE_TRANSLATION)
 }
 
-data class ReLearnSource(val sourceText : String,
-                         val latestSourceTime : LocalDateTime,
-                         val latestSourceId : Long,
-                         val latestReLearnTime : LocalDateTime?,
-                         val latestRelearnStatus : RelearnEventStatus?,
-                         val sourceType : SourceType,
-                         val webpageVisit: WebpageVisit?,
-                         val translationEvent: TranslationEvent?)
+data class ReLearnSource(
+    val sourceText: String,
+    val latestSourceTime: LocalDateTime,
+    val latestSourceId: Long,
+    val latestReLearnTime: LocalDateTime?,
+    val latestRelearnStatus: RelearnEventStatus?,
+    val sourceType: SourceType,
+    val webpageVisit: WebpageVisit?,
+    val translationEvent: TranslationEvent?
+)

@@ -8,7 +8,7 @@ import timber.log.Timber
 
 class ReLearnScheduleReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if(intent.action != ACTION) return
+        if (intent.action != ACTION) return
 
         Timber.d("Scheduling ReLearn worker")
 

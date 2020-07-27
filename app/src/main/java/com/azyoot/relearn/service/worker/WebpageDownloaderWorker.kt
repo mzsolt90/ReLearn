@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.work.*
 import com.azyoot.relearn.ReLearnApplication
 import com.azyoot.relearn.data.repository.WebpageVisitRepository
+import com.azyoot.relearn.di.service.WorkerSubcomponent
 import com.azyoot.relearn.domain.usecase.parsing.CountUnparsedWebpagesUseCase
 import com.azyoot.relearn.domain.usecase.parsing.DownloadLastWebpagesAndStoreTranslationsUseCase
-import com.azyoot.relearn.di.service.WorkerSubcomponent
 import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.TimeUnit

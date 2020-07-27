@@ -1,8 +1,8 @@
 package com.azyoot.relearn.ui.main
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.azyoot.relearn.R
 
 class MainActivity : AppCompatActivity() {

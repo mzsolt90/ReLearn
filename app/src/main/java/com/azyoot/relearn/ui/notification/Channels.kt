@@ -7,10 +7,10 @@ import com.azyoot.relearn.R
 
 const val CHANNEL_ID = "ReLearnNotifications"
 
-fun ensureChannelCreated(context: Context){
+fun ensureChannelCreated(context: Context) {
     val notificationManager: NotificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    if(notificationManager.getNotificationChannel(CHANNEL_ID) != null) return
+    if (notificationManager.getNotificationChannel(CHANNEL_ID) != null) return
 
     val name = context.getString(R.string.channel_name)
     val descriptionText = ""

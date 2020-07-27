@@ -26,7 +26,7 @@ class LogWebpageVisitBufferUseCase @Inject constructor(
 
     suspend fun logWebpageVisit(webpageVisit: WebpageVisit) {
         val latestForSameUrl = repository.getLastWebpageVisitForUrl(webpageVisit.url) ?:
-            //for backwards compatibility
+        //for backwards compatibility
         repository.getLastWebpageVisitForUrl(urlProcessing.removeScheme(webpageVisit.url))
 
         if (!shouldLog(latestForSameUrl)) return

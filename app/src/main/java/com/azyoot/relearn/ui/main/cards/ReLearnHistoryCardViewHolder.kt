@@ -4,9 +4,9 @@ import android.view.View
 import com.azyoot.relearn.databinding.ItemRelearnHistoryCardBinding
 import com.azyoot.relearn.domain.entity.ReLearnTranslation
 import com.azyoot.relearn.ui.animation.GroupRevealAnimator
-import com.azyoot.relearn.ui.relearn.ReLearnTranslationFormatter
 import com.azyoot.relearn.ui.common.setAlphaForViews
 import com.azyoot.relearn.ui.common.setEnabledForViews
+import com.azyoot.relearn.ui.relearn.ReLearnTranslationFormatter
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import timber.log.Timber

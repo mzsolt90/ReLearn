@@ -1,7 +1,5 @@
 package com.azyoot.relearn.ui.main
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
@@ -41,12 +39,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.coroutines.resume
 
 
 @FlowPreview
@@ -70,7 +65,7 @@ class MainFragment : Fragment() {
     private var viewBinding: FragmentMainBinding? = null
 
     private val component: MainFragmentSubcomponent by lazy {
-        (context!!.applicationContext as ReLearnApplication).appComponent
+        (requireContext().applicationContext as ReLearnApplication).appComponent
             .mainFragmentSubcomponentFactory()
             .create(lifecycleScope)
     }

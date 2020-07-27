@@ -1,7 +1,6 @@
 package com.azyoot.relearn.ui.main
 
 import android.content.Context
-import androidx.lifecycle.viewModelScope
 import com.azyoot.relearn.di.ui.ViewModelScope
 import com.azyoot.relearn.domain.config.PREFERENCES_NAME
 import com.azyoot.relearn.domain.config.PREF_ONBOARDING_SEEN
@@ -99,7 +98,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun setOnboardingSeen(){
+    fun setOnboardingSeen() {
         applicationContext.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
             .edit()
             .putBoolean(
@@ -110,12 +109,15 @@ class MainViewModel @Inject constructor(
 
     fun onOnboardingScreenNext(screen: OnboardingScreen) {
         currentViewState.also {
-            if(it !is MainViewState.Onboarding) return
+            if (it !is MainViewState.Onboarding) return
 
-            when(it.screen){
-                OnboardingScreen.WELCOME -> viewState.value = MainViewState.Onboarding(OnboardingScreen.HOW_IT_WORKS)
-                OnboardingScreen.HOW_IT_WORKS -> viewState.value = MainViewState.Onboarding(OnboardingScreen.ENABLE_ACCESSIBILITY)
-                OnboardingScreen.ENABLE_ACCESSIBILITY -> viewState.value = MainViewState.Onboarding(OnboardingScreen.DONE)
+            when (it.screen) {
+                OnboardingScreen.WELCOME -> viewState.value =
+                    MainViewState.Onboarding(OnboardingScreen.HOW_IT_WORKS)
+                OnboardingScreen.HOW_IT_WORKS -> viewState.value =
+                    MainViewState.Onboarding(OnboardingScreen.ENABLE_ACCESSIBILITY)
+                OnboardingScreen.ENABLE_ACCESSIBILITY -> viewState.value =
+                    MainViewState.Onboarding(OnboardingScreen.DONE)
                 OnboardingScreen.DONE -> {
                     setOnboardingSeen()
                     loadData()

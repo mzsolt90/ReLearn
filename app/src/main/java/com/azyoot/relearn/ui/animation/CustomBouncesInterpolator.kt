@@ -1,7 +1,6 @@
 package com.azyoot.relearn.ui.animation
 
 import android.view.animation.Interpolator
-import java.lang.IllegalStateException
 import kotlin.math.pow
 
 data class CustomBounceKeyFrame(

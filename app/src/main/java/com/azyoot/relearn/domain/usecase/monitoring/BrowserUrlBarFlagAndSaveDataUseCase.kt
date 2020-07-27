@@ -1,9 +1,9 @@
 package com.azyoot.relearn.domain.usecase.monitoring
 
+import com.azyoot.relearn.di.service.ServiceScope
 import com.azyoot.relearn.domain.entity.AccessibilityEventDescriptor
 import com.azyoot.relearn.domain.entity.AccessibilityEventViewInfo
 import com.azyoot.relearn.domain.entity.WebpageVisit
-import com.azyoot.relearn.di.service.ServiceScope
 import com.azyoot.relearn.util.UrlProcessing
 import timber.log.Timber
 import javax.inject.Inject

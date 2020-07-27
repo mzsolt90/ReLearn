@@ -32,7 +32,7 @@ class OnboardingFragment : Fragment() {
     private lateinit var params: OnboardingFragmentParams
 
     private val component: OnboardingFragmentSubcomponent by lazy {
-        (context!!.applicationContext as ReLearnApplication).appComponent
+        (requireContext().applicationContext as ReLearnApplication).appComponent
             .onboardingFragmentSubcomponentFactory()
             .create(params)
     }
@@ -40,7 +40,7 @@ class OnboardingFragment : Fragment() {
     @ExperimentalCoroutinesApi
     @FlowPreview
     private val mainViewModel: MainViewModel
-        get() = ViewModelProvider(parentFragment!!).get(MainViewModel::class.java)
+        get() = ViewModelProvider(requireParentFragment()).get(MainViewModel::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,10 +67,13 @@ class OnboardingFragment : Fragment() {
             title.setText(titleResId)
             message.setText(messageResId)
 
-            if(params.screen == OnboardingScreen.DONE) {
+            if (params.screen == OnboardingScreen.DONE) {
                 lifecycleScope.launch {
                     delay(750)
-                    val animVector = resources.getDrawable(R.drawable.ic_check_animated, view.context.theme) as AnimatedVectorDrawable
+                    val animVector = resources.getDrawable(
+                        R.drawable.ic_check_animated,
+                        view.context.theme
+                    ) as AnimatedVectorDrawable
                     icon.setImageDrawable(animVector)
                     animVector.start()
                 }
@@ -101,9 +104,8 @@ class OnboardingFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        if (params.screen == OnboardingScreen.ENABLE_ACCESSIBILITY && MonitoringService.isRunning(
-                context!!
-            )
+        if (params.screen == OnboardingScreen.ENABLE_ACCESSIBILITY &&
+            MonitoringService.isRunning(requireContext())
         ) {
             mainViewModel.onOnboardingScreenNext(params.screen)
         }

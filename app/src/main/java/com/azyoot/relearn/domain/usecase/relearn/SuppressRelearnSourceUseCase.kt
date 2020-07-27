@@ -8,11 +8,11 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
-class SuppressRelearnSourceUseCase @Inject constructor(private val repository: RelearnEventRepository){
+class SuppressRelearnSourceUseCase @Inject constructor(private val repository: RelearnEventRepository) {
 
-    suspend fun suppressRelearnSource(source: ReLearnSource){
+    suspend fun suppressRelearnSource(source: ReLearnSource) {
         Timber.d("Suppressing source ${source.sourceText}")
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             repository.setLatestReLearnEventForSource(source, RelearnEventStatus.SUPPRESSED)
         }
     }

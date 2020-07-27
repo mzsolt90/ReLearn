@@ -109,7 +109,11 @@ class ReLearnNotificationFactory @Inject constructor(
             .setContentText(reLearnTranslation.translations.first())
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText(reLearnTranslationFormatter.formatTranslationTextForNotification(reLearnTranslation))
+                    .bigText(
+                        reLearnTranslationFormatter.formatTranslationTextForNotification(
+                            reLearnTranslation
+                        )
+                    )
                     .setSummaryText(getSummaryText(reLearnTranslation))
             )
             .addAction(

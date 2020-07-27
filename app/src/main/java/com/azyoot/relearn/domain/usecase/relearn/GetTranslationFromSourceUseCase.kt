@@ -12,7 +12,11 @@ class GetTranslationFromSourceUseCase @Inject constructor(private val webpageTra
 
     suspend fun getTranslationFromSource(source: ReLearnSource): ReLearnTranslation {
         if (source.translationEvent != null) {
-            return ReLearnTranslation(source, source.sourceText, listOf(source.translationEvent.toText))
+            return ReLearnTranslation(
+                source,
+                source.sourceText,
+                listOf(source.translationEvent.toText)
+            )
         }
         return withContext(Dispatchers.IO) {
             Timber.d("Getting translations for ${source.sourceText}")

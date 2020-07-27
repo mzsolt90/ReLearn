@@ -18,14 +18,14 @@ class WebpageVisitMapperTest {
     private val mapper = WebpageVisitMapper(mockDateTimeMapper)
 
     @Before
-    fun setup(){
+    fun setup() {
         whenever(mockDateTimeMapper.mapToLocalDateTime(TIMESTAMP)).thenReturn(TIME)
         whenever(mockDateTimeMapper.mapToTimestamp(TIME)).thenReturn(TIMESTAMP)
     }
 
     @Test
     fun `Given domain entity When mapped to data entity Then correctly mapped all properties`() {
-       val domainEntity = DomainEntity(URL, PACKAGE_NAME, TIME, ID, PARSE_VERSION)
+        val domainEntity = DomainEntity(URL, PACKAGE_NAME, TIME, ID, PARSE_VERSION)
 
         val mapped = mapper.toDataEntity(domainEntity)
 

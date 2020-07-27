@@ -10,12 +10,14 @@ import kotlinx.coroutines.flow.filterNotNull
 import androidx.lifecycle.viewModelScope as AndroidViewModelScope
 
 @ExperimentalCoroutinesApi
-abstract class BaseAndroidViewModel<S : Any, E : Any>(initialState: S,
-                                                      private val viewModelScopeOverride: CoroutineScope? = null) : ViewModel(),
+abstract class BaseAndroidViewModel<S : Any, E : Any>(
+    initialState: S,
+    private val viewModelScopeOverride: CoroutineScope? = null
+) : ViewModel(),
     ViewEffectsProducer<E> by FlowEffectsProducer() {
 
     protected val viewModelScope: CoroutineScope
-    get() = viewModelScopeOverride ?: AndroidViewModelScope
+        get() = viewModelScopeOverride ?: AndroidViewModelScope
 
     protected val viewState: MutableStateFlow<S?> = MutableStateFlow(null)
     fun getViewState(): Flow<S> = viewState.filterNotNull()

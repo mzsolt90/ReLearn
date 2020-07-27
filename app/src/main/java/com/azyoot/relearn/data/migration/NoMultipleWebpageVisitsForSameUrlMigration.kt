@@ -6,7 +6,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 class NoMultipleWebpageVisitsForSameUrlMigration : Migration(9, 10) {
 
     override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL("""DELETE FROM relearn_event
+        database.execSQL(
+            """DELETE FROM relearn_event
 WHERE webpage_visit_id IN (
 	SELECT webpage_visit.id 
 	FROM webpage_visit 
@@ -17,9 +18,11 @@ WHERE webpage_visit_id IN (
 	ON max_ids.url = webpage_visit.url 
 		AND max_ids.max_id != webpage_visit.id 
 	WHERE max_ids.url IS NOT NULL
-)""")
+)"""
+        )
 
-        database.execSQL("""DELETE FROM webpage_visit
+        database.execSQL(
+            """DELETE FROM webpage_visit
 WHERE ID IN (
 	SELECT webpage_visit.id 
 	FROM webpage_visit 
@@ -30,7 +33,8 @@ WHERE ID IN (
 	ON max_ids.url = webpage_visit.url 
 		AND max_ids.max_id != webpage_visit.id 
 	WHERE max_ids.url IS NOT NULL
-)""")
+)"""
+        )
     }
 
 }

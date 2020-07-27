@@ -16,10 +16,16 @@ class GetNextReLearnSourceUseCase @Inject constructor(
             getNextPredeterminedReLearnSourceUseCase.getNextPredeterminedReLearnSource()
         if (predetermined != null)
             return predetermined
-                .also { Timber.d("""Next source of text ${predetermined.sourceText}
-                        | is predetermined with state ${predetermined.latestRelearnStatus}""".trimMargin()) }
+                .also {
+                    Timber.d(
+                        """Next source of text ${predetermined.sourceText}
+                        | is predetermined with state ${predetermined.latestRelearnStatus}""".trimMargin()
+                    )
+                }
 
-        val nextId = getOrderingNumberForNextReLearnSourceUseCase.getOrderingNumberForNextReLearnSource() ?: return null
+        val nextId =
+            getOrderingNumberForNextReLearnSourceUseCase.getOrderingNumberForNextReLearnSource()
+                ?: return null
         return relearnEventRepository.getNearestSource(nextId)
     }
 }
